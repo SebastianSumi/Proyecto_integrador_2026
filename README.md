@@ -68,7 +68,7 @@ El proyecto está organizado siguiendo una arquitectura por capas:
 
 **Frontend**
 
-* React *(o la tecnología que utilicen)*
+
 
 **Base de datos**
 
