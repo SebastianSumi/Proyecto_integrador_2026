@@ -3,7 +3,3 @@ spring:
     name: saludablemente
   profiles:
     default: dev
-
-application:
-  cors:
-    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000}

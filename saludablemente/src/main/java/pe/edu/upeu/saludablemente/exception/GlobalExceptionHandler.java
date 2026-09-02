@@ -1,4 +1,4 @@
-package pe.edu.upeu.saludablemente.web.error;
+package pe.edu.upeu.saludablemente.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.MDC;
@@ -9,10 +9,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
 import java.time.Instant;
 import java.util.List;
 
-import static pe.edu.upeu.saludablemente.web.filter.CorrelationIdFilter.TRACE_ID_MDC_KEY;
+import static pe.edu.upeu.saludablemente.filter.CorrelationIdFilter.TRACE_ID_MDC_KEY;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,6 +24,11 @@ public class GlobalExceptionHandler {
                 .map(this::toFieldViolation)
                 .toList();
         return buildResponse(HttpStatus.BAD_REQUEST, "Validation failed", request, violations);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException exception, HttpServletRequest request) {
+        return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage(), request, List.of());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

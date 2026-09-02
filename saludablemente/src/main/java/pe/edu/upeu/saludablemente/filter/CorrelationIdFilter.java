@@ -1,4 +1,4 @@
-package pe.edu.upeu.saludablemente.web.filter;
+package pe.edu.upeu.saludablemente.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

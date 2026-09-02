@@ -1,4 +1,4 @@
-package pe.edu.upeu.saludablemente.web.error;
+package pe.edu.upeu.saludablemente.exception;
 
 import java.time.Instant;
 import java.util.List;
