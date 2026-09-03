@@ -1,14 +1,18 @@
 package pe.edu.upeu.saludablemente.teams.team.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+
+import java.sql.Types;
 
 @Entity
-@Table(name = "TEAMS")
+@Table(name = "TEAMS", schema = "SAL_TEAMS")
 public class Team {
 
     @Id
@@ -21,6 +25,8 @@ public class Team {
     @Column(length = 500)
     private String description;
 
+    @Convert(converter = BooleanToIntegerConverter.class)
+    @JdbcTypeCode(Types.NUMERIC)
     @Column(nullable = false)
     private boolean active = true;
 
@@ -36,8 +42,8 @@ public class Team {
         this.description = description;
     }
 
-    public void deactivate() {
-        this.active = false;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public Long getId() {
