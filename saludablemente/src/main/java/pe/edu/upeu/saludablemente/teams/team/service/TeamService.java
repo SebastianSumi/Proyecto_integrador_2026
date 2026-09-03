@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
 import pe.edu.upeu.saludablemente.teams.team.dto.TeamRequest;
 import pe.edu.upeu.saludablemente.teams.team.dto.TeamResponse;
+import pe.edu.upeu.saludablemente.teams.team.dto.TeamStateRequest;
 import pe.edu.upeu.saludablemente.teams.team.entity.Team;
 import pe.edu.upeu.saludablemente.teams.team.mapper.TeamMapper;
 import pe.edu.upeu.saludablemente.teams.team.repository.TeamRepository;
@@ -23,8 +24,11 @@ public class TeamService {
         this.teamMapper = teamMapper;
     }
 
-    public List<TeamResponse> findAll() {
-        return teamRepository.findAll().stream()
+    public List<TeamResponse> findAll(Boolean active) {
+        List<Team> teams = active == null
+                ? teamRepository.findAll()
+                : teamRepository.findAllByActive(active);
+        return teams.stream()
                 .map(teamMapper::toResponse)
                 .toList();
     }
@@ -57,9 +61,10 @@ public class TeamService {
     }
 
     @Transactional
-    public void deactivate(Long id) {
+    public TeamResponse updateState(Long id, TeamStateRequest request) {
         Team team = findTeam(id);
-        team.deactivate();
+        team.setActive(request.active());
+        return teamMapper.toResponse(team);
     }
 
     private Team findTeam(Long id) {
