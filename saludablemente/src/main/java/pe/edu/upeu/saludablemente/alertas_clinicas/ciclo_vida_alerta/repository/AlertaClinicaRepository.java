@@ -71,4 +71,6 @@ public interface AlertaClinicaRepository extends JpaRepository<AlertaClinicaEnti
     );
 
     Optional<AlertaClinicaEntity> findByIdAlertaAndPersona_IdPersona(UUID idAlerta, Long idPersona);
+
+    long countByEstado(EstadoAlerta estado); long countByNivelSeveridadAndEstado( NivelSeveridad nivelSeveridad, EstadoAlerta estado );
 }
