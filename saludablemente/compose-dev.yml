@@ -1,0 +1,24 @@
+name: saludablemente-dev
+
+services:
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    container_name: saludablemente-oracle
+    restart: unless-stopped
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: 123456
+      APP_USER: SALUDABLEMENTE_APP
+      APP_USER_PASSWORD: 123456
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+volumes:
+  oracle-data:
