@@ -1,6 +1,7 @@
 package pe.edu.upeu.saludablemente;
 
 import pe.edu.upeu.saludablemente.teams.team.service.TeamService;
+import pe.edu.upeu.saludablemente.actividades.actividad.service.ActividadService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,9 @@ class SaludablementeApplicationTests {
 
     @MockitoBean
     private TeamService teamService;
+
+    @MockitoBean
+    private ActividadService actividadService;
 
     @Test
     void contextLoads() {
