@@ -1,4 +1,4 @@
--- Execute as SAL_ACTIVITIES after 04_provision_activities_user.sql.
+-- Execute as a pre-provisioned SAL_ACTIVITIES schema owner.
 -- Logical-model mapping:
 -- id_actividad -> ID; nombre -> NAME; descripcion -> DESCRIPTION;
 -- fecha_actividad + hora_inicio/hora_fin -> START_AT/END_AT;
