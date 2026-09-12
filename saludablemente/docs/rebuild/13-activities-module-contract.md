@@ -36,8 +36,17 @@ El creador se conserva como `creadorId`, no como relación JPA a una entidad de 
 
 - `Inscripcion` sigue siendo una decisión aprobada dentro de Actividades, pero no forma parte de esta primera capa.
 - `Asistencia` pertenece a Francisco; Actividades no accederá a su repository ni lo modelará como hijo interno.
-- No se agregan DTO, mapper, repository, service, controller, SQL, Oracle ni configuración en este slice.
+- `ActividadRequest` y `ActividadResponse` están implementados; request valida nombre, fecha, horarios, lugar y creador, mientras response no expone la entidad JPA.
+- No se agregan mapper, repository, service, controller, SQL, Oracle ni configuración en este slice.
+
+## Paquetes, `package-info` y CORS
+
+El paquete raíz `actividades` agrupa sus submódulos `actividad` e `inscripcion`. Un futuro `actividades/package-info.java` declara el límite de Spring Modulith y, si se necesita colaboración externa, expone solamente un contrato público explícito. No configura CORS, endpoints ni transacciones.
+
+CORS es infraestructura transversal del backend, no una responsabilidad de `dto/`, `package-info.java` ni de un controller. Para S06 se configurará después mediante propiedades por entorno y una configuración global bajo `/api/**`; no se fijarán orígenes ni credenciales en código. Su evidencia será una prueba HTTP y la propiedad visible por entorno.
+
+El paquete `dto/` de Actividad empezará con `ActividadRequest` y `ActividadResponse`. Si una operación cabecera-detalle real queda aprobada, sus DTO compuestos se nombrarán por el dominio —por ejemplo, `ActividadConInscripcionesRequest`— y no se copiarán nombres como `DetalleVentaRequest` o `VentaAgregado` de BOMERP.
 
 ## Verificación
 
-`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. La evidencia de cierre es prueba focalizada 3/3 PASS y suite Maven 29/29 PASS.
+`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. La evidencia de cierre es prueba focalizada 3/3 PASS y suite Maven 32/32 PASS.

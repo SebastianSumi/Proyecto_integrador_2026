@@ -20,6 +20,7 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 12. [Referencia BOMERP clase por clase](rebuild/11-bomerp-class-by-class-reference.md)
 13. [Vertical de referencia para módulos posteriores](rebuild/12-reference-vertical-for-next-modules.md)
 14. [Contrato inicial de Actividades](rebuild/13-activities-module-contract.md)
+15. [Preparación de integración S06](rebuild/14-s06-integration-readiness.md)
 
 ## Estado de Teams
 
@@ -35,7 +36,7 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 
 ## Inicio de Actividades
 
-La capa `entity` de `Actividad` está completada y verificada. Expresa únicamente los hechos del modelo lógico: nombre, fecha, horarios, lugar, estado inicial `PROGRAMADA` y creador. `Inscripcion` queda como submódulo futuro de Actividades; `Asistencia` es un módulo externo. No se implementaron DTO, mapper, repository, service ni controller.
+Las capas `entity` y `dto` de `Actividad` están completadas y verificadas. Los DTO separan `ActividadRequest` (entrada validada) de `ActividadResponse` (salida pública). `Inscripcion` queda como submódulo futuro de Actividades; `Asistencia` es un módulo externo. No se implementaron mapper, repository, service ni controller.
 
 ## Documentos históricos
 
