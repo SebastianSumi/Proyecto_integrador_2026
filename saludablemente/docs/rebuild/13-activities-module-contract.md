@@ -38,7 +38,9 @@ El creador se conserva como `creadorId`, no como relación JPA a una entidad de 
 - `Asistencia` pertenece a Francisco; Actividades no accederá a su repository ni lo modelará como hijo interno.
 - `ActividadRequest` y `ActividadResponse` están implementados; request valida nombre, fecha, horarios, lugar y creador, mientras response no expone la entidad JPA.
 - `ActividadMapper` usa MapStruct para `ActividadRequest -> Actividad` y `Actividad -> ActividadResponse`; no consulta repositories ni aplica reglas.
-- No se agregan repository, service, controller, SQL, Oracle ni configuración en este slice.
+- `ActividadRepository` hereda `JpaRepository<Actividad, Long>` y declara solo `existeSolapamiento`, una consulta explícita por lugar, fecha y rango horario con parámetros en orden natural: inicio y fin.
+- La prueba comportamental de repository se difiere hasta una infraestructura de persistencia autorizada; no se reemplaza por mocks ni reflexión.
+- No se agregan service, controller, SQL, Oracle ni configuración en este slice.
 
 ## Paquetes, `package-info` y CORS
 

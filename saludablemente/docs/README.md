@@ -36,7 +36,7 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 
 ## Inicio de Actividades
 
-Las capas `entity`, `dto` y `mapper` de `Actividad` están completadas y verificadas. `ActividadMapper` usa MapStruct y mantiene `id` y `estado` como campos gestionados por la entidad. `Inscripcion` queda como submódulo futuro de Actividades; `Asistencia` es un módulo externo. No se implementaron repository, service ni controller.
+Las capas `entity`, `dto`, `mapper` y `repository` de `Actividad` están completadas. `ActividadRepository` declara únicamente una consulta explícita de solapamiento de horario; su prueba comportamental queda diferida hasta contar con infraestructura de persistencia autorizada. No se implementaron service ni controller.
 
 ## Documentos históricos
 
