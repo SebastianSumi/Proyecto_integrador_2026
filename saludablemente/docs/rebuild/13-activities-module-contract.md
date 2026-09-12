@@ -40,9 +40,13 @@ La entidad no contiene anotaciones Bean Validation ni reglas que consulten persi
 
 La regla acordada es una sola inscripción vigente por persona y actividad. La cancelación permitirá una futura inscripción; repository y service impondrán esa regla al consultar y actualizar el estado. La entidad no consulta persistencia ni intenta resolver unicidad por sí sola.
 
+## DTO de Inscripción
+
+`InscripcionRequest` acepta exclusivamente `actividadId` y `personaId`, ambos obligatorios y positivos. `InscripcionResponse` expone identificador, IDs, estado y marcas de ciclo; estado, `inscritaEn` y `canceladaEn` permanecen bajo control del backend.
+
 ## Límites actuales
 
-- `Inscripcion` es una decisión aprobada dentro de Actividades y su capa entity está implementada; DTO, mapper, repository, service y controller siguen diferidos.
+- `Inscripcion` es una decisión aprobada dentro de Actividades; entity y DTO están implementados. Mapper, repository, service y controller siguen diferidos.
 - `Asistencia` pertenece a Francisco; Actividades no accederá a su repository ni lo modelará como hijo interno.
 - `ActividadRequest` y `ActividadResponse` están implementados; request valida nombre, fecha, horarios, lugar y creador, mientras response no expone la entidad JPA.
 - `ActividadMapper` usa MapStruct para `ActividadRequest -> Actividad` y `Actividad -> ActividadResponse`; no consulta repositories ni aplica reglas.

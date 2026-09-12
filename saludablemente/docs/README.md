@@ -38,6 +38,8 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 
 Las capas `entity`, `dto`, `mapper`, `repository`, `service` y `controller` de `Actividad` están completadas. `ActividadServiceImpl` lista, obtiene, crea y actualiza dentro de fronteras transaccionales, y rechaza solapamientos de horario. `ActividadController` expone esas operaciones bajo `/api/v1/actividades`, valida los DTO de entrada y el manejo global centraliza 400, 404 y 409.
 
+Para `Inscripcion`, las capas `entity` y `dto` están completadas. Sus mapper, repository, service y controller permanecen diferidos; la unicidad de una inscripción vigente por persona y actividad se aplicará en repository/service, no en el DTO ni en la entidad.
+
 ## Documentos históricos
 
 `external-module-recommendations.md`, `next-iteration.md`, `pedro-module-roadmap.md` y `project-architecture.md` describen el legado eliminado. Se conservan como evidencia; no son instrucciones de implementación para la reconstrucción.
