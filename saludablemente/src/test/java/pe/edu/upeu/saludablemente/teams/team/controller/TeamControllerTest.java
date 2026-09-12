@@ -1,138 +1,153 @@
 package pe.edu.upeu.saludablemente.teams.team.controller;
 
-import pe.edu.upeu.saludablemente.teams.team.dto.TeamRequest;
-import pe.edu.upeu.saludablemente.teams.team.dto.TeamResponse;
-import pe.edu.upeu.saludablemente.teams.team.dto.TeamStateRequest;
-import pe.edu.upeu.saludablemente.teams.team.service.TeamService;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Validation;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
+import pe.edu.upeu.saludablemente.exception.GlobalExceptionHandler;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
+import pe.edu.upeu.saludablemente.teams.team.dto.TeamRequest;
+import pe.edu.upeu.saludablemente.teams.team.dto.TeamResponse;
+import pe.edu.upeu.saludablemente.teams.team.service.TeamService;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(TeamController.class)
-@AutoConfigureMockMvc(addFilters = false)
+@ExtendWith(MockitoExtension.class)
 class TeamControllerTest {
 
-    @Autowired
+    @Mock
+    private TeamService service;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private MockMvc mockMvc;
 
-    @MockitoBean
-    private TeamService teamService;
-
-    @Test
-    void createsTeamWithLocationHeader() throws Exception {
-        given(teamService.create(any(TeamRequest.class)))
-                .willReturn(new TeamResponse(1L, "Nutrition", "Nutrition support team", true));
-
-        mockMvc.perform(post("/api/v1/equipos")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"nombre":"Nutrition","descripcion":"Nutrition support team"}
-                                """))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "http://localhost/api/v1/equipos/1"))
-                .andExpect(jsonPath("$.nombre").value("Nutrition"))
-                .andExpect(jsonPath("$.activo").value(true));
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new TeamController(service))
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .setValidator(new SpringValidatorAdapter(Validation.buildDefaultValidatorFactory().getValidator()))
+                .build();
     }
 
     @Test
-    void rejectsInvalidTeamRequest() throws Exception {
-        mockMvc.perform(post("/api/v1/equipos")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nombre\":\"\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"))
-                .andExpect(jsonPath("$.violations[0].field").value("name"));
+    void listsTeamsWithOptionalActiveFilter() throws Exception {
+        when(service.findAll(true)).thenReturn(List.of(response(1L, "Wellness", "Wellness team", true)));
+
+        mockMvc.perform(get("/api/v1/teams").param("active", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].name").value("Wellness"))
+                .andExpect(jsonPath("$[0].active").value(true));
+
+        verify(service).findAll(true);
     }
 
     @Test
     void returnsTeamById() throws Exception {
-        given(teamService.findById(1L))
-                .willReturn(new TeamResponse(1L, "Nutrition", null, true));
+        when(service.findById(7L)).thenReturn(response(7L, "Wellness", "Wellness team", true));
 
-        mockMvc.perform(get("/api/v1/equipos/1"))
+        mockMvc.perform(get("/api/v1/teams/7"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.nombre").value("Nutrition"));
+                .andExpect(jsonPath("$.id").value(7L))
+                .andExpect(jsonPath("$.name").value("Wellness"));
     }
 
     @Test
-    void returnsNotFoundWhenTeamDoesNotExist() throws Exception {
-        given(teamService.findById(999L)).willThrow(new ResourceNotFoundException("Team", 999L));
+    void createsTeamFromValidRequest() throws Exception {
+        TeamRequest request = request("Wellness", "Wellness team");
+        when(service.create(any(TeamRequest.class))).thenReturn(response(10L, "Wellness", "Wellness team", true));
 
-        mockMvc.perform(get("/api/v1/equipos/999"))
+        mockMvc.perform(post("/api/v1/teams")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(10L))
+                .andExpect(jsonPath("$.active").value(true));
+    }
+
+    @Test
+    void rejectsInvalidCreateRequest() throws Exception {
+        TeamRequest request = request(" ", "x".repeat(201));
+
+        mockMvc.perform(post("/api/v1/teams")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Error de validación en los datos enviados"));
+
+        verify(service, never()).create(any(TeamRequest.class));
+    }
+
+    @Test
+    void updatesTeamFromValidRequest() throws Exception {
+        TeamRequest request = request("Updated", "Updated team");
+        when(service.update(any(Long.class), any(TeamRequest.class)))
+                .thenReturn(response(10L, "Updated", "Updated team", true));
+
+        mockMvc.perform(put("/api/v1/teams/10")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated"));
+
+        verify(service).update(any(Long.class), any(TeamRequest.class));
+    }
+
+    @Test
+    void changesTeamState() throws Exception {
+        when(service.changeState(10L, false)).thenReturn(response(10L, "Wellness", "Wellness team", false));
+
+        mockMvc.perform(patch("/api/v1/teams/10/state").param("active", "false"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.active").value(false));
+
+        verify(service).changeState(10L, false);
+    }
+
+    @Test
+    void mapsMissingTeamToNotFound() throws Exception {
+        when(service.findById(99L)).thenThrow(new ResourceNotFoundException("Team with id 99 was not found"));
+
+        mockMvc.perform(get("/api/v1/teams/99"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.message").value("Team with id 999 was not found"));
-    }
-    @Test
-    void listsTeams() throws Exception {
-        given(teamService.findAll(null)).willReturn(List.of(
-                new TeamResponse(1L, "Nutrition", null, true),
-                new TeamResponse(2L, "Activities", null, false)
-        ));
-
-        mockMvc.perform(get("/api/v1/equipos"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nombre").value("Nutrition"))
-                .andExpect(jsonPath("$[1].activo").value(false));
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Team with id 99 was not found"));
     }
 
-    @Test
-    void filtersTeamsByActiveState() throws Exception {
-        given(teamService.findAll(true)).willReturn(List.of(
-                new TeamResponse(1L, "Nutrition", null, true)
-        ));
-
-        mockMvc.perform(get("/api/v1/equipos?activo=true"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].activo").value(true));
-
-        then(teamService).should().findAll(true);
+    private TeamRequest request(String name, String description) {
+        TeamRequest request = new TeamRequest();
+        request.setName(name);
+        request.setDescription(description);
+        return request;
     }
 
-    @Test
-    void updatesTeam() throws Exception {
-        given(teamService.update(eq(1L), any(TeamRequest.class)))
-                .willReturn(new TeamResponse(1L, "Wellness", "Updated", true));
-
-        mockMvc.perform(put("/api/v1/equipos/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nombre\":\"Wellness\",\"descripcion\":\"Updated\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre").value("Wellness"));
-    }
-
-    @Test
-    void updatesTeamStateExplicitly() throws Exception {
-        given(teamService.updateState(eq(1L), any(TeamStateRequest.class)))
-                .willReturn(new TeamResponse(1L, "Nutrition", null, false));
-
-        mockMvc.perform(patch("/api/v1/equipos/1/estado")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"activo\":false}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.activo").value(false));
-
-        then(teamService).should().updateState(eq(1L), any(TeamStateRequest.class));
+    private TeamResponse response(Long id, String name, String description, boolean active) {
+        return TeamResponse.builder()
+                .id(id)
+                .name(name)
+                .description(description)
+                .active(active)
+                .build();
     }
 }

@@ -1,13 +1,23 @@
 package pe.edu.upeu.saludablemente.teams.team.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Schema(name = "EquipoResponse", description = "Representación pública de un equipo")
-public record TeamResponse(
-        Long id,
-        @JsonProperty("nombre") String name,
-        @JsonProperty("descripcion") String description,
-        @JsonProperty("activo") boolean active
-) {
+/**
+ * Public representation of a team.
+ */
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TeamResponse {
+
+    private Long id;
+    private String name;
+    private String description;
+    private boolean active;
 }
