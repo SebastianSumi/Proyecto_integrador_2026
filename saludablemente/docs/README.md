@@ -40,4 +40,3 @@ La capa `entity` de `Actividad` está completada y verificada. Expresa únicamen
 ## Documentos históricos
 
 `external-module-recommendations.md`, `next-iteration.md`, `pedro-module-roadmap.md` y `project-architecture.md` describen el legado eliminado. Se conservan como evidencia; no son instrucciones de implementación para la reconstrucción.
-
