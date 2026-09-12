@@ -37,7 +37,8 @@ El creador se conserva como `creadorId`, no como relación JPA a una entidad de 
 - `Inscripcion` sigue siendo una decisión aprobada dentro de Actividades, pero no forma parte de esta primera capa.
 - `Asistencia` pertenece a Francisco; Actividades no accederá a su repository ni lo modelará como hijo interno.
 - `ActividadRequest` y `ActividadResponse` están implementados; request valida nombre, fecha, horarios, lugar y creador, mientras response no expone la entidad JPA.
-- No se agregan mapper, repository, service, controller, SQL, Oracle ni configuración en este slice.
+- `ActividadMapper` usa MapStruct para `ActividadRequest -> Actividad` y `Actividad -> ActividadResponse`; no consulta repositories ni aplica reglas.
+- No se agregan repository, service, controller, SQL, Oracle ni configuración en este slice.
 
 ## Paquetes, `package-info` y CORS
 
@@ -49,4 +50,4 @@ El paquete `dto/` de Actividad empezará con `ActividadRequest` y `ActividadResp
 
 ## Verificación
 
-`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. La evidencia de cierre es prueba focalizada 3/3 PASS y suite Maven 32/32 PASS.
+`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. `ActividadMapperTest` cubre ambas direcciones y los campos gestionados por entidad. La evidencia de cierre es prueba focalizada 2/2 PASS y suite Maven 34/34 PASS.

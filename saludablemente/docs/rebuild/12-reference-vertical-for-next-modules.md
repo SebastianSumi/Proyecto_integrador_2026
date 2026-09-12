@@ -36,4 +36,4 @@ La vertical incluye `entity`, DTO, mapper MapStruct, repository, service, contro
 
 ## Aplicación inicial: Actividades
 
-Las capas `actividades/actividad/entity` y `dto` están completadas. El modelo lógico confirma nombre, fecha, hora de inicio, hora de fin, lugar, estado y creador; la entidad preserva estos conceptos con `LocalDate` y `LocalTime`, sin decidir DDL ni la representación física Oracle de `TIME`. `ActividadRequest` valida la entrada y `ActividadResponse` expone la salida. El siguiente paso, sujeto a revisión, es solo el mapper de `Actividad`.
+Las capas `actividades/actividad/entity`, `dto` y `mapper` están completadas. El modelo lógico confirma nombre, fecha, hora de inicio, hora de fin, lugar, estado y creador; la entidad preserva estos conceptos con `LocalDate` y `LocalTime`, sin decidir DDL ni la representación física Oracle de `TIME`. `ActividadMapper` usa MapStruct, ignora `id` y `estado` al crear una entidad, y transforma la entidad completa a response. El siguiente paso, sujeto a revisión, es solo el repository de `Actividad`.

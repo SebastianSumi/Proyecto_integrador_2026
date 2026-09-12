@@ -36,7 +36,7 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 
 ## Inicio de Actividades
 
-Las capas `entity` y `dto` de `Actividad` están completadas y verificadas. Los DTO separan `ActividadRequest` (entrada validada) de `ActividadResponse` (salida pública). `Inscripcion` queda como submódulo futuro de Actividades; `Asistencia` es un módulo externo. No se implementaron mapper, repository, service ni controller.
+Las capas `entity`, `dto` y `mapper` de `Actividad` están completadas y verificadas. `ActividadMapper` usa MapStruct y mantiene `id` y `estado` como campos gestionados por la entidad. `Inscripcion` queda como submódulo futuro de Actividades; `Asistencia` es un módulo externo. No se implementaron repository, service ni controller.
 
 ## Documentos históricos
 
