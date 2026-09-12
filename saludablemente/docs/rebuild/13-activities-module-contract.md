@@ -15,7 +15,7 @@ actividades/
 │   ├── repository/      # persistencia propia futura
 │   ├── service/         # reglas y frontera transaccional futura
 │   └── controller/      # API futura bajo /api/v1
-└── inscripcion/         # registro previo, pendiente de implementación
+└── inscripcion/         # registro previo de una persona en una actividad
     ├── entity/
     ├── dto/
     ├── mapper/
@@ -34,9 +34,15 @@ El creador se conserva como `creadorId`, no como relación JPA a una entidad de 
 
 La entidad no contiene anotaciones Bean Validation ni reglas que consulten persistencia: las restricciones de forma están en `ActividadRequest` y las reglas de negocio en `ActividadService`. El servicio valida `horaInicio < horaFin` antes de consultar solapamientos y devuelve 400 para un intervalo inválido; la regla de solapamiento continúa siendo un conflicto 409.
 
+## Entidad de Inscripción
+
+`Inscripcion` representa el estado actual de la intención previa de participar. Conserva `actividadId` y `personaId` como identificadores escalares: no crea relaciones JPA hacia `Actividad` ni hacia Personal. Sus marcas `inscritaEn` y `canceladaEn` expresan el ciclo vigente o cancelado de la misma inscripción, y `EstadoInscripcion` inicia en `INSCRITA` o puede pasar a `CANCELADA`.
+
+La regla acordada es una sola inscripción vigente por persona y actividad. La cancelación permitirá una futura inscripción; repository y service impondrán esa regla al consultar y actualizar el estado. La entidad no consulta persistencia ni intenta resolver unicidad por sí sola.
+
 ## Límites actuales
 
-- `Inscripcion` sigue siendo una decisión aprobada dentro de Actividades, pero no forma parte de esta primera capa.
+- `Inscripcion` es una decisión aprobada dentro de Actividades y su capa entity está implementada; DTO, mapper, repository, service y controller siguen diferidos.
 - `Asistencia` pertenece a Francisco; Actividades no accederá a su repository ni lo modelará como hijo interno.
 - `ActividadRequest` y `ActividadResponse` están implementados; request valida nombre, fecha, horarios, lugar y creador, mientras response no expone la entidad JPA.
 - `ActividadMapper` usa MapStruct para `ActividadRequest -> Actividad` y `Actividad -> ActividadResponse`; no consulta repositories ni aplica reglas.
@@ -57,4 +63,4 @@ El paquete `dto/` de Actividad empezará con `ActividadRequest` y `ActividadResp
 
 ## Verificación
 
-`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. `ActividadMapperTest` cubre ambas direcciones y los campos gestionados por entidad. `ActividadServiceImplTest` cubre lectura, no encontrado, crear, actualizar, transacciones, rechazo de solapamiento e intervalo horario inválido. `ActividadControllerTest` cubre las cuatro operaciones HTTP y las respuestas 400, 404 y 409. La evidencia de cierre es la prueba focalizada de servicio 9/9 PASS y la suite Maven vigente.
+`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `InscripcionTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. `ActividadMapperTest` cubre ambas direcciones y los campos gestionados por entidad. `ActividadServiceImplTest` cubre lectura, no encontrado, crear, actualizar, transacciones, rechazo de solapamiento e intervalo horario inválido. `ActividadControllerTest` cubre las cuatro operaciones HTTP y las respuestas 400, 404 y 409.
