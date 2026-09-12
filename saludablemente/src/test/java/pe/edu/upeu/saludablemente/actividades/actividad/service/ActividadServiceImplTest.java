@@ -11,6 +11,7 @@ import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.Actividad;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.EstadoActividad;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
+import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
 import pe.edu.upeu.saludablemente.actividades.actividad.mapper.ActividadMapper;
 import pe.edu.upeu.saludablemente.actividades.actividad.repository.ActividadRepository;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -95,6 +97,18 @@ class ActividadServiceImplTest {
 
         verify(mapper, never()).toEntity(request);
         verify(repository, never()).save(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void rejectsCreationWhenStartTimeIsNotBeforeEndTime() {
+        ActividadRequest request = request("Caminata saludable");
+        request.setHoraFin(request.getHoraInicio());
+
+        HorarioActividadInvalidoException exception = assertThrows(HorarioActividadInvalidoException.class,
+                () -> service.create(request));
+
+        assertEquals("La hora de inicio debe ser anterior a la hora de fin", exception.getMessage());
+        verifyNoInteractions(repository, mapper);
     }
 
     @Test

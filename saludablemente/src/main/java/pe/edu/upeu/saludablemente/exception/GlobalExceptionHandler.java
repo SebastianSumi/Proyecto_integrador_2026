@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
+import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -30,6 +31,16 @@ public class GlobalExceptionHandler {
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("error", "Bad Request");
         body.put("message", "Error de validación en los datos enviados");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(HorarioActividadInvalidoException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidSchedule(HorarioActividadInvalidoException exception) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Bad Request");
+        body.put("message", exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 

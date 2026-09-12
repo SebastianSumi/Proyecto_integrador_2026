@@ -7,6 +7,7 @@ import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadRequest;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.Actividad;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
+import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
 import pe.edu.upeu.saludablemente.actividades.actividad.mapper.ActividadMapper;
 import pe.edu.upeu.saludablemente.actividades.actividad.repository.ActividadRepository;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
@@ -36,6 +37,7 @@ public class ActividadServiceImpl implements ActividadService {
     @Override
     @Transactional
     public ActividadResponse create(ActividadRequest request) {
+        validarIntervaloHorario(request);
         validarSinSolapamiento(request, null);
         Actividad actividad = mapper.toEntity(request);
         return mapper.toResponse(repository.save(actividad));
@@ -45,6 +47,7 @@ public class ActividadServiceImpl implements ActividadService {
     @Transactional
     public ActividadResponse update(Long id, ActividadRequest request) {
         Actividad actividad = findActividad(id);
+        validarIntervaloHorario(request);
         validarSinSolapamiento(request, id);
         actividad.setNombre(request.getNombre());
         actividad.setFecha(request.getFecha());
@@ -58,6 +61,12 @@ public class ActividadServiceImpl implements ActividadService {
     private Actividad findActividad(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Actividad with id " + id + " was not found"));
+    }
+
+    private void validarIntervaloHorario(ActividadRequest request) {
+        if (!request.getHoraInicio().isBefore(request.getHoraFin())) {
+            throw new HorarioActividadInvalidoException("La hora de inicio debe ser anterior a la hora de fin");
+        }
     }
 
     private void validarSinSolapamiento(ActividadRequest request, Long idExcluido) {

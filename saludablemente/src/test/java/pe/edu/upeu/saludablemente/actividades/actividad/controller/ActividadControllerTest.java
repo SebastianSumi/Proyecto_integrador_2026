@@ -18,6 +18,7 @@ import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadRequest;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.EstadoActividad;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
+import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
 import pe.edu.upeu.saludablemente.actividades.actividad.service.ActividadService;
 import pe.edu.upeu.saludablemente.exception.GlobalExceptionHandler;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
@@ -111,6 +112,20 @@ class ActividadControllerTest {
                 .andExpect(jsonPath("$.error").value("Bad Request"));
 
         verify(service, never()).create(any(ActividadRequest.class));
+    }
+
+    @Test
+    void mapsInvalidScheduleToBadRequest() throws Exception {
+        when(service.create(any(ActividadRequest.class)))
+                .thenThrow(new HorarioActividadInvalidoException("La hora de inicio debe ser anterior a la hora de fin"));
+
+        mockMvc.perform(post("/api/v1/actividades")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request())))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("La hora de inicio debe ser anterior a la hora de fin"));
     }
 
     @Test
