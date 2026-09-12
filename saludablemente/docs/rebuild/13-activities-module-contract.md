@@ -46,12 +46,12 @@ La regla acordada es una sola inscripción vigente por persona y actividad. La c
 
 ## Límites actuales
 
-- `Inscripcion` es una decisión aprobada dentro de Actividades; entity, DTO y mapper están implementados. `InscripcionMapper` convierte request a entity ignorando id, estado y marcas de ciclo, que son gestionados por backend; la conversión a response expone el ciclo completo. Repository, service y controller siguen diferidos.
+- `Inscripcion` es una decisión aprobada dentro de Actividades; entity, DTO, mapper y repository están implementados. `InscripcionMapper` convierte request a entity ignorando id, estado y marcas de ciclo, que son gestionados por backend; la conversión a response expone el ciclo completo. `InscripcionRepository` hereda `JpaRepository<Inscripcion, Long>` y declara solamente `existsByActividadIdAndPersonaIdAndEstado`, que el futuro servicio invocará con `INSCRITA` para impedir una segunda inscripción vigente. Service y controller siguen diferidos.
 - `Asistencia` pertenece a Francisco; Actividades no accederá a su repository ni lo modelará como hijo interno.
 - `ActividadRequest` y `ActividadResponse` están implementados; request valida nombre, fecha, horarios, lugar y creador, mientras response no expone la entidad JPA.
 - `ActividadMapper` usa MapStruct para `ActividadRequest -> Actividad` y `Actividad -> ActividadResponse`; no consulta repositories ni aplica reglas.
 - `ActividadRepository` hereda `JpaRepository<Actividad, Long>` y declara solo `existeSolapamiento`, una consulta explícita por lugar, fecha y rango horario con parámetros en orden natural: inicio y fin.
-- La prueba comportamental de repository se difiere hasta una infraestructura de persistencia autorizada; no se reemplaza por mocks ni reflexión.
+- La prueba comportamental de repository se difiere hasta una infraestructura de persistencia autorizada; no se reemplaza por mocks ni reflexión. Esto aplica a `ActividadRepository` e `InscripcionRepository`.
 - `ActividadService` expone listar, obtener, crear y actualizar. `ActividadServiceImpl` usa transacciones de escritura, valida el intervalo horario antes de consultar el solapamiento y lanza `ActividadSolapadaException` ante la regla real.
 - `ActividadController` publica esas cuatro operaciones en `/api/v1/actividades`; aplica `@Valid` en crear y actualizar para activar las restricciones declaradas en `ActividadRequest` antes de invocar el servicio.
 - `GlobalExceptionHandler` traduce `ActividadSolapadaException` a 409 y `HorarioActividadInvalidoException` a 400, sin acoplar esas respuestas al controller. Las validaciones de DTO y recursos ausentes conservan 400 y 404, respectivamente.
