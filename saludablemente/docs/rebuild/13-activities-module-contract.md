@@ -46,7 +46,7 @@ La regla acordada es una sola inscripción vigente por persona y actividad. La c
 
 ## Límites actuales
 
-- `Inscripcion` es una decisión aprobada dentro de Actividades; entity y DTO están implementados. Mapper, repository, service y controller siguen diferidos.
+- `Inscripcion` es una decisión aprobada dentro de Actividades; entity, DTO y mapper están implementados. `InscripcionMapper` convierte request a entity ignorando id, estado y marcas de ciclo, que son gestionados por backend; la conversión a response expone el ciclo completo. Repository, service y controller siguen diferidos.
 - `Asistencia` pertenece a Francisco; Actividades no accederá a su repository ni lo modelará como hijo interno.
 - `ActividadRequest` y `ActividadResponse` están implementados; request valida nombre, fecha, horarios, lugar y creador, mientras response no expone la entidad JPA.
 - `ActividadMapper` usa MapStruct para `ActividadRequest -> Actividad` y `Actividad -> ActividadResponse`; no consulta repositories ni aplica reglas.
@@ -67,4 +67,4 @@ El paquete `dto/` de Actividad empezará con `ActividadRequest` y `ActividadResp
 
 ## Verificación
 
-`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `InscripcionTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. `ActividadMapperTest` cubre ambas direcciones y los campos gestionados por entidad. `ActividadServiceImplTest` cubre lectura, no encontrado, crear, actualizar, transacciones, rechazo de solapamiento e intervalo horario inválido. `ActividadControllerTest` cubre las cuatro operaciones HTTP y las respuestas 400, 404 y 409.
+`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `InscripcionTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. `ActividadMapperTest` cubre ambas direcciones y los campos gestionados por entidad. `InscripcionMapperTest` cubre el mapeo de IDs de entrada, el aislamiento de campos gestionados por backend y la representación completa del ciclo. `ActividadServiceImplTest` cubre lectura, no encontrado, crear, actualizar, transacciones, rechazo de solapamiento e intervalo horario inválido. `ActividadControllerTest` cubre las cuatro operaciones HTTP y las respuestas 400, 404 y 409.
