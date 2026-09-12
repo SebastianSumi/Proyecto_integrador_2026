@@ -16,8 +16,8 @@ build_output_hash: sha256:f136dfaff0c7e455ef712998d85669d4a4e7c9343dc74602cfb278
 
 ## Verification Report
 
-**Change**: teams-mapstruct-mapper  
-**Version**: N/A  
+**Change**: teams-mapstruct-mapper
+**Version**: N/A
 **Mode**: Strict TDD
 
 ### Completeness
@@ -113,7 +113,7 @@ Coverage analysis skipped — no configured coverage tool or coverage report was
 
 ### Quality Metrics
 
-**Linter**: ➖ Not available  
+**Linter**: ➖ Not available
 **Type Checker / compiler**: ✅ Maven compilation completed as part of both successful test commands.
 
 ### Documentation and Scope Readback

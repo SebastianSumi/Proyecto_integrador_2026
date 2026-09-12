@@ -53,7 +53,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public TeamResponse changeState(Long id, boolean active) {  
+    public TeamResponse changeState(Long id, boolean active) {
         Team team = findTeam(id);
         team.setActive(active);
         return mapper.toResponse(repository.save(team));

@@ -16,8 +16,8 @@ build_output_hash: sha256:32c48297fbf4be23490c0180fdc3d0aac6a8296d9be6dfa1669a21
 
 ## Verification Report
 
-**Change**: teams-repository  
-**Version**: N/A  
+**Change**: teams-repository
+**Version**: N/A
 **Mode**: Standard
 
 ### Completeness

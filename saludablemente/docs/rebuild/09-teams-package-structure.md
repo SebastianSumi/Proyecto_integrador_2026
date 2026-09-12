@@ -1,5 +1,4 @@
 # Teams: estructura de paquetes
-
 ```text
 pe.edu.upeu.saludablemente
 ├── exception/       # implementada: package-info + GlobalExceptionHandler + ResourceNotFoundException

@@ -99,7 +99,7 @@ Como `VentaController`: `@RestController`, `@RequestMapping("/api/v1/teams")`, `
 
 1. Refactorizar y verificar la entidad JPA `Team` con Lombok.
 2. DTOs y pruebas de validación.
-3. Mapper y pruebas de conversión: implementación verificada. 
+3. Mapper y pruebas de conversión: implementación verificada.
 4. Repository: implementación verificada; prueba de persistencia real queda diferida hasta estrategia Oracle/infraestructura aprobada.
 5. Interfaz/implementación de servicio y pruebas transaccionales: implementación verificada.
 6. Controller y pruebas HTTP: implementación verificada.
