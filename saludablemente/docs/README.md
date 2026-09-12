@@ -36,7 +36,7 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 
 ## Inicio de Actividades
 
-Las capas `entity`, `dto`, `mapper`, `repository` y `service` de `Actividad` están completadas. `ActividadServiceImpl` lista, obtiene, crea y actualiza dentro de fronteras transaccionales, y rechaza solapamientos de horario. No se implementó controller.
+Las capas `entity`, `dto`, `mapper`, `repository`, `service` y `controller` de `Actividad` están completadas. `ActividadServiceImpl` lista, obtiene, crea y actualiza dentro de fronteras transaccionales, y rechaza solapamientos de horario. `ActividadController` expone esas operaciones bajo `/api/v1/actividades`, valida los DTO de entrada y el manejo global centraliza 400, 404 y 409.
 
 ## Documentos históricos
 

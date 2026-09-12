@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -30,5 +31,15 @@ public class GlobalExceptionHandler {
         body.put("error", "Bad Request");
         body.put("message", "Error de validación en los datos enviados");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(ActividadSolapadaException.class)
+    public ResponseEntity<Map<String, Object>> handleScheduleConflict(ActividadSolapadaException exception) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", HttpStatus.CONFLICT.value());
+        body.put("error", "Conflict");
+        body.put("message", exception.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 }

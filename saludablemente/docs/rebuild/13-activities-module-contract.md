@@ -40,8 +40,10 @@ El creador se conserva como `creadorId`, no como relación JPA a una entidad de 
 - `ActividadMapper` usa MapStruct para `ActividadRequest -> Actividad` y `Actividad -> ActividadResponse`; no consulta repositories ni aplica reglas.
 - `ActividadRepository` hereda `JpaRepository<Actividad, Long>` y declara solo `existeSolapamiento`, una consulta explícita por lugar, fecha y rango horario con parámetros en orden natural: inicio y fin.
 - La prueba comportamental de repository se difiere hasta una infraestructura de persistencia autorizada; no se reemplaza por mocks ni reflexión.
-- `ActividadService` expone listar, obtener, crear y actualizar. `ActividadServiceImpl` usa transacciones de escritura, consulta el solapamiento y lanza `ActividadSolapadaException` ante la regla real; su traducción HTTP queda para el controller/handler.
-- No se agregan controller, SQL, Oracle ni configuración en este slice.
+- `ActividadService` expone listar, obtener, crear y actualizar. `ActividadServiceImpl` usa transacciones de escritura, consulta el solapamiento y lanza `ActividadSolapadaException` ante la regla real.
+- `ActividadController` publica esas cuatro operaciones en `/api/v1/actividades`; aplica `@Valid` en crear y actualizar para activar las restricciones declaradas en `ActividadRequest` antes de invocar el servicio.
+- `GlobalExceptionHandler` traduce `ActividadSolapadaException` a 409 sin acoplar esa respuesta al controller. Las validaciones de DTO y recursos ausentes conservan 400 y 404, respectivamente.
+- No se agregan SQL, Oracle ni configuración en este slice.
 
 ## Paquetes, `package-info` y CORS
 
@@ -53,4 +55,4 @@ El paquete `dto/` de Actividad empezará con `ActividadRequest` y `ActividadResp
 
 ## Verificación
 
-`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. `ActividadMapperTest` cubre ambas direcciones y los campos gestionados por entidad. `ActividadServiceImplTest` cubre lectura, no encontrado, crear, actualizar, transacciones y rechazo de solapamiento. La evidencia de cierre es prueba focalizada 8/8 PASS y suite Maven 42/42 PASS.
+`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. `ActividadMapperTest` cubre ambas direcciones y los campos gestionados por entidad. `ActividadServiceImplTest` cubre lectura, no encontrado, crear, actualizar, transacciones y rechazo de solapamiento. `ActividadControllerTest` cubre las cuatro operaciones HTTP y las respuestas 400, 404 y 409. La evidencia de cierre es la prueba focalizada de controller 7/7 PASS y la suite Maven vigente.
