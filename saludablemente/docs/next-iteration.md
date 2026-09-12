@@ -1,3 +1,5 @@
+> **Histórico - no usar para reconstrucción.** Este documento describe el legado eliminado. Se conserva como evidencia; la fuente vigente es [docs/README.md](README.md) y docs/rebuild/.
+
 # Saludablemente backend: next iteration guide
 
 The local backend is ready to run against Oracle and exposes **Equipos** and the Activity header core. This operational guide gives the next developer a short, repeatable path without creating data unintentionally.
@@ -10,12 +12,12 @@ For requirement traceability, implementation status, evidence, and phased work u
 
 | Shared logical attribute | Oracle physical attribute | Java / REST contract | Decision |
 |---|---|---|---|
-| `TEAM.id_team` | `SAL_TEAMS.TEAMS.ID NUMBER` identity | `Team.id` / `id` | Canonical Team identifier. Personal must reference this value as `equipoId`. |
-| `TEAM.nombre VARCHAR(60)` | `NAME VARCHAR2(100 CHAR)` | `name` / `nombre` | Wider Oracle limit retained; semantics are unchanged. |
-| `TEAM.descripcion VARCHAR(200)` | `DESCRIPTION VARCHAR2(500 CHAR)` | `description` / `descripcion` | Wider Oracle limit retained; semantics are unchanged. |
-| `TEAM.activo BOOLEAN` | `ACTIVE NUMBER(1)` plus `CHECK (ACTIVE IN (0, 1))` | `active` / `activo` | Oracle-safe boolean mapping through `BooleanToIntegerConverter`. |
+| `TEAM.id_team` | `SAL_EQUIPOS.EQUIPOS.ID_EQUIPO NUMBER` identity | `Team.id` / `id` | Canonical Team identifier. Personal must reference this value as `equipoId`. |
+| `TEAM.nombre VARCHAR(60)` | `NOMBRE VARCHAR2(100 CHAR)` plus internal `NOMBRE_CANONICO VARCHAR2(300 CHAR)` | `name` / `nombre` | Java normalizes NFKC and persists the unexposed canonical key. |
+| `TEAM.descripcion VARCHAR(200)` | `DESCRIPCION VARCHAR2(500 CHAR)` | `description` / `descripcion` | Wider Oracle limit retained; semantics are unchanged. |
+| `TEAM.activo BOOLEAN` | `ACTIVO NUMBER(1)` plus `CHECK (ACTIVO IN (0, 1))` | `active` / `activo` | Oracle-safe boolean mapping through `BooleanToIntegerConverter`. |
 
-The physical reference target for the future Personal module is `SAL_TEAMS.TEAMS(ID)`. Personal owns `PERSONA.id_team` (exposed publicly as `equipoId`) and must not place Person entities or repositories inside Teams. Cross-module application access must go through an explicitly exposed public service when Personal is implemented; direct repository access is forbidden.
+The prepared physical reference target for the future Personal module is `SAL_EQUIPOS.EQUIPOS(ID_EQUIPO)`. Do not create that FK before TEAM-IDENTITY-05C accepts the migration. Personal owns `PERSONA.id_team` (exposed publicly as `equipoId`) and must not place Person entities or repositories inside Teams. Cross-module application access must go through an explicitly exposed public service when Personal is implemented; direct repository access is forbidden.
 
 ## Quick path
 
@@ -28,20 +30,41 @@ The local database listener is `localhost:1522`; the dedicated PDB is `SALUDPDB`
 
 ## Local Oracle setup
 
-The repository contains seven versioned Oracle scripts. The `SAL_ACTIVITIES` owner must be provisioned separately by the local DBA before running its DDL; schema credentials are not stored in Git.
+The local Oracle workflow uses eight versioned scripts. **Credential values are intentionally omitted:** keep them only in the Git-ignored local `.env`; never paste, print, commit, or add them to Markdown.
 
-| Order | Script | Responsibility |
+### Local configuration contract
+
+| Configuration name | Consumer and purpose | Safe local source |
 |---|---|---|
-| 1 | `01_provision_users.sql` | Creates schema owner `SAL_TEAMS` and DML user `SALUDABLEMENTE_APP`. |
-| 2 | `02_create_teams.sql` | Creates `SAL_TEAMS.TEAMS`, including named constraints and the `ACTIVE` `0/1` check. |
-| 3 | `03_grant_teams_access.sql` | Grants only Team-table DML to the application user. |
-| 5 | `05_create_activities.sql` | Creates Activities and the place-lock table used for concurrency-safe scheduling. |
-| 6 | `06_grant_activities_access.sql` | Grants only the required Activity-table DML to the application user. |
-| 7 | `07_create_activity_enrollments.sql` | Adds the accepted Activities-local enrollment relationship, lifecycle checks, indexes, and Activity foreign key. |
-| 8 | `08_grant_activity_enrollment_access.sql` | Grants enrollment read/write access without physical-delete permission. |
+| `ORACLE_PASSWORD` | Oracle container startup through `database/docker/compose-dev.yml` | `.env` beside the local application checkout |
+| `ORACLE_JDBC_URL` | Spring `dev` datasource target | `.env` |
+| `ORACLE_APP_USERNAME` | Spring application schema login | `.env` |
+| `ORACLE_APP_PASSWORD` | Spring application schema password | `.env` |
+| `SAL_EQUIPOS_PASSWORD` | Secret input for clean-install or TEAM-IDENTITY-05 owner provisioning | Environment or ignored `.env`, consumed only by `Invoke-TeamOwnerProvisioning.ps1` |
+| `SAL_ACTIVITIES_PASSWORD` | Hidden input for `04_provision_activities_user.sql` and the `SAL_ACTIVITIES` schema login | `.env`, supplied only to the interactive SQL*Plus prompt or approved non-echoing rotation procedure |
 
-Run script 1 as a PDB SYSDBA, scripts 2 and 3 as `SAL_TEAMS`, and scripts 5 through 8 as `SAL_ACTIVITIES`. Existing installations that already completed scripts 1 through 6 apply only scripts 7 and 8; no reset is required. Provision local credentials outside version control and never reuse them outside local development.
+The local `.env` is intentionally ignored. A safe operator check is `git check-ignore -q .env`; it must succeed before local credentials are created or used. `docker compose --env-file .env -f database/docker/compose-dev.yml ps` is the safe container-status command because it does not render values.
 
+### Provisioning and verified state
+
+| Order | Script | Required connected role | Verified state |
+|---|---|---|---|
+| 1 | `Invoke-TeamOwnerProvisioning.ps1 -Mode CleanInstall` | PDB administrator supplied through secure stdin transport | Renders `01_provision_users.sql` in memory; `SAL_EQUIPOS` and `SALUDABLEMENTE_APP` are open. Existing data uses `-Mode TargetOwner` and the TEAM-IDENTITY-05 runbook instead. |
+| 2 | `02_create_teams.sql` | `SAL_EQUIPOS` | `SAL_EQUIPOS.EQUIPOS` exists with the canonical-name constraint. |
+| 3 | `03_grant_teams_access.sql` | `SAL_EQUIPOS` | Application has only SELECT, INSERT and UPDATE on `SAL_EQUIPOS.EQUIPOS`. |
+| 4 | `04_provision_activities_user.sql` | PDB SYSDBA | `SAL_ACTIVITIES` is open. |
+| 5 | `05_create_activities.sql` | `SAL_ACTIVITIES` | `ACTIVITIES` and `ACTIVITY_PLACE_LOCKS` exist. |
+| 6 | `06_grant_activities_access.sql` | `SAL_ACTIVITIES` | Required application DML grants on both Activity tables exist. |
+| 7 | `07_create_activity_enrollments.sql` | `SAL_ACTIVITIES` | `ACTIVITY_ENROLLMENTS` and its constraints/indexes exist. |
+| 8 | `08_grant_activity_enrollment_access.sql` | `SAL_ACTIVITIES` | Required application DML grants on enrollments exist. |
+
+For a **fresh** local database, start through the secure PowerShell runner and then continue with scripts 02–08. The provisioning SQL templates fail closed when run directly: this prevents SQL*Plus substitution from corrupting or leaking passwords containing apostrophes, ampersands, spaces, or other special characters. These operations are not idempotent. An existing `SAL_TEAMS.TEAMS` installation must follow `database/oracle/migrations/team_identity_05/README.md`; never rerun clean-install provisioning over it.
+
+### Safe rotation, verification, and rollback
+
+When an approved local `SAL_ACTIVITIES_PASSWORD` no longer authenticates, a DBA may rotate **only** `SAL_ACTIVITIES` as PDB SYSDBA using a non-echoing standard-input or interactive mechanism. Keep the password out of command arguments, terminal history, logs, and this document. Verify with a hidden-input `SAL_ACTIVITIES` connection, then run the owner/table/grant postflight. The successful connection and postflight output must contain no credential value.
+
+To roll back the WU1 runtime configuration, revert `database/docker/compose-dev.yml`, `src/main/resources/application-dev.yaml`, `database/oracle/01_provision_users.sql`, `database/oracle/04_provision_activities_user.sql`, the secure-runtime configuration classes/tests, and this operations section together. Database rollback is DBA-owned and requires backup/provenance review: revoke grants and remove only objects created by the authorized run in reverse dependency order. Never automatically drop a pre-existing schema, user, or application data.
 ## Activities REST contract
 
 Base path: `/api/v1/actividades`. Public date and time fields remain separate while Oracle stores safe `START_AT` and `END_AT` timestamps.

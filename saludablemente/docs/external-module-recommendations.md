@@ -1,3 +1,5 @@
+> **Histórico - no usar para reconstrucción.** Este documento describe el legado eliminado. Se conserva como evidencia; la fuente vigente es [docs/README.md](README.md) y docs/rebuild/.
+
 # External Module Recommendations for Pedro's Modules
 
 This document contains non-authoritative collaboration proposals for **Activities, Teams, and Goals**. Teammates are expected to follow the brief and shared schema; proposed contracts below require coordination, not unilateral adoption. The [Pedro Module Roadmap](pedro-module-roadmap.md) owns implementation status and sequencing.
