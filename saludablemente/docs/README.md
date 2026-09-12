@@ -36,7 +36,7 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 
 ## Inicio de Actividades
 
-Las capas `entity`, `dto`, `mapper` y `repository` de `Actividad` están completadas. `ActividadRepository` declara únicamente una consulta explícita de solapamiento de horario; su prueba comportamental queda diferida hasta contar con infraestructura de persistencia autorizada. No se implementaron service ni controller.
+Las capas `entity`, `dto`, `mapper`, `repository` y `service` de `Actividad` están completadas. `ActividadServiceImpl` lista, obtiene, crea y actualiza dentro de fronteras transaccionales, y rechaza solapamientos de horario. No se implementó controller.
 
 ## Documentos históricos
 

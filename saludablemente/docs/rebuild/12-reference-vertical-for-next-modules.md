@@ -36,4 +36,4 @@ La vertical incluye `entity`, DTO, mapper MapStruct, repository, service, contro
 
 ## Aplicación inicial: Actividades
 
-Las capas `actividades/actividad/entity`, `dto`, `mapper` y `repository` están completadas. El modelo lógico confirma nombre, fecha, hora de inicio, hora de fin, lugar, estado y creador; la entidad preserva estos conceptos con `LocalDate` y `LocalTime`, sin decidir DDL ni la representación física Oracle de `TIME`. `ActividadRepository` contiene únicamente una consulta explícita, `existeSolapamiento`, para detectar solapamientos por lugar y fecha. El siguiente paso, sujeto a revisión, es solo el servicio de `Actividad`.
+Las capas `actividades/actividad/entity`, `dto`, `mapper`, `repository` y `service` están completadas. El modelo lógico confirma nombre, fecha, hora de inicio, hora de fin, lugar, estado y creador; la entidad preserva estos conceptos con `LocalDate` y `LocalTime`, sin decidir DDL ni la representación física Oracle de `TIME`. `ActividadServiceImpl` aplica la regla de solapamiento al crear y actualizar, excluyendo el propio ID en actualización. El siguiente paso, sujeto a revisión, es solo el controller de `Actividad`.

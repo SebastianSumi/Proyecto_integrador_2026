@@ -17,11 +17,13 @@ public interface ActividadRepository extends JpaRepository<Actividad, Long> {
                 and actividad.fecha = :fecha
                 and actividad.horaInicio < :horaFin
                 and actividad.horaFin > :horaInicio
+                and (:idExcluido is null or actividad.id <> :idExcluido)
             """)
     boolean existeSolapamiento(
             @Param("lugar") String lugar,
             @Param("fecha") LocalDate fecha,
             @Param("horaInicio") LocalTime horaInicio,
-            @Param("horaFin") LocalTime horaFin
+            @Param("horaFin") LocalTime horaFin,
+            @Param("idExcluido") Long idExcluido
     );
 }

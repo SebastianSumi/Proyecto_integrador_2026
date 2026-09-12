@@ -18,7 +18,7 @@ La entrega S06 requiere CRUD, una operación cabecera-detalle real, consultas, C
 ## Ruta de construcción
 
 1. DTOs de `Actividad` y su validación: completados.
-2. Completar mapper, repository, servicio y controller del CRUD.
+2. Mapper, repository y servicio: completados. Falta controller del CRUD y su contrato HTTP.
 3. Definir con el equipo una operación cabecera-detalle real y su dueño: Actividad–Inscripción solo si la regla y la atomicidad son evidenciables; Asistencia permanece externa.
 4. Añadir CORS por propiedades, logs y prueba de límite modular como trabajo transversal de integración.
 5. Con Oracle autorizado por BD2, demostrar CRUD, rollback, consulta combinada/reporte y CORS en vivo.
