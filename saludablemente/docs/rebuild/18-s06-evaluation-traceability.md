@@ -28,6 +28,7 @@
 - **Bootstrap y Spring Modulith:** `SaludablementeApplication` es el bootstrap único y `SaludablementeApplicationTest` ejecuta `ApplicationModules.of(SaludablementeApplication.class).verify()` sobre la topología actual de paquetes (1/1 PASS, 2026-09-13). No se inventaron anotaciones ni fronteras para aprobarla. El equipo debe preservar este bootstrap y acordar límites explícitos antes de futuras ampliaciones; la prueba local no reemplaza Oracle, Swagger ni la integración compartida.
 - **Migraciones manuales V001/V002:** están preparadas, no se ejecutan automáticamente. Su aplicación y el resultado deben quedar registrados por el responsable autorizado.
 - **CORS:** existe una configuración única y transversal para `/api/**`, con `app.cors.*` y sobrescritura por variables de entorno. El valor de desarrollo autorizado es `http://localhost:4200`, con credenciales desactivadas; el ambiente compartido debe aportar sus propios valores. No lleva `@CrossOrigin` por controller.
+- **OpenAPI/Swagger:** Springdoc descubre los endpoints y `OpenApiConfig` aporta título, versión y descripción para presentarlos. Sus metadatos no reemplazan una demostración de Swagger con el backend iniciado.
 - **Logs:** respuestas de error no son logs. La convención está implementada, pero debe observarse en un backend iniciado antes de atribuir evidencia en vivo.
 
 ## Convención de logs de servidor
@@ -86,3 +87,4 @@ No se registran cuerpos HTTP, descripciones, nombres, correos, credenciales, tok
 - [Preparación S06 específica de Actividades](14-s06-integration-readiness.md)
 - [Requisitos de Actividades](16-activities-module-requirements-and-rationale.md)
 - [Requisitos y dependencias de Metas](17-metas-requirements-and-dependencies.md)
+- [Guía de merge de módulos de Pedro](../merge-pedro-modules.md)

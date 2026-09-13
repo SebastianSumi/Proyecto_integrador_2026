@@ -35,6 +35,12 @@
 
 La prueba confirma que las dependencias actuales no violan la topología que Spring Modulith infiere de los paquetes. No se añadieron anotaciones ni límites artificiales solo para aprobarla. Persisten los límites de integración: el equipo debe conservar este bootstrap único y acordar cualquier frontera explícita futura antes de ampliar módulos. Esta evidencia habilita la verificación local de Modulith, pero no reemplaza el arranque real con Oracle, Swagger ni una prueba de infraestructura compartida.
 
+## Presentación del contrato OpenAPI
+
+Springdoc descubre los endpoints publicados sin configuración adicional. `config/OpenApiConfig` aporta únicamente los metadatos visibles en Swagger: título `Saludablemente API`, versión `1.0.0` y una descripción del backend. No modifica rutas, seguridad, CORS ni lógica de negocio. La validación en vivo de Swagger todavía requiere arrancar el backend contra el ambiente autorizado.
+
+Antes de integrar con la rama compartida, seguir la [guía de merge de módulos de Pedro](../merge-pedro-modules.md). Esa guía separa los checks obligatorios del trabajo que solo puede resolverse con BD2 o decisión del equipo.
+
 ## Gate CORS transversal
 
 > **Decidido:** CORS se configurará una única vez y de forma transversal para `/api/**`. No se usará `@CrossOrigin` en controllers ni se codificarán orígenes en Java.

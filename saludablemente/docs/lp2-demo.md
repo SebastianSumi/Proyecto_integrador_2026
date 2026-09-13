@@ -5,7 +5,7 @@
 ## Lectura rápida
 
 - **Implementado en Java:** verticales Teams, Actividades, Inscripciones y Metas, con DTOs, mappers, servicios transaccionales, controllers y pruebas focalizadas.
-- **Pendiente para afirmar cumplimiento integral de S06:** Oracle vivo, evidencia CORS contra el backend de demo, logs y una operación cabecera–detalle atómica. El bootstrap único y la verificación local de Spring Modulith ya están disponibles. CORS local ya opera por propiedades para Angular en `http://localhost:4200`, sin credenciales; el ambiente compartido debe configurar sus propios valores. Las consultas/reportes de Actividades están implementados localmente, pero requieren demostración con datos reales.
+- **Pendiente para afirmar cumplimiento integral de S06:** Oracle vivo, evidencia CORS contra el backend de demo, logs y una operación cabecera–detalle atómica. El bootstrap único, la verificación local de Spring Modulith y los metadatos de Swagger ya están disponibles. CORS local ya opera por propiedades para Angular en `http://localhost:4200`, sin credenciales; el ambiente compartido debe configurar sus propios valores. Las consultas/reportes de Actividades están implementados localmente, pero requieren demostración con datos reales.
 - **Ruta de evidencia:** usar la [matriz S06](rebuild/18-s06-evaluation-traceability.md) durante la demo; no presentar como terminada una fila pendiente.
 
 ## 1. Alcance arquitectónico del corte
@@ -25,7 +25,7 @@ El backend es un monolito modular: cada módulo conserva entity, DTO, mapper, re
 
 | Aspecto | Evidencia actual | Límite honesto |
 |---|---|---|
-| Proyecto único | Un único `pom.xml` Maven, contratos REST y `SaludablementeApplication` como bootstrap único. | Falta arrancar contra Oracle/BD2 y demostrar Swagger en vivo. |
+| Proyecto único | Un único `pom.xml` Maven, contratos REST, `SaludablementeApplication` como bootstrap único y metadatos OpenAPI para Swagger. | Falta arrancar contra Oracle/BD2 y demostrar Swagger en vivo. |
 | Modularidad | Paquetes de negocio separados y `SaludablementeApplicationTest` con `ApplicationModules.of(...).verify()` verde (1/1, 2026-09-13). | La prueba refleja la topología actual; el equipo debe acordar límites explícitos antes de ampliar módulos. |
 | Persistencia | Entities y `JpaRepository` implementados. | No declarar persistencia Oracle validada hasta la demo conectada. |
 | Errores | Handler global y excepciones de dominio con 400/404/409. | No sustituye logs de trazabilidad. |
