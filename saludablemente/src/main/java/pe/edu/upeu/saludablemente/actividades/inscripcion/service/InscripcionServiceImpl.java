@@ -1,6 +1,7 @@
 package pe.edu.upeu.saludablemente.actividades.inscripcion.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import pe.edu.upeu.saludablemente.actividades.inscripcion.exception.InscripcionV
 import pe.edu.upeu.saludablemente.actividades.inscripcion.mapper.InscripcionMapper;
 import pe.edu.upeu.saludablemente.actividades.inscripcion.repository.InscripcionRepository;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
+import pe.edu.upeu.saludablemente.observability.TransactionLog;
 
 import java.time.LocalDateTime;
 import java.sql.SQLException;
@@ -23,6 +25,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class InscripcionServiceImpl implements InscripcionService {
 
@@ -58,7 +61,11 @@ public class InscripcionServiceImpl implements InscripcionService {
         inscripcion.setEstado(EstadoInscripcion.INSCRITA);
         inscripcion.setInscritaEn(LocalDateTime.now());
         try {
-            return mapper.toResponse(repository.saveAndFlush(inscripcion));
+            InscripcionResponse response = mapper.toResponse(repository.saveAndFlush(inscripcion));
+            TransactionLog.afterCommit(() -> log.info(
+                    "enrollment.registered id={} actividadId={} personaId={} estado={}", response.getId(),
+                    response.getActividadId(), response.getPersonaId(), response.getEstado()));
+            return response;
         } catch (DataIntegrityViolationException exception) {
             if (isActiveEnrollmentUniqueViolation(exception)) {
                 throw new InscripcionVigenteException(
@@ -79,7 +86,11 @@ public class InscripcionServiceImpl implements InscripcionService {
 
         inscripcion.setEstado(EstadoInscripcion.CANCELADA);
         inscripcion.setCanceladaEn(LocalDateTime.now());
-        return mapper.toResponse(repository.save(inscripcion));
+        InscripcionResponse response = mapper.toResponse(repository.save(inscripcion));
+        TransactionLog.afterCommit(() -> log.info(
+                "enrollment.cancelled id={} actividadId={} personaId={} estado={}", response.getId(),
+                response.getActividadId(), response.getPersonaId(), response.getEstado()));
+        return response;
     }
 
     private Inscripcion findInscripcion(Long id) {

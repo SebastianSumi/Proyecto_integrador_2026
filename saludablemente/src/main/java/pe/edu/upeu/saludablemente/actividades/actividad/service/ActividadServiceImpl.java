@@ -1,6 +1,7 @@
 package pe.edu.upeu.saludablemente.actividades.actividad.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import pe.edu.upeu.saludablemente.actividades.actividad.mapper.ActividadMapper;
 import pe.edu.upeu.saludablemente.actividades.actividad.repository.ActividadRepository;
 import pe.edu.upeu.saludablemente.actividades.actividad.repository.AgendaActividadLock;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
+import pe.edu.upeu.saludablemente.observability.TransactionLog;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -26,6 +28,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class ActividadServiceImpl implements ActividadService {
 
@@ -82,7 +85,9 @@ public class ActividadServiceImpl implements ActividadService {
         bloquearAgenda(request.getLugar(), request.getFecha());
         validarSinSolapamiento(request, null);
         Actividad actividad = mapper.toEntity(request);
-        return mapper.toResponse(repository.save(actividad));
+        ActividadResponse response = mapper.toResponse(repository.save(actividad));
+        TransactionLog.afterCommit(() -> log.info("activity.created id={} estado={}", response.getId(), response.getEstado()));
+        return response;
     }
 
     @Override
@@ -98,7 +103,9 @@ public class ActividadServiceImpl implements ActividadService {
         actividad.setHoraFin(request.getHoraFin());
         actividad.setLugar(request.getLugar());
         actividad.setCreadorId(request.getCreadorId());
-        return mapper.toResponse(repository.save(actividad));
+        ActividadResponse response = mapper.toResponse(repository.save(actividad));
+        TransactionLog.afterCommit(() -> log.info("activity.updated id={} estado={}", response.getId(), response.getEstado()));
+        return response;
     }
 
     private Actividad findActividad(Long id) {

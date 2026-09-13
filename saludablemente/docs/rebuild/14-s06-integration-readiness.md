@@ -18,7 +18,7 @@
 |---|---|---|
 | Regla de Actividad/Inscripción | Service del submódulo dueño y pruebas focalizadas. | Controller, entity o repository ajeno. |
 | CORS | Configuración transversal mediante propiedades y prueba HTTP. | `package-info.java`, DTO o controller de Actividades. |
-| Logs | Acuerdo/configuración transversal y límites de service. | Entidades o DTOs. |
+| Logs | Services para escrituras exitosas y handler global para errores, sin datos sensibles. | Entidades, DTOs, requests completos o repositories. |
 | ORM relacionado | Una asociación propia confirmada, su DTO y prueba de navegación. | Convertir IDs escalares externos en relación JPA improvisada. |
 | Cabecera–detalle | DTO compuesto y operación transaccional de un agregado aprobado. | Renombrar la relación Actividad–Inscripción existente. |
 | Verificación modular | Prueba Spring Modulith aplicable y resultado visible. | Una declaración documental. |
@@ -36,7 +36,7 @@
 3. Probar un solapamiento secuencial y mostrar 409.
 4. Registrar y cancelar una Inscripción; repetir cancelación y explicar idempotencia.
 5. Si V001/V002 fueron aplicadas, ejecutar además la prueba concurrente real acordada. Si no, declarar esa garantía pendiente.
-6. Para criterios globales de CORS, logs, asociación ORM, cabecera–detalle, consultas/reporte y Modulith, seguir la [matriz S06](18-s06-evaluation-traceability.md); Actividades no los atribuye a sí misma.
+6. Verificar en consola un `INFO` de escritura y un `WARN` de error esperado sin datos sensibles. Para CORS, asociación ORM, cabecera–detalle, consultas/reporte y Modulith, seguir la [matriz S06](18-s06-evaluation-traceability.md); Actividades no los atribuye a sí misma.
 
 ## Criterios de honestidad
 

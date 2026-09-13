@@ -2,9 +2,11 @@ package pe.edu.upeu.saludablemente.metas.meta.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
+import pe.edu.upeu.saludablemente.observability.TransactionLog;
 import pe.edu.upeu.saludablemente.metas.meta.dto.MetaCreateRequest;
 import pe.edu.upeu.saludablemente.metas.meta.dto.MetaResponse;
 import pe.edu.upeu.saludablemente.metas.meta.dto.MetaUpdateRequest;
@@ -17,6 +19,7 @@ import pe.edu.upeu.saludablemente.metas.meta.repository.MetaRepository;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class MetaServiceImpl implements MetaService {
 
@@ -48,7 +51,10 @@ public class MetaServiceImpl implements MetaService {
         validateDates(request.getFechaInicio(), request.getFechaLimite());
         Meta meta = mapper.toEntity(request);
         meta.setEstado(EstadoMeta.EN_CURSO);
-        return mapper.toResponse(repository.save(meta));
+        MetaResponse response = mapper.toResponse(repository.save(meta));
+        TransactionLog.afterCommit(() -> log.info("goal.created id={} personaId={} estado={}", response.getId(),
+                response.getPersonaId(), response.getEstado()));
+        return response;
     }
 
     @Override
@@ -58,7 +64,10 @@ public class MetaServiceImpl implements MetaService {
         requireInProgress(meta, "La meta solo puede modificarse mientras esté en curso");
         validateDates(request.getFechaInicio(), request.getFechaLimite());
         mapper.updateEntity(request, meta);
-        return mapper.toResponse(repository.save(meta));
+        MetaResponse response = mapper.toResponse(repository.save(meta));
+        TransactionLog.afterCommit(() -> log.info("goal.updated id={} personaId={} estado={}", response.getId(),
+                response.getPersonaId(), response.getEstado()));
+        return response;
     }
 
     @Override
@@ -67,7 +76,10 @@ public class MetaServiceImpl implements MetaService {
         Meta meta = findMeta(id);
         requireInProgress(meta, "La meta solo puede completarse mientras esté en curso");
         meta.setEstado(EstadoMeta.CUMPLIDA);
-        return mapper.toResponse(repository.save(meta));
+        MetaResponse response = mapper.toResponse(repository.save(meta));
+        TransactionLog.afterCommit(() -> log.info("goal.completed id={} personaId={} estado={}", response.getId(),
+                response.getPersonaId(), response.getEstado()));
+        return response;
     }
 
     @Override
@@ -76,6 +88,8 @@ public class MetaServiceImpl implements MetaService {
         Meta meta = findMeta(id);
         requireInProgress(meta, "La meta solo puede eliminarse mientras esté en curso");
         repository.delete(meta);
+        TransactionLog.afterCommit(() -> log.info("goal.deleted id={} personaId={} estado={}", meta.getId(),
+                meta.getPersonaId(), meta.getEstado()));
     }
 
     private Meta findMeta(Long id) {

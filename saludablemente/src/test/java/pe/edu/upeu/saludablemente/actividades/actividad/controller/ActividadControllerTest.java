@@ -270,6 +270,30 @@ class ActividadControllerTest {
                 .andExpect(jsonPath("$.message").value("Ya existe una actividad programada en ese lugar y horario"));
     }
 
+    @Test
+    void mapsMalformedJsonToBadRequest() throws Exception {
+        mockMvc.perform(post("/api/v1/actividades")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{invalid-json"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Error de formato en los datos enviados"));
+
+        verify(service, never()).create(any(ActividadRequest.class));
+    }
+
+    @Test
+    void mapsInvalidPathVariableTypeToBadRequest() throws Exception {
+        mockMvc.perform(get("/api/v1/actividades/not-a-number"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Error de formato en los parámetros enviados"));
+
+        verify(service, never()).findById(any());
+    }
+
     private ActividadRequest request() {
         ActividadRequest request = new ActividadRequest();
         request.setNombre("Taller de bienestar");
