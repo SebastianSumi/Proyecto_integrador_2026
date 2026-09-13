@@ -38,7 +38,7 @@ La entidad no contiene anotaciones Bean Validation ni reglas que consulten persi
 
 `Inscripcion` representa el estado actual de la intención previa de participar. Conserva `actividadId` y `personaId` como identificadores escalares: no crea relaciones JPA hacia `Actividad` ni hacia Personal. Sus marcas `inscritaEn` y `canceladaEn` expresan el ciclo vigente o cancelado de la misma inscripción, y `EstadoInscripcion` inicia en `INSCRITA` o puede pasar a `CANCELADA`.
 
-La regla acordada es una sola inscripción vigente por persona y actividad. La cancelación permitirá una futura inscripción; repository y service impondrán esa regla al consultar y actualizar el estado. La entidad no consulta persistencia ni intenta resolver unicidad por sí sola.
+La regla acordada es una sola inscripción vigente por persona y actividad. `InscripcionService` consulta el repository con estado `INSCRITA` antes de registrar y responde conflicto 409 ante un duplicado vigente. Al cancelar, la transición `INSCRITA → CANCELADA` registra `canceladaEn`; repetir la cancelación es idempotente y devuelve la representación existente sin alterar esa marca. La entidad no consulta persistencia ni intenta resolver unicidad por sí sola.
 
 ## DTO de Inscripción
 
@@ -46,7 +46,7 @@ La regla acordada es una sola inscripción vigente por persona y actividad. La c
 
 ## Límites actuales
 
-- `Inscripcion` es una decisión aprobada dentro de Actividades; entity, DTO, mapper y repository están implementados. `InscripcionMapper` convierte request a entity ignorando id, estado y marcas de ciclo, que son gestionados por backend; la conversión a response expone el ciclo completo. `InscripcionRepository` hereda `JpaRepository<Inscripcion, Long>` y declara solamente `existsByActividadIdAndPersonaIdAndEstado`, que el futuro servicio invocará con `INSCRITA` para impedir una segunda inscripción vigente. Service y controller siguen diferidos.
+- `Inscripcion` es una decisión aprobada dentro de Actividades; entity, DTO, mapper, repository y service están implementados. `InscripcionMapper` convierte request a entity ignorando id, estado y marcas de ciclo, que son gestionados por backend; la conversión a response expone el ciclo completo. `InscripcionRepository` hereda `JpaRepository<Inscripcion, Long>` y declara solamente `existsByActividadIdAndPersonaIdAndEstado`, usado por `InscripcionService` con `INSCRITA` para impedir una segunda inscripción vigente. El servicio lista, obtiene, registra y cancela de forma idempotente; controller sigue diferido.
 - `Asistencia` pertenece a Francisco; Actividades no accederá a su repository ni lo modelará como hijo interno.
 - `ActividadRequest` y `ActividadResponse` están implementados; request valida nombre, fecha, horarios, lugar y creador, mientras response no expone la entidad JPA.
 - `ActividadMapper` usa MapStruct para `ActividadRequest -> Actividad` y `Actividad -> ActividadResponse`; no consulta repositories ni aplica reglas.
@@ -54,7 +54,7 @@ La regla acordada es una sola inscripción vigente por persona y actividad. La c
 - La prueba comportamental de repository se difiere hasta una infraestructura de persistencia autorizada; no se reemplaza por mocks ni reflexión. Esto aplica a `ActividadRepository` e `InscripcionRepository`.
 - `ActividadService` expone listar, obtener, crear y actualizar. `ActividadServiceImpl` usa transacciones de escritura, valida el intervalo horario antes de consultar el solapamiento y lanza `ActividadSolapadaException` ante la regla real.
 - `ActividadController` publica esas cuatro operaciones en `/api/v1/actividades`; aplica `@Valid` en crear y actualizar para activar las restricciones declaradas en `ActividadRequest` antes de invocar el servicio.
-- `GlobalExceptionHandler` traduce `ActividadSolapadaException` a 409 y `HorarioActividadInvalidoException` a 400, sin acoplar esas respuestas al controller. Las validaciones de DTO y recursos ausentes conservan 400 y 404, respectivamente.
+- `GlobalExceptionHandler` traduce `ActividadSolapadaException` e `InscripcionVigenteException` a 409, y `HorarioActividadInvalidoException` a 400, sin acoplar esas respuestas al controller. Las validaciones de DTO y recursos ausentes conservan 400 y 404, respectivamente.
 - No se agregan SQL, Oracle ni configuración en este slice.
 
 ## Paquetes, `package-info` y CORS
@@ -67,4 +67,4 @@ El paquete `dto/` de Actividad empezará con `ActividadRequest` y `ActividadResp
 
 ## Verificación
 
-`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `InscripcionTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. `ActividadMapperTest` cubre ambas direcciones y los campos gestionados por entidad. `InscripcionMapperTest` cubre el mapeo de IDs de entrada, el aislamiento de campos gestionados por backend y la representación completa del ciclo. `ActividadServiceImplTest` cubre lectura, no encontrado, crear, actualizar, transacciones, rechazo de solapamiento e intervalo horario inválido. `ActividadControllerTest` cubre las cuatro operaciones HTTP y las respuestas 400, 404 y 409.
+`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `InscripcionTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. `ActividadMapperTest` cubre ambas direcciones y los campos gestionados por entidad. `InscripcionMapperTest` cubre el mapeo de IDs de entrada, el aislamiento de campos gestionados por backend y la representación completa del ciclo. `ActividadServiceImplTest` cubre lectura, no encontrado, crear, actualizar, transacciones, rechazo de solapamiento e intervalo horario inválido. `ActividadControllerTest` cubre las cuatro operaciones HTTP y las respuestas 400, 404 y 409. `InscripcionServiceImplTest` cubre listado, consulta, no encontrado, registro, duplicado vigente, primera cancelación, repetición idempotente y límites transaccionales.

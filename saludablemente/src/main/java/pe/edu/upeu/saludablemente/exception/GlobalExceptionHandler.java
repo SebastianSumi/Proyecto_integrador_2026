@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
+import pe.edu.upeu.saludablemente.actividades.inscripcion.exception.InscripcionVigenteException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
