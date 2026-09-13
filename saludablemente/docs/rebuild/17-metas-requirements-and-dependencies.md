@@ -43,6 +43,20 @@ No se define aquí la firma Java, endpoint ni evento de esos contratos. Deben ac
 - Solo una meta `EN_CURSO` puede modificarse o eliminarse. Las metas `CUMPLIDA` y `VENCIDA` son inmutables en el núcleo inicial para preservar historial.
 - `VENCIDA` queda reservado en el modelo. No se aplicará automáticamente hasta acordar quién la activa, cuándo y si admite reapertura.
 
+## API del núcleo inicial
+
+La API expone DTOs, no entities JPA, bajo `/api/v1/metas`:
+
+- `GET /api/v1/metas`: lista las metas.
+- `GET /api/v1/metas/persona/{personaId}`: lista las metas del padre lógico indicado.
+- `GET /api/v1/metas/{id}`: consulta una meta.
+- `POST /api/v1/metas`: crea una meta `EN_CURSO`.
+- `PUT /api/v1/metas/{id}`: actualiza únicamente los campos mutables de una meta en curso.
+- `PATCH /api/v1/metas/{id}/cumplimiento`: confirma explícitamente una meta como `CUMPLIDA`.
+- `DELETE /api/v1/metas/{id}`: elimina únicamente una meta `EN_CURSO`.
+
+La validación de cuerpos usa `@Valid`; las excepciones de negocio y de recurso se traducen en el manejo global existente. No se agrega CORS por módulo: es una configuración transversal del despliegue.
+
 ## Preguntas de negocio pendientes
 
 Estas reglas no aparecen confirmadas en el modelo lógico actual y no se deben inventar en entity, DTO, service o API:
