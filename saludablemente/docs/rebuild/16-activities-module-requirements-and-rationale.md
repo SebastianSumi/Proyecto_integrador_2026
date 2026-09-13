@@ -2,7 +2,7 @@
 
 **Estado.** Actividades está implementado en Java como dos submódulos: `actividad` e `inscripcion`. Este documento reúne los requisitos confirmados, las decisiones aplicadas y los pendientes deliberados para que el equipo pueda revisar e integrar el módulo sin deducir comportamientos no implementados.
 
-> **Lectura rápida:** el módulo programa actividades y registra inscripciones previas. Rechaza horarios que se solapan en el mismo lugar y fecha, evita una segunda inscripción vigente en el flujo normal y conserva las cancelaciones como historial. La garantía concurrente de inscripción solo entra en vigor después de ejecutar manualmente `V001` en Oracle; la de horarios aún está pendiente.
+> **Lectura rápida:** el módulo programa actividades y registra inscripciones previas. Rechaza horarios que se solapan en el mismo lugar y fecha, evita una segunda inscripción vigente en el flujo normal y conserva las cancelaciones como historial. Las garantías concurrentes de inscripción y horarios solo entran en vigor después de ejecutar manualmente `V001` y `V002` en Oracle.
 
 ## 1. Propósito y límites
 
@@ -75,17 +75,17 @@ El script manual `database/oracle/manual-migrations/V001__enrollment_active_uniq
 
 **Antes de la ejecución manual:** el script no tiene efecto y la unicidad concurrente no está garantizada. La carpeta no usa Flyway ni el backend ejecuta DDL automáticamente. El equipo debe confirmar los nombres físicos, resolver duplicados existentes y registrar la ejecución según `database/oracle/manual-migrations/README.md`.
 
-### Pendiente deliberado: solapamiento concurrente de horarios
+### Hecho implementado: serialización de agenda
 
-El service detecta solapamientos en solicitudes secuenciales, pero dos creaciones simultáneas del mismo `lugar` y `fecha` todavía pueden pasar ambas consultas antes de guardar. Oracle no ofrece una constraint nativa de exclusión de intervalos para esta regla.
+`V002__activity_schedule_coordination.sql` crea una fila durable por el `lugar` exacto y fecha, y `LOCK_AGENDA_ACTIVIDAD` la obtiene con `SELECT ... FOR UPDATE`. El service llama ese procedimiento antes de reutilizar la consulta de solapamiento. Al actualizar, bloquea agenda previa y nueva en orden determinista para evitar deadlocks.
 
-El diseño aprobado, aún no implementado, es una agenda de coordinación con una fila única por `(lugar normalizado, fecha)`: tomar `SELECT ... FOR UPDATE`, consultar solapamiento, escribir y confirmar en la misma transacción. Si una actualización cambia lugar o fecha, deberá bloquear ambas claves en orden determinista. Ver [Diseño de concurrencia Oracle](15-activities-concurrency-oracle-design.md).
+Esto no normaliza ni cambia mayúsculas/minúsculas de `lugar`: conserva la igualdad exacta ya definida. La garantía requiere la ejecución manual de `V002` contra el Oracle usado por la aplicación; la evidencia concurrente real debe ejecutarse allí. Ver [Diseño de concurrencia Oracle](15-activities-concurrency-oracle-design.md).
 
 ## 7. Fuera de alcance actual
 
 | Pendiente | Razón para no implementarlo todavía |
 |---|---|
-| Migración y bloqueo Oracle de agenda | Faltan DDL acordado, nombres físicos de tiempo y prueba concurrente contra Oracle. |
+| Prueba de concurrencia real con agenda Oracle | `V002` debe ejecutarse y verificarse contra Oracle autorizado. |
 | Prueba de integración real con Oracle | No existe infraestructura aislada autorizada para repositories ni migraciones. |
 | CORS | Es configuración transversal por propiedades de entorno, no responsabilidad de controller, DTO ni `package-info`. |
 | Logs transversales | Requiere acuerdo de integración del backend. |
@@ -97,8 +97,8 @@ El diseño aprobado, aún no implementado, es una agenda de coordinación con un
 
 La evidencia registrada al cierre de la última mejora es:
 
-- pruebas focalizadas de la garantía de inscripción: **11/11**;
-- suite Maven completa: **80/80**;
+- pruebas focalizadas de agenda: **14/14**;
+- suite Maven completa: **83/83**;
 - `git diff --check`: sin errores de espacios.
 
 Las pruebas cubren entidades, DTOs, mappers, services y controllers de Actividad e Inscripción, incluidos 400, 404, 409, intervalo inválido, solapamiento, actividad inexistente, duplicado vigente y cancelación idempotente. Las pruebas comportamentales de repository y la concurrencia real de Oracle siguen pendientes de infraestructura autorizada; por tanto, esta evidencia no afirma haber ejecutado Oracle.
@@ -110,5 +110,6 @@ Las pruebas cubren entidades, DTOs, mappers, services y controllers de Actividad
 - [x] Reglas de intervalo, solapamiento secuencial, existencia y ciclo de inscripción implementadas.
 - [x] Script Oracle manual de unicidad activa preparado.
 - [ ] `V001` ejecutado y registrado en Oracle por el equipo.
-- [ ] Garantía concurrente de agenda implementada y probada contra Oracle.
+- [x] Garantía concurrente de agenda implementada como V002 + bloqueo de service.
+- [ ] `V002` ejecutado y probado contra Oracle por el equipo.
 - [ ] CORS, logs, reportes y operación cabecera-detalle acordados e integrados.

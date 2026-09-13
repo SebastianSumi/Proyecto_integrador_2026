@@ -14,6 +14,7 @@ import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolap
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
 import pe.edu.upeu.saludablemente.actividades.actividad.mapper.ActividadMapper;
 import pe.edu.upeu.saludablemente.actividades.actividad.repository.ActividadRepository;
+import pe.edu.upeu.saludablemente.actividades.actividad.repository.AgendaActividadLock;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -38,6 +40,9 @@ class ActividadServiceImplTest {
 
     @Mock
     private ActividadMapper mapper;
+
+    @Mock
+    private AgendaActividadLock agendaActividadLock;
 
     @InjectMocks
     private ActividadServiceImpl service;
@@ -109,6 +114,27 @@ class ActividadServiceImplTest {
     }
 
     @Test
+    void locksScheduleBeforeCheckingOverlapWhenCreating() {
+        ActividadRequest request = request("Caminata saludable");
+        Actividad mapped = actividad(null, "Caminata saludable");
+        Actividad saved = actividad(1L, "Caminata saludable");
+        ActividadResponse response = response(1L, "Caminata saludable");
+        when(repository.existeSolapamiento("Parque central", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), null))
+                .thenReturn(false);
+        when(mapper.toEntity(request)).thenReturn(mapped);
+        when(repository.save(mapped)).thenReturn(saved);
+        when(mapper.toResponse(saved)).thenReturn(response);
+
+        service.create(request);
+
+        org.mockito.InOrder order = inOrder(agendaActividadLock, repository);
+        order.verify(agendaActividadLock).lock("Parque central", request.getFecha());
+        order.verify(repository).existeSolapamiento(
+                "Parque central", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), null
+        );
+    }
+
+    @Test
     void rejectsCreationWhenScheduleOverlaps() {
         ActividadRequest request = request("Caminata saludable");
         when(repository.existeSolapamiento("Parque central", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), null))
@@ -146,6 +172,33 @@ class ActividadServiceImplTest {
 
         assertEquals(response, service.update(1L, request));
         assertEquals("Caminata actualizada", existing.getNombre());
+    }
+
+    @Test
+    void locksChangedScheduleKeysInDeterministicOrderBeforeCheckingOverlap() {
+        ActividadRequest request = request("Caminata actualizada");
+        request.setLugar("Parque A");
+        request.setFecha(LocalDate.of(2026, 9, 13));
+        Actividad existing = actividad(1L, "Caminata anterior");
+        existing.setLugar("Sala Z");
+        existing.setFecha(LocalDate.of(2026, 9, 12));
+        Actividad saved = actividad(1L, "Caminata actualizada");
+        ActividadResponse response = response(1L, "Caminata actualizada");
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.existeSolapamiento("Parque A", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), 1L))
+                .thenReturn(false);
+        when(repository.save(existing)).thenReturn(saved);
+        when(mapper.toResponse(saved)).thenReturn(response);
+
+        service.update(1L, request);
+
+        org.mockito.InOrder order = inOrder(repository, agendaActividadLock);
+        order.verify(repository).findById(1L);
+        order.verify(agendaActividadLock).lock("Parque A", LocalDate.of(2026, 9, 13));
+        order.verify(agendaActividadLock).lock("Sala Z", LocalDate.of(2026, 9, 12));
+        order.verify(repository).existeSolapamiento(
+                "Parque A", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), 1L
+        );
     }
 
     @Test

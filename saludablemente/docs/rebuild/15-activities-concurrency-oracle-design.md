@@ -1,17 +1,17 @@
 # Diseño Oracle de concurrencia para Actividades
 
-**Estado: inscripción implementada como migración manual; agenda pendiente.** Actividad e Inscripción detectan conflictos en el flujo normal, pero una verificación previa a guardar no protege contra dos solicitudes concurrentes. La garantía de inscripción se incorpora en un script manual versionado; no existe Flyway ni ejecución automática desde Spring.
+**Estado: listo para activación manual.** El backend incorpora las dos defensas de concurrencia, pero Oracle solo las garantiza después de ejecutar `V001` y `V002` en el mismo esquema donde corre la aplicación. No hay Flyway ni DDL automático.
 
 ## Garantías objetivo
 
-| Regla | Garantía de base de datos propuesta | Estado actual |
+| Regla | Mecanismo | Estado |
 |---|---|---|
-| Una persona tiene como máximo una inscripción `INSCRITA` por actividad. | Índice único Oracle basado en función que indexa `actividad_id` y `persona_id` solo cuando el estado es `INSCRITA`. | Disponible en script manual; queda activa solo tras ejecutarlo en Oracle. |
-| Dos actividades no se solapan en un lugar y fecha. | Serialización por una fila de agenda de `(lugar normalizado, fecha)` bloqueada con `SELECT ... FOR UPDATE` antes de comprobar y escribir. | Pendiente de migración y servicio. |
+| Una persona tiene como máximo una inscripción `INSCRITA` por actividad. | Índice único Oracle basado en función. | Implementado en `V001`; activo tras ejecución manual. |
+| Dos actividades no se solapan en el mismo `lugar` exacto y `fecha`. | Fila de coordinación bloqueada por Oracle antes de consultar y escribir. | Implementado en `V002` y Java; activo tras ejecución manual. |
 
 ## Inscripción vigente
 
-`database/oracle/manual-migrations/V001__enrollment_active_uniqueness.sql` crea el índice único basado en función `UK_INSCRIPCION_VIGENTE` equivalente a:
+`V001__enrollment_active_uniqueness.sql` crea `UK_INSCRIPCION_VIGENTE`, equivalente a:
 
 ```sql
 UNIQUE (
@@ -20,26 +20,34 @@ UNIQUE (
 )
 ```
 
-Oracle permite múltiples pares de valores nulos en un índice único; por eso las filas `CANCELADA` no bloquean una nueva inscripción. El script deriva `INSCRIPCIONES`, `ACTIVIDAD_ID`, `PERSONA_ID` y `ESTADO` del mapeo JPA y de la convención actual, pero exige confirmar esos nombres mediante `ALL_TAB_COLUMNS` antes de ejecutarlo. También detecta duplicados existentes, que deben resolverse antes del `CREATE INDEX`.
+El service conserva la consulta previa para UX y usa `saveAndFlush()` para observar la violación dentro de la transacción. Solo un `ORA-00001` que menciona ese índice se transforma en 409; otro error de integridad se propaga sin disfrazarse de duplicado.
 
-Al activarlo, el servicio conserva la consulta previa para UX y usa `saveAndFlush` para recibir la violación dentro de su frontera transaccional. Solo traduce un `ORA-00001` que identifica `UK_INSCRIPCION_VIGENTE` a `InscripcionVigenteException` (409); una FK, `NOT NULL` u otro error de integridad se propaga sin disfrazarse de duplicado.
+## Horarios solapados
 
-## Solapamiento de agenda
+`V002__activity_schedule_coordination.sql` crea `AGENDA_ACTIVIDAD_BLOQUEO` con clave primaria `(LUGAR, FECHA)` y el procedimiento `LOCK_AGENDA_ACTIVIDAD`.
 
-Oracle no ofrece una exclusion constraint para intervalos horario como esta regla. Un índice sobre `lugar`, `fecha`, `hora_inicio` y `hora_fin` acelera consultas, pero no impide intervalos cruzados. La solución propuesta es una tabla de coordinación de agenda, con una fila única por `(lugar_normalizado, fecha)`:
+### Algoritmo de escritura
 
-1. En la misma transacción, crear u obtener la fila de coordinación.
-2. Bloquear esa fila con `SELECT ... FOR UPDATE`.
-3. Ejecutar la consulta de solapamiento y crear o actualizar la actividad.
-4. Confirmar; las solicitudes del mismo lugar y fecha quedan serializadas.
+1. `ActividadService` valida `horaInicio < horaFin`.
+2. Para crear, llama el procedimiento con el `lugar` y `fecha` solicitados; para actualizar, bloquea tanto la clave anterior como la nueva.
+3. En una actualización, las claves se ordenan por `lugar` exacto y luego fecha antes de bloquearlas. La misma clave se bloquea una sola vez.
+4. El procedimiento inserta u obtiene la fila de coordinación y aplica `SELECT ... FOR UPDATE` sin hacer `COMMIT`.
+5. Con el lock tomado, el service reutiliza `ActividadRepository.existeSolapamiento(...)` y guarda solo si no hay cruce.
+6. El commit libera los locks; la siguiente solicitud de esa agenda entonces consulta el estado ya confirmado.
 
-Una actualización que cambia lugar o fecha debe bloquear ambas claves en orden determinista para evitar deadlocks. La migración debe definir cómo crear la fila de forma segura ante carreras y los índices de soporte; el servicio no debe basarse solo en `@Transactional`.
+El procedimiento trata correctamente la primera fila: si dos transacciones intentan crearla, Oracle serializa la clave primaria. La que pierde espera, recibe `DUP_VAL_ON_INDEX` o inserta tras un rollback, y después bloquea la fila antes de continuar. Un lock JPA sobre actividades existentes no bastaría porque la primera agenda no tendría una fila para bloquear.
 
-## Activación y pendientes
+`lugar` se transmite tal como llega al service: no hay trim, normalización ni case-folding. Por lo tanto, la garantía conserva exactamente la semántica actual de igualdad de `ActividadRepository`.
 
-La inscripción requiere ejecutar manualmente `V001__enrollment_active_uniqueness.sql` según su README. Antes de implementar el bloqueo de agenda se necesita:
+## Activación y prueba requerida
 
-- cerrar los nombres físicos y la representación Oracle de `LocalTime`;
-- probar solicitudes concurrentes contra Oracle y verificar que la violación del índice se traduzca únicamente a 409.
+1. Un DBA confirma nombres disponibles, permisos y que la aplicación se conecta al mismo Oracle.
+2. Ejecuta `V001` y `V002` en orden desde `database/oracle/manual-migrations/`.
+3. Antes de desplegar, prueba dos requests concurrentes que creen o muevan actividades al mismo `lugar`/`fecha` con horarios cruzados: una debe persistir y la otra devolver 409.
+4. Prueba también una actualización que cambia de agenda para comprobar el orden determinista de locks.
 
-Hasta que el script se ejecute, no se afirma concurrencia segura para Inscripción. El solapamiento de agenda continúa pendiente de DDL y servicio.
+Las pruebas unitarias validan delegación y orden, no pueden demostrar bloqueo Oracle real. Antes de ejecutar `V002`, los creates/updates de Actividad que llaman el procedimiento no están operativos contra esa base; el script es requisito de despliegue de esta versión.
+
+## Rollback
+
+Detener primero una versión del backend que llame `LOCK_AGENDA_ACTIVIDAD`. Luego evaluar datos y ejecutar el rollback comentado en `V002`. Revertir el DDL mientras el backend nuevo está activo haría fallar sus escrituras.
