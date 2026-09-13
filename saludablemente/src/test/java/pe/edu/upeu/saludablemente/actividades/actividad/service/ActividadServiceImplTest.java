@@ -5,13 +5,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadAgregado;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadRequest;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadDetalleResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResumen;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.Actividad;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.EstadoActividad;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
+import pe.edu.upeu.saludablemente.actividades.actividad.exception.CriterioConsultaActividadInvalidoException;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
 import pe.edu.upeu.saludablemente.actividades.actividad.mapper.ActividadMapper;
 import pe.edu.upeu.saludablemente.actividades.actividad.repository.ActividadRepository;
@@ -96,6 +100,77 @@ class ActividadServiceImplTest {
 
         assertEquals("Actividad with id 99 was not found", exception.getMessage());
         verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void searchesActivitiesWithAnAllowedSort() {
+        LocalDate desde = LocalDate.of(2026, 9, 1);
+        LocalDate hasta = LocalDate.of(2026, 9, 30);
+        Sort sort = Sort.by(Sort.Order.desc("fecha"), Sort.Order.asc("nombre"));
+        ActividadResumen resumen = new ActividadResumen(
+                1L, "Caminata saludable", LocalDate.of(2026, 9, 12),
+                LocalTime.of(8, 0), LocalTime.of(9, 0), "Parque central", EstadoActividad.PROGRAMADA
+        );
+        when(repository.buscar(EstadoActividad.PROGRAMADA, desde, hasta, sort)).thenReturn(List.of(resumen));
+
+        assertEquals(List.of(resumen), service.search(EstadoActividad.PROGRAMADA, desde, hasta, sort));
+
+        verify(repository).buscar(EstadoActividad.PROGRAMADA, desde, hasta, sort);
+    }
+
+    @Test
+    void rejectsSearchWithAReversedDateRange() {
+        LocalDate desde = LocalDate.of(2026, 9, 30);
+        LocalDate hasta = LocalDate.of(2026, 9, 1);
+
+        CriterioConsultaActividadInvalidoException exception = assertThrows(
+                CriterioConsultaActividadInvalidoException.class,
+                () -> service.search(null, desde, hasta, Sort.unsorted())
+        );
+
+        assertEquals("La fecha desde no puede ser posterior a la fecha hasta", exception.getMessage());
+        verify(repository, never()).buscar(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void rejectsSearchWithAnUnauthorizedSortProperty() {
+        Sort sort = Sort.by("inscripciones.personaId");
+
+        CriterioConsultaActividadInvalidoException exception = assertThrows(
+                CriterioConsultaActividadInvalidoException.class,
+                () -> service.search(null, null, null, sort)
+        );
+
+        assertEquals("No se permite ordenar actividades por: inscripciones.personaId", exception.getMessage());
+        verify(repository, never()).buscar(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void returnsAggregatesForTheRequestedDateRange() {
+        LocalDate desde = LocalDate.of(2026, 9, 1);
+        LocalDate hasta = LocalDate.of(2026, 9, 30);
+        ActividadAgregado agregado = new ActividadAgregado(EstadoActividad.PROGRAMADA, 3L);
+        when(repository.agregados(desde, hasta)).thenReturn(List.of(agregado));
+
+        assertEquals(List.of(agregado), service.getAggregates(desde, hasta));
+
+        verify(repository).agregados(desde, hasta);
+    }
+
+    @Test
+    void rejectsAggregateWithAReversedDateRange() {
+        LocalDate desde = LocalDate.of(2026, 9, 30);
+        LocalDate hasta = LocalDate.of(2026, 9, 1);
+
+        CriterioConsultaActividadInvalidoException exception = assertThrows(
+                CriterioConsultaActividadInvalidoException.class,
+                () -> service.getAggregates(desde, hasta)
+        );
+
+        assertEquals("La fecha desde no puede ser posterior a la fecha hasta", exception.getMessage());
+        verify(repository, never()).agregados(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
     }
 
     @Test
@@ -254,6 +329,10 @@ class ActividadServiceImplTest {
         assertFalse(ActividadServiceImpl.class.getMethod("create", ActividadRequest.class)
                 .getAnnotation(Transactional.class).readOnly());
         assertFalse(ActividadServiceImpl.class.getMethod("update", Long.class, ActividadRequest.class)
+                .getAnnotation(Transactional.class).readOnly());
+        assertTrue(ActividadServiceImpl.class.getMethod("search", EstadoActividad.class, LocalDate.class,
+                LocalDate.class, Sort.class).getAnnotation(Transactional.class).readOnly());
+        assertTrue(ActividadServiceImpl.class.getMethod("getAggregates", LocalDate.class, LocalDate.class)
                 .getAnnotation(Transactional.class).readOnly());
     }
 

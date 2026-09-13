@@ -59,4 +59,24 @@ class ActividadDtoTest {
         assertEquals(EstadoActividad.PROGRAMADA, response.getEstado());
         assertEquals(7L, response.getCreadorId());
     }
+
+    @Test
+    void exposesFlatOperationalSearchAndAggregateProjections() {
+        ActividadResumen resumen = new ActividadResumen(
+                1L,
+                "Caminata saludable",
+                LocalDate.of(2026, 9, 12),
+                LocalTime.of(8, 0),
+                LocalTime.of(9, 0),
+                "Parque central",
+                EstadoActividad.PROGRAMADA
+        );
+        ActividadAgregado agregado = new ActividadAgregado(EstadoActividad.PROGRAMADA, 3L);
+
+        assertEquals(1L, resumen.getId());
+        assertEquals("Caminata saludable", resumen.getNombre());
+        assertEquals(EstadoActividad.PROGRAMADA, resumen.getEstado());
+        assertEquals(EstadoActividad.PROGRAMADA, agregado.getEstado());
+        assertEquals(3L, agregado.getTotal());
+    }
 }
