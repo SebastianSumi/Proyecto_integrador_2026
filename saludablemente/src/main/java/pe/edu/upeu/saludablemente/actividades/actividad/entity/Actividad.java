@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +16,10 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.edu.upeu.saludablemente.actividades.inscripcion.entity.Inscripcion;
 
 @Entity
 @Table(name = "ACTIVIDADES", schema = "SALUDABLEMENTE_OWNER")
@@ -47,4 +53,7 @@ public class Actividad {
 
     @Column(nullable = false)
     private Long creadorId;
+
+    @OneToMany(mappedBy = "actividad", fetch = FetchType.LAZY)
+    private List<Inscripcion> inscripciones = new ArrayList<>();
 }

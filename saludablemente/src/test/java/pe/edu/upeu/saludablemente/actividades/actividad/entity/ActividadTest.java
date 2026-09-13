@@ -7,12 +7,16 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import pe.edu.upeu.saludablemente.actividades.inscripcion.entity.Inscripcion;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -74,6 +78,22 @@ class ActividadTest {
         Field estado = Actividad.class.getDeclaredField("estado");
         assertEquals(EnumType.STRING, estado.getAnnotation(Enumerated.class).value());
         assertColumn(estado, false, 20);
+    }
+
+    @Test
+    void exposesLazyEnrollmentCollectionAsInverseRelationship() throws NoSuchFieldException {
+        Field inscripciones = Actividad.class.getDeclaredField("inscripciones");
+        OneToMany relationship = inscripciones.getAnnotation(OneToMany.class);
+
+        assertNotNull(relationship);
+        assertEquals("actividad", relationship.mappedBy());
+        assertEquals(FetchType.LAZY, relationship.fetch());
+        assertEquals(0, relationship.cascade().length);
+        assertTrue(!relationship.orphanRemoval());
+        assertEquals(List.class, inscripciones.getType());
+        assertTrue(Inscripcion.class.isAssignableFrom(
+                (Class<?>) ((java.lang.reflect.ParameterizedType) inscripciones.getGenericType())
+                        .getActualTypeArguments()[0]));
     }
 
     private void assertColumn(Field field, boolean nullable, int length) {

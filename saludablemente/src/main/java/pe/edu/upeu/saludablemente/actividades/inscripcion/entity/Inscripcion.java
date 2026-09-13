@@ -7,12 +7,17 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+
+import pe.edu.upeu.saludablemente.actividades.actividad.entity.Actividad;
 
 @Entity
 @Table(name = "INSCRIPCIONES", schema = "SALUDABLEMENTE_OWNER")
@@ -25,8 +30,12 @@ public class Inscripcion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "ACTIVIDAD_ID", nullable = false)
     private Long actividadId;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "ACTIVIDAD_ID", insertable = false, updatable = false)
+    private Actividad actividad;
 
     @Column(nullable = false)
     private Long personaId;

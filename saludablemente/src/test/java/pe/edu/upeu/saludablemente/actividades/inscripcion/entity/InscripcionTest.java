@@ -7,7 +7,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import pe.edu.upeu.saludablemente.actividades.actividad.entity.Actividad;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -70,6 +74,25 @@ class InscripcionTest {
         Field estado = Inscripcion.class.getDeclaredField("estado");
         assertEquals(EnumType.STRING, estado.getAnnotation(Enumerated.class).value());
         assertColumn(estado, false, 20);
+    }
+
+    @Test
+    void keepsActivityIdAsWritableColumnAndNavigatesToActivityLazily() throws NoSuchFieldException {
+        Field actividadId = Inscripcion.class.getDeclaredField("actividadId");
+        Field actividad = Inscripcion.class.getDeclaredField("actividad");
+        ManyToOne relationship = actividad.getAnnotation(ManyToOne.class);
+        JoinColumn joinColumn = actividad.getAnnotation(JoinColumn.class);
+
+        assertColumn(actividadId, false, 255);
+        assertEquals("ACTIVIDAD_ID", actividadId.getAnnotation(Column.class).name());
+        assertEquals(Actividad.class, actividad.getType());
+        assertNotNull(relationship);
+        assertEquals(FetchType.LAZY, relationship.fetch());
+        assertTrue(!relationship.optional());
+        assertNotNull(joinColumn);
+        assertEquals("ACTIVIDAD_ID", joinColumn.name());
+        assertTrue(!joinColumn.insertable());
+        assertTrue(!joinColumn.updatable());
     }
 
     private void assertColumn(Field field, boolean nullable, int length) {
