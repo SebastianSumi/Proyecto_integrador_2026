@@ -1,6 +1,8 @@
 package pe.edu.upeu.saludablemente.actividades.actividad.exception;
 
-public class ActividadSolapadaException extends RuntimeException {
+import pe.edu.upeu.saludablemente.exception.BusinessConflictException;
+
+public class ActividadSolapadaException extends BusinessConflictException {
 
     public ActividadSolapadaException(String message) {
         super(message);

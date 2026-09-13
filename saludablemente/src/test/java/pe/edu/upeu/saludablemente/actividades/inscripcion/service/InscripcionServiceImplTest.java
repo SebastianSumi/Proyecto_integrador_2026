@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.upeu.saludablemente.actividades.actividad.service.ActividadService;
 import pe.edu.upeu.saludablemente.actividades.inscripcion.dto.InscripcionRequest;
 import pe.edu.upeu.saludablemente.actividades.inscripcion.dto.InscripcionResponse;
 import pe.edu.upeu.saludablemente.actividades.inscripcion.entity.EstadoInscripcion;
@@ -37,6 +38,9 @@ class InscripcionServiceImplTest {
 
     @Mock
     private InscripcionMapper mapper;
+
+    @Mock
+    private ActividadService actividadService;
 
     @InjectMocks
     private InscripcionServiceImpl service;
@@ -86,6 +90,22 @@ class InscripcionServiceImplTest {
         assertEquals(response, service.register(request));
         assertEquals(EstadoInscripcion.INSCRITA, mapped.getEstado());
         assertTrue(mapped.getInscritaEn().isBefore(LocalDateTime.now().plusSeconds(1)));
+        verify(actividadService).findById(10L);
+    }
+
+    @Test
+    void rejectsRegistrationWhenActivityDoesNotExist() {
+        InscripcionRequest request = request();
+        when(actividadService.findById(10L))
+                .thenThrow(new ResourceNotFoundException("Actividad with id 10 was not found"));
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> service.register(request));
+
+        assertEquals("Actividad with id 10 was not found", exception.getMessage());
+        verify(repository, never()).existsByActividadIdAndPersonaIdAndEstado(any(), any(), any());
+        verify(mapper, never()).toEntity(request);
+        verify(repository, never()).save(any());
     }
 
     @Test

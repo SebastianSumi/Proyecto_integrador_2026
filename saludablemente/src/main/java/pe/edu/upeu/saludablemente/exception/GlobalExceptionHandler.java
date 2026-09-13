@@ -8,9 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
-import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
-import pe.edu.upeu.saludablemente.actividades.inscripcion.exception.InscripcionVigenteException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -35,8 +32,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    @ExceptionHandler(HorarioActividadInvalidoException.class)
-    public ResponseEntity<Map<String, Object>> handleInvalidSchedule(HorarioActividadInvalidoException exception) {
+    @ExceptionHandler(BusinessValidationException.class)
+    public ResponseEntity<Map<String, Object>> handleBusinessValidation(BusinessValidationException exception) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now().toString());
         body.put("status", HttpStatus.BAD_REQUEST.value());
@@ -45,17 +42,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    @ExceptionHandler(ActividadSolapadaException.class)
-    public ResponseEntity<Map<String, Object>> handleScheduleConflict(ActividadSolapadaException exception) {
+    @ExceptionHandler(BusinessConflictException.class)
+    public ResponseEntity<Map<String, Object>> handleBusinessConflict(BusinessConflictException exception) {
         return conflictResponse(exception);
     }
 
-    @ExceptionHandler(InscripcionVigenteException.class)
-    public ResponseEntity<Map<String, Object>> handleEnrollmentConflict(InscripcionVigenteException exception) {
-        return conflictResponse(exception);
-    }
-
-    private ResponseEntity<Map<String, Object>> conflictResponse(RuntimeException exception) {
+    private ResponseEntity<Map<String, Object>> conflictResponse(BusinessConflictException exception) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now().toString());
         body.put("status", HttpStatus.CONFLICT.value());

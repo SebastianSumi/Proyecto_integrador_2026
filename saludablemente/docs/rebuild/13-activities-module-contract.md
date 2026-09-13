@@ -38,7 +38,7 @@ La entidad no contiene anotaciones Bean Validation ni reglas que consulten persi
 
 `Inscripcion` representa el estado actual de la intención previa de participar. Conserva `actividadId` y `personaId` como identificadores escalares: no crea relaciones JPA hacia `Actividad` ni hacia Personal. Sus marcas `inscritaEn` y `canceladaEn` expresan el ciclo vigente o cancelado de la misma inscripción, y `EstadoInscripcion` inicia en `INSCRITA` o puede pasar a `CANCELADA`.
 
-La regla acordada es una sola inscripción vigente por persona y actividad. `InscripcionService` consulta el repository con estado `INSCRITA` antes de registrar y responde conflicto 409 ante un duplicado vigente. Al cancelar, la transición `INSCRITA → CANCELADA` registra `canceladaEn`; repetir la cancelación es idempotente y devuelve la representación existente sin alterar esa marca. La entidad no consulta persistencia ni intenta resolver unicidad por sí sola.
+La regla acordada es una sola inscripción vigente por persona y actividad. Antes de consultar el duplicado, `InscripcionService` verifica la existencia de la actividad mediante el contrato público `ActividadService`; una actividad inexistente conserva la respuesta 404. Luego consulta el repository con estado `INSCRITA` y responde conflicto 409 ante un duplicado vigente. Al cancelar, la transición `INSCRITA → CANCELADA` registra `canceladaEn`; repetir la cancelación es idempotente y devuelve la representación existente sin alterar esa marca. La entidad no consulta persistencia ni intenta resolver unicidad por sí sola.
 
 ## DTO de Inscripción
 
@@ -54,8 +54,12 @@ La regla acordada es una sola inscripción vigente por persona y actividad. `Ins
 - La prueba comportamental de repository se difiere hasta una infraestructura de persistencia autorizada; no se reemplaza por mocks ni reflexión. Esto aplica a `ActividadRepository` e `InscripcionRepository`.
 - `ActividadService` expone listar, obtener, crear y actualizar. `ActividadServiceImpl` usa transacciones de escritura, valida el intervalo horario antes de consultar el solapamiento y lanza `ActividadSolapadaException` ante la regla real.
 - `ActividadController` publica esas cuatro operaciones en `/api/v1/actividades`; aplica `@Valid` en crear y actualizar para activar las restricciones declaradas en `ActividadRequest` antes de invocar el servicio.
-- `GlobalExceptionHandler` traduce `ActividadSolapadaException` e `InscripcionVigenteException` a 409, y `HorarioActividadInvalidoException` a 400, sin acoplar esas respuestas al controller. Las validaciones de DTO y recursos ausentes conservan 400 y 404, respectivamente.
+- Las excepciones de negocio siguen siendo propiedad de `actividad` o `inscripcion`. Extienden `BusinessConflictException` o `BusinessValidationException`, bases compartidas que el `GlobalExceptionHandler` traduce a 409 o 400 sin importar módulos. Las validaciones de DTO y recursos ausentes conservan 400 y 404, respectivamente.
 - No se agregan SQL, Oracle ni configuración en este slice.
+
+## Concurrencia diferida con diseño explícito
+
+Las consultas previas a guardar detectan conflictos en el flujo normal, pero no serializan solicitudes concurrentes. No se añadió SQL porque el proyecto aún no define una herramienta ni una ubicación versionada de migraciones, y los nombres/tipos físicos Oracle siguen pendientes. El diseño exacto y los pasos de activación están en `15-activities-concurrency-oracle-design.md`.
 
 ## Paquetes, `package-info` y CORS
 

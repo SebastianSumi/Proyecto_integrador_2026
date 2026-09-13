@@ -19,7 +19,7 @@ La entrega S06 requiere CRUD, una operación cabecera-detalle real, consultas, C
 
 1. DTOs de `Actividad` y su validación: completados.
 2. Mapper, repository, servicio y controller: completados. El CRUD actual cubre listar, obtener, crear y actualizar, con DTO validado y respuestas HTTP 400/404/409 centralizadas.
-3. `Inscripcion` cuenta con entity, DTO, mapper, repository, service y controller; su registro validado impide duplicados vigentes con 409 y su cancelación idempotente se publica como transición, no como `DELETE`. Definir con el equipo una operación cabecera-detalle real y su dueño antes de construirla. Actividad–Inscripción aplicará solo si la regla y la atomicidad son evidenciables; Asistencia permanece externa.
+3. `Inscripcion` cuenta con entity, DTO, mapper, repository, service y controller; su registro validado verifica primero que la actividad exista, impide duplicados vigentes con 409 en el flujo normal y su cancelación idempotente se publica como transición, no como `DELETE`. La garantía ante carreras concurrentes queda pendiente de migración Oracle; está diseñada pero no activada en `15-activities-concurrency-oracle-design.md`. Definir con el equipo una operación cabecera-detalle real y su dueño antes de construirla. Actividad–Inscripción aplicará solo si la regla y la atomicidad son evidenciables; Asistencia permanece externa.
 4. Añadir CORS por propiedades, logs y prueba de límite modular como trabajo transversal de integración.
 5. Con Oracle autorizado por BD2, demostrar CRUD, rollback, consulta combinada/reporte y CORS en vivo.
 

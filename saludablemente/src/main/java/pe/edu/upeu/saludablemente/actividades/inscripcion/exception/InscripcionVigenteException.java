@@ -1,6 +1,8 @@
 package pe.edu.upeu.saludablemente.actividades.inscripcion.exception;
 
-public class InscripcionVigenteException extends RuntimeException {
+import pe.edu.upeu.saludablemente.exception.BusinessConflictException;
+
+public class InscripcionVigenteException extends BusinessConflictException {
 
     public InscripcionVigenteException(String message) {
         super(message);

@@ -3,6 +3,7 @@ package pe.edu.upeu.saludablemente.actividades.inscripcion.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.upeu.saludablemente.actividades.actividad.service.ActividadService;
 import pe.edu.upeu.saludablemente.actividades.inscripcion.dto.InscripcionRequest;
 import pe.edu.upeu.saludablemente.actividades.inscripcion.dto.InscripcionResponse;
 import pe.edu.upeu.saludablemente.actividades.inscripcion.entity.EstadoInscripcion;
@@ -22,6 +23,7 @@ public class InscripcionServiceImpl implements InscripcionService {
 
     private final InscripcionRepository repository;
     private final InscripcionMapper mapper;
+    private final ActividadService actividadService;
 
     @Override
     public List<InscripcionResponse> findAll() {
@@ -38,6 +40,8 @@ public class InscripcionServiceImpl implements InscripcionService {
     @Override
     @Transactional
     public InscripcionResponse register(InscripcionRequest request) {
+        actividadService.findById(request.getActividadId());
+
         if (repository.existsByActividadIdAndPersonaIdAndEstado(
                 request.getActividadId(), request.getPersonaId(), EstadoInscripcion.INSCRITA)) {
             throw new InscripcionVigenteException("La persona ya cuenta con una inscripción vigente para esta actividad");

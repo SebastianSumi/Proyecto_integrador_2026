@@ -21,11 +21,11 @@
 | Repository | `JpaRepository` y consultas mínimas evidenciadas | No consultar repositories de otros módulos ni usar `@EntityGraph` sin prueba de N+1. |
 | Service | Interfaz pública + implementación transaccional | Concentrar reglas, transacciones y colaboraciones mediante servicios públicos. |
 | Controller | `/api/v1`, validación y delegación exclusiva | No incluir JPA, transacciones ni reglas de negocio. |
-| Exception | Handler transversal y excepción de recurso inexistente | Agregar una excepción de negocio solo cuando exista una regla equivalente real. |
+| Exception | Handler transversal, excepción de recurso inexistente y bases HTTP compartidas | La excepción de negocio permanece en su módulo y extiende una base compartida según su semántica HTTP. |
 
 ## Límites explícitos
 
-- `ResourceNotFoundException` y `GlobalExceptionHandler` son transversales y siguen el formato BOMERP de `timestamp`, `status`, `error` y `message`.
+- `ResourceNotFoundException`, `BusinessConflictException`, `BusinessValidationException` y `GlobalExceptionHandler` son transversales y siguen el formato BOMERP de `timestamp`, `status`, `error` y `message`. El handler solo conoce las bases compartidas, no excepciones de módulos.
 - No se copia `StockInsuficienteException`: pertenece al dominio de ventas. Un módulo nuevo define su excepción solo si su propia regla lo exige.
 - No tocar Oracle, SQL, POM, Docker, configuración, ramas, commits ni PRs sin una autorización específica.
 - Preservar siempre cambios preexistentes del workspace.
@@ -34,6 +34,8 @@
 
 La vertical incluye `entity`, DTO, mapper MapStruct, repository, service, controller y manejo de excepciones. La evidencia final registrada es `mvn test` 26/26 PASS y `git diff --check` PASS, con advertencias LF/CRLF preexistentes únicamente.
 
-## Aplicación inicial: Actividades
+## Aplicación: Actividades
 
-Las capas `actividades/actividad/entity`, `dto`, `mapper`, `repository` y `service` están completadas. El modelo lógico confirma nombre, fecha, hora de inicio, hora de fin, lugar, estado y creador; la entidad preserva estos conceptos con `LocalDate` y `LocalTime`, sin decidir DDL ni la representación física Oracle de `TIME`. `ActividadServiceImpl` aplica la regla de solapamiento al crear y actualizar, excluyendo el propio ID en actualización. El siguiente paso, sujeto a revisión, es solo el controller de `Actividad`.
+Las verticales de `Actividad` e `Inscripcion` están completadas en Java: entity, DTO, mapper, repository, service, controller y manejo HTTP de errores. `ActividadServiceImpl` aplica intervalo válido y solapamiento al crear/actualizar; `InscripcionServiceImpl` verifica la existencia de la actividad mediante `ActividadService`, impide duplicados vigentes y cancela de forma idempotente. El modelo conserva `LocalDate` y `LocalTime` sin decidir DDL ni la representación física Oracle de `TIME`.
+
+La garantía ante carreras concurrentes no está implementada: requiere una migración Oracle aprobada. Ver `15-activities-concurrency-oracle-design.md`; no se debe inferir que las verificaciones previas a guardar sean una protección de base de datos.
