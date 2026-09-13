@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upeu.saludablemente.actividades.actividad.service.ActividadService;
 import pe.edu.upeu.saludablemente.actividades.inscripcion.dto.InscripcionRequest;
@@ -17,6 +18,7 @@ import pe.edu.upeu.saludablemente.actividades.inscripcion.repository.Inscripcion
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,13 +87,46 @@ class InscripcionServiceImplTest {
         when(repository.existsByActividadIdAndPersonaIdAndEstado(10L, 20L, EstadoInscripcion.INSCRITA))
                 .thenReturn(false);
         when(mapper.toEntity(request)).thenReturn(mapped);
-        when(repository.save(mapped)).thenReturn(saved);
+        when(repository.saveAndFlush(mapped)).thenReturn(saved);
         when(mapper.toResponse(saved)).thenReturn(response);
 
         assertEquals(response, service.register(request));
         assertEquals(EstadoInscripcion.INSCRITA, mapped.getEstado());
         assertTrue(mapped.getInscritaEn().isBefore(LocalDateTime.now().plusSeconds(1)));
         verify(actividadService).validateExists(10L);
+    }
+
+    @Test
+    void translatesTheKnownOracleActiveEnrollmentIndexViolation() {
+        InscripcionRequest request = request();
+        Inscripcion mapped = enrollment(null, null, null);
+        SQLException oracleCause = new SQLException(
+                "ORA-00001: unique constraint (SALUDABLEMENTE_OWNER.UK_INSCRIPCION_VIGENTE) violated",
+                "23000",
+                1
+        );
+        when(repository.existsByActividadIdAndPersonaIdAndEstado(10L, 20L, EstadoInscripcion.INSCRITA))
+                .thenReturn(false);
+        when(mapper.toEntity(request)).thenReturn(mapped);
+        when(repository.saveAndFlush(mapped)).thenThrow(new DataIntegrityViolationException("Could not execute statement", oracleCause));
+
+        assertThrows(InscripcionVigenteException.class, () -> service.register(request));
+    }
+
+    @Test
+    void propagatesAnUnrelatedIntegrityViolation() {
+        InscripcionRequest request = request();
+        Inscripcion mapped = enrollment(null, null, null);
+        DataIntegrityViolationException integrityViolation = new DataIntegrityViolationException(
+                "ORA-00001: unique constraint (SALUDABLEMENTE_OWNER.UK_INSCRIPCION_PERSONA_FK) violated",
+                new SQLException("ORA-00001: unique constraint (SALUDABLEMENTE_OWNER.UK_INSCRIPCION_PERSONA_FK) violated", "23000", 1)
+        );
+        when(repository.existsByActividadIdAndPersonaIdAndEstado(10L, 20L, EstadoInscripcion.INSCRITA))
+                .thenReturn(false);
+        when(mapper.toEntity(request)).thenReturn(mapped);
+        when(repository.saveAndFlush(mapped)).thenThrow(integrityViolation);
+
+        assertSame(integrityViolation, assertThrows(DataIntegrityViolationException.class, () -> service.register(request)));
     }
 
     @Test

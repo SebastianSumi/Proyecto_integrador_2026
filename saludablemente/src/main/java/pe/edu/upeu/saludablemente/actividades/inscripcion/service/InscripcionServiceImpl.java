@@ -1,6 +1,7 @@
 package pe.edu.upeu.saludablemente.actividades.inscripcion.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upeu.saludablemente.actividades.actividad.service.ActividadService;
@@ -14,12 +15,18 @@ import pe.edu.upeu.saludablemente.actividades.inscripcion.repository.Inscripcion
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class InscripcionServiceImpl implements InscripcionService {
+
+    private static final String ACTIVE_ENROLLMENT_INDEX = "UK_INSCRIPCION_VIGENTE";
 
     private final InscripcionRepository repository;
     private final InscripcionMapper mapper;
@@ -50,7 +57,16 @@ public class InscripcionServiceImpl implements InscripcionService {
         Inscripcion inscripcion = mapper.toEntity(request);
         inscripcion.setEstado(EstadoInscripcion.INSCRITA);
         inscripcion.setInscritaEn(LocalDateTime.now());
-        return mapper.toResponse(repository.save(inscripcion));
+        try {
+            return mapper.toResponse(repository.saveAndFlush(inscripcion));
+        } catch (DataIntegrityViolationException exception) {
+            if (isActiveEnrollmentUniqueViolation(exception)) {
+                throw new InscripcionVigenteException(
+                        "La persona ya cuenta con una inscripción vigente para esta actividad"
+                );
+            }
+            throw exception;
+        }
     }
 
     @Override
@@ -69,5 +85,25 @@ public class InscripcionServiceImpl implements InscripcionService {
     private Inscripcion findInscripcion(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Inscripcion with id " + id + " was not found"));
+    }
+
+    private boolean isActiveEnrollmentUniqueViolation(DataIntegrityViolationException exception) {
+        boolean oracleUniqueViolation = false;
+        boolean knownIndexMentioned = false;
+        Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+
+        for (Throwable current = exception; current != null && visited.add(current); current = current.getCause()) {
+            String message = current.getMessage();
+            if (message != null) {
+                String normalizedMessage = message.toUpperCase(java.util.Locale.ROOT);
+                oracleUniqueViolation |= normalizedMessage.contains("ORA-00001");
+                knownIndexMentioned |= normalizedMessage.contains(ACTIVE_ENROLLMENT_INDEX);
+            }
+            if (current instanceof SQLException sqlException && sqlException.getErrorCode() == 1) {
+                oracleUniqueViolation = true;
+            }
+        }
+
+        return oracleUniqueViolation && knownIndexMentioned;
     }
 }

@@ -1,17 +1,17 @@
 # Diseño Oracle de concurrencia para Actividades
 
-**Estado: diseñado, no implementado.** Actividad e Inscripción detectan conflictos en el flujo normal, pero una verificación previa a guardar no protege contra dos solicitudes concurrentes. No existe aún una herramienta ni una ubicación versionada aprobada para migraciones Oracle, por lo que este documento define el cambio que deberá revisarse antes de escribir o ejecutar DDL.
+**Estado: inscripción implementada como migración manual; agenda pendiente.** Actividad e Inscripción detectan conflictos en el flujo normal, pero una verificación previa a guardar no protege contra dos solicitudes concurrentes. La garantía de inscripción se incorpora en un script manual versionado; no existe Flyway ni ejecución automática desde Spring.
 
 ## Garantías objetivo
 
 | Regla | Garantía de base de datos propuesta | Estado actual |
 |---|---|---|
-| Una persona tiene como máximo una inscripción `INSCRITA` por actividad. | Índice único Oracle basado en función que indexa `actividad_id` y `persona_id` solo cuando el estado es `INSCRITA`. | Pendiente de migración. |
+| Una persona tiene como máximo una inscripción `INSCRITA` por actividad. | Índice único Oracle basado en función que indexa `actividad_id` y `persona_id` solo cuando el estado es `INSCRITA`. | Disponible en script manual; queda activa solo tras ejecutarlo en Oracle. |
 | Dos actividades no se solapan en un lugar y fecha. | Serialización por una fila de agenda de `(lugar normalizado, fecha)` bloqueada con `SELECT ... FOR UPDATE` antes de comprobar y escribir. | Pendiente de migración y servicio. |
 
 ## Inscripción vigente
 
-La migración debe crear un índice único basado en función equivalente a:
+`database/oracle/manual-migrations/V001__enrollment_active_uniqueness.sql` crea el índice único basado en función `UK_INSCRIPCION_VIGENTE` equivalente a:
 
 ```sql
 UNIQUE (
@@ -20,9 +20,9 @@ UNIQUE (
 )
 ```
 
-Oracle permite múltiples pares de valores nulos en un índice único; por eso las filas `CANCELADA` no bloquean una nueva inscripción. Los nombres físicos finales, tipos y el nombre de constraint deben definirse en la migración aprobada, no en esta guía.
+Oracle permite múltiples pares de valores nulos en un índice único; por eso las filas `CANCELADA` no bloquean una nueva inscripción. El script deriva `INSCRIPCIONES`, `ACTIVIDAD_ID`, `PERSONA_ID` y `ESTADO` del mapeo JPA y de la convención actual, pero exige confirmar esos nombres mediante `ALL_TAB_COLUMNS` antes de ejecutarlo. También detecta duplicados existentes, que deben resolverse antes del `CREATE INDEX`.
 
-Al activarlo, el servicio debe detectar la violación de **ese constraint identificado** al persistir/flush y traducirla a `InscripcionVigenteException` (409). No se debe convertir toda excepción de integridad en 409: podría ocultar una FK, `NOT NULL` u otro defecto.
+Al activarlo, el servicio conserva la consulta previa para UX y usa `saveAndFlush` para recibir la violación dentro de su frontera transaccional. Solo traduce un `ORA-00001` que identifica `UK_INSCRIPCION_VIGENTE` a `InscripcionVigenteException` (409); una FK, `NOT NULL` u otro error de integridad se propaga sin disfrazarse de duplicado.
 
 ## Solapamiento de agenda
 
@@ -35,13 +35,11 @@ Oracle no ofrece una exclusion constraint para intervalos horario como esta regl
 
 Una actualización que cambia lugar o fecha debe bloquear ambas claves en orden determinista para evitar deadlocks. La migración debe definir cómo crear la fila de forma segura ante carreras y los índices de soporte; el servicio no debe basarse solo en `@Transactional`.
 
-## Activación pendiente
+## Activación y pendientes
 
-Antes de implementar DDL o adaptar servicios se necesita:
+La inscripción requiere ejecutar manualmente `V001__enrollment_active_uniqueness.sql` según su README. Antes de implementar el bloqueo de agenda se necesita:
 
-- elegir y versionar la herramienta/ruta de migraciones Oracle;
 - cerrar los nombres físicos y la representación Oracle de `LocalTime`;
-- revisar rollback, datos existentes y el nombre estable del constraint de inscripción;
-- probar solicitudes concurrentes contra Oracle y verificar que se traduzcan únicamente los conflictos esperados a 409.
+- probar solicitudes concurrentes contra Oracle y verificar que la violación del índice se traduzca únicamente a 409.
 
-Hasta entonces, no se afirma concurrencia segura ni se añaden scripts aislados fuera de una convención de migración.
+Hasta que el script se ejecute, no se afirma concurrencia segura para Inscripción. El solapamiento de agenda continúa pendiente de DDL y servicio.

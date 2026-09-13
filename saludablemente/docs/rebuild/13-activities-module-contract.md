@@ -46,7 +46,7 @@ La regla acordada es una sola inscripción vigente por persona y actividad. Ante
 
 ## Límites actuales
 
-- `Inscripcion` es una decisión aprobada dentro de Actividades; entity, DTO, mapper, repository, service y controller están implementados. `InscripcionMapper` convierte request a entity ignorando id, estado y marcas de ciclo, que son gestionados por backend; la conversión a response expone el ciclo completo. `InscripcionRepository` hereda `JpaRepository<Inscripcion, Long>` y declara solamente `existsByActividadIdAndPersonaIdAndEstado`, usado por `InscripcionService` con `INSCRITA` para impedir una segunda inscripción vigente. El servicio lista, obtiene, registra y cancela de forma idempotente; el controller publica esas operaciones en `/api/v1/inscripciones`, con `POST` validado y `PATCH /{id}/cancelacion` para la transición que preserva historial.
+- `Inscripcion` es una decisión aprobada dentro de Actividades; entity, DTO, mapper, repository, service y controller están implementados. `InscripcionMapper` convierte request a entity ignorando id, estado y marcas de ciclo, que son gestionados por backend; la conversión a response expone el ciclo completo. `InscripcionRepository` hereda `JpaRepository<Inscripcion, Long>` y declara solamente `existsByActividadIdAndPersonaIdAndEstado`, usado por `InscripcionService` con `INSCRITA` para impedir una segunda inscripción vigente. El servicio lista, obtiene, registra y cancela de forma idempotente; conserva esa consulta para UX y ejecuta `saveAndFlush` al registrar. Tras aplicar la migración manual Oracle `V001__enrollment_active_uniqueness.sql`, solo la violación identificada de `UK_INSCRIPCION_VIGENTE` se traduce a 409; otros errores de integridad se propagan. El controller publica esas operaciones en `/api/v1/inscripciones`, con `POST` validado y `PATCH /{id}/cancelacion` para la transición que preserva historial.
 - `Asistencia` pertenece a Francisco; Actividades no accederá a su repository ni lo modelará como hijo interno.
 - `ActividadRequest` y `ActividadResponse` están implementados; request valida nombre, fecha, horarios, lugar y creador, mientras response no expone la entidad JPA.
 - `ActividadMapper` usa MapStruct para `ActividadRequest -> Actividad` y `Actividad -> ActividadResponse`; no consulta repositories ni aplica reglas.
@@ -55,11 +55,11 @@ La regla acordada es una sola inscripción vigente por persona y actividad. Ante
 - `ActividadService` expone listar, obtener, validar existencia, crear y actualizar. `InscripcionService` usa `validateExists` como contrato intermodular antes de registrar, sin acceder al repository de Actividad. `ActividadServiceImpl` usa transacciones de escritura, valida el intervalo horario antes de consultar el solapamiento y lanza `ActividadSolapadaException` ante la regla real.
 - `ActividadController` publica esas cuatro operaciones en `/api/v1/actividades`; aplica `@Valid` en crear y actualizar para activar las restricciones declaradas en `ActividadRequest` antes de invocar el servicio.
 - Las excepciones de negocio siguen siendo propiedad de `actividad` o `inscripcion`. Extienden `BusinessConflictException` o `BusinessValidationException`, bases compartidas que el `GlobalExceptionHandler` traduce a 409 o 400 sin importar módulos. Las validaciones de DTO y recursos ausentes conservan 400 y 404, respectivamente.
-- No se agregan SQL, Oracle ni configuración en este slice.
+- La garantía concurrente de inscripción se entrega como DDL Oracle manual versionado en `database/oracle/manual-migrations/`; no hay Flyway, configuración ni ejecución automática.
 
 ## Concurrencia diferida con diseño explícito
 
-Las consultas previas a guardar detectan conflictos en el flujo normal, pero no serializan solicitudes concurrentes. No se añadió SQL porque el proyecto aún no define una herramienta ni una ubicación versionada de migraciones, y los nombres/tipos físicos Oracle siguen pendientes. El diseño exacto y los pasos de activación están en `15-activities-concurrency-oracle-design.md`.
+Las consultas previas a guardar detectan conflictos en el flujo normal, pero no serializan solicitudes concurrentes. Para inscripción vigente, `V001__enrollment_active_uniqueness.sql` añade la garantía Oracle cuando el equipo lo ejecuta manualmente. El solapamiento de actividades continúa sin serialización; el diseño exacto y los pasos pendientes están en `15-activities-concurrency-oracle-design.md`.
 
 ## Paquetes, `package-info` y CORS
 

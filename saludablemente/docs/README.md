@@ -22,6 +22,7 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 14. [Contrato inicial de Actividades](rebuild/13-activities-module-contract.md)
 15. [Preparación de integración S06](rebuild/14-s06-integration-readiness.md)
 16. [Diseño de concurrencia Oracle para Actividades](rebuild/15-activities-concurrency-oracle-design.md)
+17. [Scripts Oracle manuales](../database/oracle/manual-migrations/README.md)
 
 ## Estado de Teams
 
@@ -39,7 +40,7 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 
 Las capas `entity`, `dto`, `mapper`, `repository`, `service` y `controller` de `Actividad` están completadas. `ActividadServiceImpl` lista, obtiene, crea y actualiza dentro de fronteras transaccionales, y rechaza solapamientos de horario. `ActividadController` expone esas operaciones bajo `/api/v1/actividades`, valida los DTO de entrada y el manejo global centraliza 400, 404 y 409.
 
-Para `Inscripcion`, las capas `entity`, `dto`, `mapper`, `repository`, `service` y `controller` están completadas. El registro verifica la actividad mediante el contrato público de Actividades e impide una segunda inscripción vigente con 409 en el flujo normal; la cancelación se publica como transición idempotente bajo `/api/v1/inscripciones/{id}/cancelacion` y conserva historial. La unicidad y el solapamiento concurrentes requieren la migración Oracle diseñada en `rebuild/15-activities-concurrency-oracle-design.md`; no están activos todavía.
+Para `Inscripcion`, las capas `entity`, `dto`, `mapper`, `repository`, `service` y `controller` están completadas. El registro verifica la actividad mediante el contrato público de Actividades e impide una segunda inscripción vigente con 409 en el flujo normal; la cancelación se publica como transición idempotente bajo `/api/v1/inscripciones/{id}/cancelacion` y conserva historial. `database/oracle/manual-migrations/V001__enrollment_active_uniqueness.sql` está listo para activarlo contra Oracle de manera manual y controlada: hasta que el equipo lo ejecute, la unicidad concurrente no está garantizada. El solapamiento concurrente sigue pendiente en `rebuild/15-activities-concurrency-oracle-design.md`.
 
 ## Documentos históricos
 
