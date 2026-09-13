@@ -40,7 +40,7 @@ No se define aquí la firma Java, endpoint ni evento de esos contratos. Deben ac
 - El repository consulta por personaId escalar. No requiere @EntityGraph, porque Meta no declara asociaciones JPA que cargar; se reevalúa solo si un contrato futuro justifica una asociación propia.
 - `valorActual` puede registrarse o actualizarse por la operación supervisada, pero Metas no lo deriva ni lo recalcula desde Evaluación Nutricional.
 - La confirmación de cumplimiento es explícita por el supervisor; no se deduce con `>=` ni `<=` porque la dirección depende del indicador.
-- Una meta `EN_CURSO` puede eliminarse. Una `CUMPLIDA` no se elimina para conservar el historial del objetivo alcanzado.
+- Solo una meta `EN_CURSO` puede modificarse o eliminarse. Las metas `CUMPLIDA` y `VENCIDA` son inmutables en el núcleo inicial para preservar historial.
 - `VENCIDA` queda reservado en el modelo. No se aplicará automáticamente hasta acordar quién la activa, cuándo y si admite reapertura.
 
 ## Preguntas de negocio pendientes
