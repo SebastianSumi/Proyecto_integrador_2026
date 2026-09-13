@@ -15,11 +15,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadRequest;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadDetalleResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.EstadoActividad;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
 import pe.edu.upeu.saludablemente.actividades.actividad.service.ActividadService;
+import pe.edu.upeu.saludablemente.actividades.inscripcion.dto.InscripcionDetalleResponse;
+import pe.edu.upeu.saludablemente.actividades.inscripcion.entity.EstadoInscripcion;
 import pe.edu.upeu.saludablemente.exception.GlobalExceptionHandler;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
 
@@ -70,6 +73,22 @@ class ActividadControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(7L))
                 .andExpect(jsonPath("$.estado").value("PROGRAMADA"));
+    }
+
+    @Test
+    void returnsActivityDetailWithEmbeddedEnrollments() throws Exception {
+        when(service.findDetalleById(7L)).thenReturn(detalleResponse(7L));
+
+        mockMvc.perform(get("/api/v1/actividades/7/detalle"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(7L))
+                .andExpect(jsonPath("$.inscripciones[0].id").value(31L))
+                .andExpect(jsonPath("$.inscripciones[0].personaId").value(8L))
+                .andExpect(jsonPath("$.inscripciones[0].estado").value("INSCRITA"))
+                .andExpect(jsonPath("$.inscripciones[0].actividad").doesNotExist())
+                .andExpect(jsonPath("$.inscripciones[0].actividadId").doesNotExist());
+
+        verify(service).findDetalleById(7L);
     }
 
     @Test
@@ -139,6 +158,17 @@ class ActividadControllerTest {
     }
 
     @Test
+    void mapsMissingDetailedActivityToNotFound() throws Exception {
+        when(service.findDetalleById(99L))
+                .thenThrow(new ResourceNotFoundException("Actividad with id 99 was not found"));
+
+        mockMvc.perform(get("/api/v1/actividades/99/detalle"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"));
+    }
+
+    @Test
     void mapsScheduleConflictToConflict() throws Exception {
         when(service.create(any(ActividadRequest.class)))
                 .thenThrow(new ActividadSolapadaException("Ya existe una actividad programada en ese lugar y horario"));
@@ -173,6 +203,26 @@ class ActividadControllerTest {
                 .lugar("Sala principal")
                 .estado(EstadoActividad.PROGRAMADA)
                 .creadorId(5L)
+                .build();
+    }
+
+    private ActividadDetalleResponse detalleResponse(Long id) {
+        return ActividadDetalleResponse.builder()
+                .id(id)
+                .nombre("Taller de bienestar")
+                .fecha(LocalDate.of(2026, 10, 15))
+                .horaInicio(LocalTime.of(10, 0))
+                .horaFin(LocalTime.of(11, 0))
+                .lugar("Sala principal")
+                .estado(EstadoActividad.PROGRAMADA)
+                .creadorId(5L)
+                .inscripciones(List.of(
+                        InscripcionDetalleResponse.builder()
+                                .id(31L)
+                                .personaId(8L)
+                                .estado(EstadoInscripcion.INSCRITA)
+                                .build()
+                ))
                 .build();
     }
 }

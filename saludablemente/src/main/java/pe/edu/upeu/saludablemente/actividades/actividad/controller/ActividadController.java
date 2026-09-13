@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadRequest;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadDetalleResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.service.ActividadService;
 
@@ -31,6 +32,11 @@ public class ActividadController {
     @GetMapping("/{id}")
     public ActividadResponse findById(@PathVariable Long id) {
         return service.findById(id);
+    }
+
+    @GetMapping("/{id}/detalle")
+    public ActividadDetalleResponse findDetalleById(@PathVariable Long id) {
+        return service.findDetalleById(id);
     }
 
     @PostMapping
