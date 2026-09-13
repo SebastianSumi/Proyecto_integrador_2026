@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecutada y retenida; Oracle no se ejecutó. El primer módulo aprobado es **Teams**: sus capas `entity/` y `dto/` están completadas y verificadas. El patrón de compilación MapStruct quedó adoptado selectivamente y la capa `mapper/` ya está implementada y verificada. La capa `repository/` también está implementada con el contrato mínimo de Spring Data; su prueba comportamental queda diferida hasta que se autorice infraestructura aislada de pruebas. La capa `service/` está implementada con contrato e implementación Spring transaccional. La capa `controller/` está implementada como contrato HTTP mínimo bajo `/api/v1/teams`, y la capa transversal `exception/` centraliza 400/404.
+Saludablemente tiene las verticales Java de **Teams**, **Actividades**, **Inscripciones** y **Metas** implementadas con DTOs, mapper, repository, service, controller y manejo de errores. La última evidencia registrada al cierre de Metas fue `mvn test` 118/118 PASS; Oracle no fue ejecutado como parte de esa evidencia. La evaluación S06 requiere además pruebas de integración que todavía no deben declararse completas: Oracle vivo, Modulith, CORS por propiedades, logs, asociación ORM relacionada, cabecera–detalle y consultas/reportes. Ver la matriz de evaluación antes de preparar la demo.
 
 ## Ruta de lectura
 
@@ -25,6 +25,8 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 17. [Scripts Oracle manuales](../database/oracle/manual-migrations/README.md)
 18. [Requisitos y fundamento de Actividades](rebuild/16-activities-module-requirements-and-rationale.md)
 19. [Ficha de dependencias y preparación de Metas](rebuild/17-metas-requirements-and-dependencies.md)
+20. [Producto LP2 Unidad I de Saludablemente](lp2-demo.md)
+21. [Matriz de trazabilidad S06](rebuild/18-s06-evaluation-traceability.md)
 
 ## Estado de Teams
 
