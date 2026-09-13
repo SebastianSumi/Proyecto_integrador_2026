@@ -5,7 +5,7 @@
 ## Lectura rápida
 
 - **Implementado en Java:** verticales Teams, Actividades, Inscripciones y Metas, con DTOs, mappers, servicios transaccionales, controllers y pruebas focalizadas.
-- **Pendiente para afirmar cumplimiento integral de S06:** Oracle vivo, Spring Modulith verde, CORS por propiedades con prueba HTTP, logs y una operación cabecera–detalle atómica. Las consultas/reportes de Actividades están implementados localmente, pero requieren demostración con datos reales.
+- **Pendiente para afirmar cumplimiento integral de S06:** Oracle vivo, Spring Modulith verde, CORS por propiedades con prueba HTTP, logs y una operación cabecera–detalle atómica. CORS no se implementará de forma efectiva hasta que el equipo confirme origen frontend autorizado y política de credenciales. Las consultas/reportes de Actividades están implementados localmente, pero requieren demostración con datos reales.
 - **Ruta de evidencia:** usar la [matriz S06](rebuild/18-s06-evaluation-traceability.md) durante la demo; no presentar como terminada una fila pendiente.
 
 ## 1. Alcance arquitectónico del corte
@@ -54,7 +54,7 @@ La demo S06 debe ejecutarse con el backend conectado al Oracle real del equipo. 
 | `PATCH` | `/api/v1/metas/{id}/cumplimiento` | Confirmar cumplimiento supervisado. | Implementado en Java. |
 | `DELETE` | `/api/v1/metas/{id}` | Eliminar solo una meta `EN_CURSO`. | Implementado en Java. |
 
-**No atribuir al contrato actual:** CORS o una operación cabecera–detalle. Las consultas y el resumen existen en Java, pero su evidencia con datos reales sigue pendiente para S06.
+**No atribuir al contrato actual:** CORS o una operación cabecera–detalle. CORS tendrá una única configuración transversal para `/api/**`, con propiedades externas por ambiente para `allowed-origins`, métodos, headers, credenciales y `max-age`; no se usará `@CrossOrigin` por controller ni orígenes hard-codeados. Falta confirmar origen frontend y política de credenciales antes de implementarla. Las consultas y el resumen existen en Java, pero su evidencia con datos reales sigue pendiente para S06.
 
 ## 4. DTO principales y límites de datos
 
@@ -95,7 +95,7 @@ Oracle BD2 (evidencia pendiente en vivo)
 | Suite registrada | Al cierre de Metas: `mvn test` 118/118 PASS. | Volver a ejecutar y mostrar el resultado actual antes de S06. |
 | Integración Oracle | Sin evidencia de ejecución viva registrada aquí. | Pendiente: arrancar y demostrar conexión contra BD2. |
 
-No existe todavía evidencia de rollback de una cabecera–detalle, CORS por propiedad, logs o Modulith verde. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
+No existe todavía evidencia de rollback de una cabecera–detalle, CORS por propiedad, logs o Modulith verde. Para CORS faltan el origen frontend autorizado, política de credenciales, configuración efectiva y tres pruebas HTTP: origen permitido, origen rechazado y preflight `OPTIONS`. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
 
 ## 7. Trazabilidad con ADS y BD2
 
@@ -106,7 +106,7 @@ No existe todavía evidencia de rollback de una cabecera–detalle, CORS por pro
 | Reglas de inscripción/agenda | Reglas de negocio de Actividades. | V001/V002 deben ser aplicadas manualmente y registradas. | Scripts preparados, no ejecutados según esta documentación. |
 | Asociación ORM/DTO relacionado | Modelo de relaciones aprobado. | FK/objetos relacionados del esquema real. | Pendiente: el diseño actual usa IDs escalares entre módulos. |
 | Cabecera–detalle y rollback | Caso de uso compuesto aprobado. | Transacción/rollback verificable. | Pendiente de dueño, contrato y prueba; Actividad–Inscripción no se presenta como cabecera–detalle. |
-| Consultas y CORS | Requisitos de consulta y cliente web. | Datos reales/índices según BD2. | Búsqueda y resumen de Actividades implementados localmente; faltan demostración con datos reales y CORS. |
+| Consultas y CORS | Requisitos de consulta y cliente web. | Datos reales/índices según BD2. | Búsqueda y resumen de Actividades implementados localmente; CORS transversal para `/api/**` decidido, pero bloqueado hasta confirmar origen frontend y credenciales. |
 
 ## 8. Rúbrica de evaluación
 

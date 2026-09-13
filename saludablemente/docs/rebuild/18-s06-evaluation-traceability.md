@@ -10,7 +10,7 @@
 | 2. CRUD, validaciones, excepciones, logs y pruebas | CRUD local de Teams, Actividades y Metas; transiciones de Inscripción/Meta; 400/404/409. Services registran transiciones exitosas con `INFO`; el handler registra errores esperados con `WARN` e inesperados con `ERROR` y stack trace. | Falta observación en un backend iniciado y resultado Maven actualizado antes de demo. | **Pedro:** ejecutar `mvn test`; iniciar el backend y demostrar un caso válido y uno fallido, verificando las trazas sin datos sensibles. |
 | 3. Objetos relacionados mediante ORM, DTO y reglas de asociación | `Actividad.inscripciones` e `Inscripcion.actividad` son asociaciones ORM internas LAZY; `GET /api/v1/actividades/{id}/detalle` devuelve DTOs relacionados sin ciclos. `@EntityGraph` se limita a esa lectura. | Falta evidencia en vivo contra Oracle. | **Pedro:** demostrar el endpoint detallado en el backend conectado a BD2. No se atribuye este criterio a relaciones entre módulos. |
 | 4. Cabecera–detalle atómica, cálculos, estado, commit y rollback | No hay evidencia que satisfaga este criterio. | No existe DTO compuesto, operación de negocio acordada, cálculo ni prueba de rollback. Actividad–Inscripción actual no es cabecera–detalle. | **Equipo:** definir el agregado y su dueño. **Propietario asignado:** implementar una única operación transaccional; provocar fallo tras iniciar la operación y demostrar que no persiste ni cabecera ni detalle. |
-| 5. Filtros, ordenamiento, proyecciones, agregados, reporte y CORS | Actividades expone búsqueda combinable y resumen por estado: `GET /api/v1/actividades/busqueda` y `GET /api/v1/actividades/resumen`. | La evidencia local cubre parámetros, ordenamiento permitido, proyección y agregado; falta demostración con datos reales y CORS por propiedades con prueba HTTP. | **Pedro:** demostrar ambas consultas contra datos reales. **Integración:** configurar CORS mediante propiedades y probar preflight/origen permitido en vivo. |
+| 5. Filtros, ordenamiento, proyecciones, agregados, reporte y CORS | Actividades expone búsqueda combinable y resumen por estado: `GET /api/v1/actividades/busqueda` y `GET /api/v1/actividades/resumen`. La arquitectura CORS decidida es transversal para `/api/**`, sin `@CrossOrigin` por controller y con propiedades externas. | La evidencia local cubre parámetros, ordenamiento permitido, proyección y agregado; CORS sigue sin configuración efectiva, origen frontend autorizado ni política de credenciales confirmados. | **Pedro:** demostrar ambas consultas contra datos reales. **Integración/equipo:** confirmar origen autorizado y política de credenciales; después, implementar propiedades y probar origen permitido, rechazado y preflight HTTP. |
 | 6. Sustentación | Aporte de Pedro: Actividades/Inscripciones/Metas y documentación de reglas. | La sustentación individual aún no se ha ejecutado. | **Pedro:** seguir checklist de demo, explicar decisiones y responder preguntas de S1–S5 con código/evidencia visible. |
 
 ## Evidencia de módulos disponible
@@ -27,7 +27,7 @@
 - **Oracle vivo:** se confirma únicamente al arrancar contra el esquema real de BD2 y ejecutar requests con datos reales.
 - **Migraciones manuales V001/V002:** están preparadas, no se ejecutan automáticamente. Su aplicación y el resultado deben quedar registrados por el responsable autorizado.
 - **Spring Modulith:** no se declara verde hasta ejecutar la prueba/verificación integrada y mostrar su resultado.
-- **CORS:** no existe por el solo hecho de tener controllers. Debe configurarse por propiedades y probarse desde un origen HTTP permitido y, si corresponde, un preflight.
+- **CORS:** no existe por el solo hecho de tener controllers. La configuración futura será única y transversal para `/api/**`, con `allowed-origins`, métodos, headers, credenciales y `max-age` externos por ambiente; no llevará `@CrossOrigin` por controller ni orígenes hard-codeados. Está bloqueada hasta confirmar el origen frontend autorizado y la política de credenciales.
 - **Logs:** respuestas de error no son logs. La convención está implementada, pero debe observarse en un backend iniciado antes de atribuir evidencia en vivo.
 
 ## Convención de logs de servidor
@@ -49,6 +49,7 @@ No se registran cuerpos HTTP, descripciones, nombres, correos, credenciales, tok
 - [ ] Confirmar con BD2 el Oracle/esquema autorizado y que el backend arranca conectado.
 - [ ] Confirmar si V001/V002 fueron aplicadas; si no, explicar que las garantías concurrentes no están activas.
 - [ ] Confirmar si existe evidencia de Spring Modulith verde; si no, declararlo pendiente.
+- [ ] Confirmar origen frontend autorizado y política de credenciales antes de implementar CORS efectivo.
 - [ ] No preparar una demo que afirme CORS, logs o cabecera–detalle si siguen pendientes. Las consultas/reporte locales requieren todavía datos reales en la demo.
 
 ### Secuencia de cinco minutos de demo técnica
@@ -65,7 +66,7 @@ No se registran cuerpos HTTP, descripciones, nombres, correos, credenciales, tok
 |---|---|---|
 | Oracle | Arrancar backend con datasource BD2 y ejecutar un CRUD. | Persistencia y respuesta real sin error de conexión. |
 | Modulith | Ejecutar su verificación integrada aplicable. | Resultado verde visible. |
-| CORS | Request desde origen permitido y preflight si aplica. | Cabeceras configuradas desde propiedades, no hard-codeadas. |
+| CORS | Request desde origen permitido, request desde origen rechazado y preflight `OPTIONS` si aplica. | Cabeceras configuradas desde propiedades, sin hard-codear; solo el origen permitido recibe autorización. |
 | Logs | Caso válido y caso fallido con el backend iniciado. | `INFO` para transición exitosa; `WARN` para 400/404/409 o `ERROR` con stack trace para 500, sin secretos. |
 | Asociación ORM | Consultar `GET /api/v1/actividades/{id}/detalle` con una actividad que tenga inscripciones. | Navegación controlada sin ciclo de serialización. |
 | Cabecera–detalle | Crear compuesto y provocar fallo interno después de comenzar la transacción. | Éxito persiste ambos lados; fallo deja cero persistencia parcial. |
