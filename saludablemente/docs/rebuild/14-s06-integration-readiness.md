@@ -29,6 +29,12 @@
 - `V002__activity_schedule_coordination.sql` está preparado para serializar la agenda por lugar/fecha; su garantía inicia solo después de ejecución manual autorizada y prueba concurrente real.
 - Estas migraciones no usan Flyway, no se ejecutan desde el backend y no prueban por sí solas que Oracle esté integrado.
 
+## Gate de integración: bootstrap y Modulith
+
+El POM contiene las dependencias de Spring Modulith, pero la revisión del árbol actual no encontró una clase `@SpringBootApplication`, paquetes de negocio declarados como módulos ni una prueba `ApplicationModules.of(...).verify()`. Por eso la suite local 148/148 PASS valida las verticales y sus pruebas unitarias/MockMvc, **no** una frontera Modulith integrada ni el arranque del backend.
+
+Este es un prerrequisito de integración del proyecto: el equipo debe acordar el bootstrap único y los límites de módulos antes de que Pedro pueda demostrar Oracle, Swagger o una verificación Modulith real. No se deben inventar esos límites desde Actividades ni declarar Modulith verde mientras no exista y pase esa prueba.
+
 ## Gate CORS transversal
 
 > **Decidido:** CORS se configurará una única vez y de forma transversal para `/api/**`. No se usará `@CrossOrigin` en controllers ni se codificarán orígenes en Java.

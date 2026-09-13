@@ -5,7 +5,7 @@
 ## Lectura rápida
 
 - **Implementado en Java:** verticales Teams, Actividades, Inscripciones y Metas, con DTOs, mappers, servicios transaccionales, controllers y pruebas focalizadas.
-- **Pendiente para afirmar cumplimiento integral de S06:** Oracle vivo, Spring Modulith verde, evidencia CORS contra el backend de demo, logs y una operación cabecera–detalle atómica. CORS local ya opera por propiedades para Angular en `http://localhost:4200`, sin credenciales; el ambiente compartido debe configurar sus propios valores. Las consultas/reportes de Actividades están implementados localmente, pero requieren demostración con datos reales.
+- **Pendiente para afirmar cumplimiento integral de S06:** bootstrap único del backend, Spring Modulith verde, Oracle vivo, evidencia CORS contra el backend de demo, logs y una operación cabecera–detalle atómica. CORS local ya opera por propiedades para Angular en `http://localhost:4200`, sin credenciales; el ambiente compartido debe configurar sus propios valores. Las consultas/reportes de Actividades están implementados localmente, pero requieren demostración con datos reales.
 - **Ruta de evidencia:** usar la [matriz S06](rebuild/18-s06-evaluation-traceability.md) durante la demo; no presentar como terminada una fila pendiente.
 
 ## 1. Alcance arquitectónico del corte
@@ -24,8 +24,8 @@ El backend es un monolito modular: cada módulo conserva entity, DTO, mapper, re
 
 | Aspecto | Evidencia actual | Límite honesto |
 |---|---|---|
-| Proyecto único | Un único backend Spring Boot/Maven. | La conexión viva a Oracle debe demostrarse contra el esquema BD2 autorizado. |
-| Modularidad | Paquetes de negocio separados y convención documentada. | Falta ejecutar y mostrar la verificación Spring Modulith en verde. |
+| Proyecto único | Un único `pom.xml` Maven y contratos REST implementados. | Falta el bootstrap único `@SpringBootApplication`; sin él no se puede arrancar el backend ni demostrar Oracle/Swagger. |
+| Modularidad | Paquetes de negocio separados y convención documentada. | Las dependencias Modulith existen, pero faltan límites declarados y una prueba `ApplicationModules.of(...).verify()` verde. |
 | Persistencia | Entities y `JpaRepository` implementados. | No declarar persistencia Oracle validada hasta la demo conectada. |
 | Errores | Handler global y excepciones de dominio con 400/404/409. | No sustituye logs de trazabilidad. |
 
@@ -92,21 +92,21 @@ Oracle BD2 (evidencia pendiente en vivo)
 | Horario inválido/solapado | Pruebas de service de Actividad. | Rechazo secuencial; concurrencia real requiere Oracle + V002. |
 | Inscripción duplicada/cancelación | Pruebas de service de Inscripción. | Flujo normal e idempotencia cubiertos; carrera real requiere Oracle + V001. |
 | Meta | Pruebas entity/DTO/mapper/service/controller. | Crear, fechas, estado inicial, actualización, cumplimiento y borrado condicionado. |
-| Suite registrada | Al cierre de Metas: `mvn test` 118/118 PASS. | Volver a ejecutar y mostrar el resultado actual antes de S06. |
+| Suite registrada | `mvn test` 148/148 PASS (2026-09-13). | Valida pruebas locales; no sustituye Oracle, bootstrap ni verificación Modulith. |
 | Integración Oracle | Sin evidencia de ejecución viva registrada aquí. | Pendiente: arrancar y demostrar conexión contra BD2. |
 
-No existe todavía evidencia de rollback de una cabecera–detalle, logs o Modulith verde. CORS por propiedad tiene pruebas MockMvc de origen permitido, origen rechazado y preflight `OPTIONS`; falta repetirlas contra el backend/Oracle de demo con las variables del ambiente. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
+No existe todavía evidencia de rollback de una cabecera–detalle, logs en un backend iniciado o Modulith verde. Además, el árbol actual no contiene bootstrap `@SpringBootApplication`, módulos de negocio declarados ni una prueba `ApplicationModules.of(...).verify()`; resolver ese prerrequisito de integración es necesario antes de ejecutar Swagger, Oracle o Modulith. CORS por propiedad tiene pruebas MockMvc de origen permitido, origen rechazado y preflight `OPTIONS`; falta repetirlas contra el backend/Oracle de demo con las variables del ambiente. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
 
 ## 7. Trazabilidad con ADS y BD2
 
 | Elemento LP2 | ADS | BD2 | Evidencia/pendiente de Saludablemente |
 |---|---|---|---|
-| Monolito modular | Límites y arquitectura del proyecto integrador. | Un datasource y propiedad de tablas/esquemas. | Paquetes modulares implementados; falta prueba Modulith verde. |
+| Monolito modular | Límites y arquitectura del proyecto integrador. | Un datasource y propiedad de tablas/esquemas. | Paquetes modulares implementados; integración/equipo debe acordar bootstrap y límites declarados antes de una prueba Modulith verde. |
 | ORM y CRUD | Diseño de recursos y responsabilidades. | Oracle real, tablas y restricciones. | CRUD Java implementado; falta conexión Oracle en vivo. |
 | Reglas de inscripción/agenda | Reglas de negocio de Actividades. | V001/V002 deben ser aplicadas manualmente y registradas. | Scripts preparados, no ejecutados según esta documentación. |
 | Asociación ORM/DTO relacionado | Modelo de relaciones aprobado. | FK/objetos relacionados del esquema real. | Pendiente: el diseño actual usa IDs escalares entre módulos. |
 | Cabecera–detalle y rollback | Caso de uso compuesto aprobado. | Transacción/rollback verificable. | Pendiente de dueño, contrato y prueba; Actividad–Inscripción no se presenta como cabecera–detalle. |
-| Consultas y CORS | Requisitos de consulta y cliente web. | Datos reales/índices según BD2. | Búsqueda y resumen de Actividades implementados localmente; CORS transversal para `/api/**` decidido, pero bloqueado hasta confirmar origen frontend y credenciales. |
+| Consultas y CORS | Requisitos de consulta y cliente web. | Datos reales/índices según BD2. | Búsqueda y resumen de Actividades implementados localmente; CORS transversal para `/api/**` permite temporalmente `http://localhost:4200` sin credenciales. Falta backend iniciado y valores del ambiente compartido. |
 
 ## 8. Rúbrica de evaluación
 
@@ -154,7 +154,7 @@ La calificación se asigna durante la revisión con evidencia en vivo. Esta tabl
 | 4. Repositorio y estándares | Topics académicos configurados desde S2, organización, commits y reproducibilidad. |
 | 5. MkDocs o equivalente | Documentación U1 publicada, navegable y alineada con este `lp2-demo.md`. |
 | 6. Pitch/demo ejecutiva | Introducción breve con apoyo visual; no reemplaza la demo técnica S06. |
-`n## 9. Procedencia y siguientes pasos
+## 9. Procedencia y siguientes pasos
 
 - Fuente de estructura y rúbrica: plantilla **LP2 - Producto de Unidad 1** entregada por la docencia.
 - Fuente de obligaciones de demo: **S06 - Evaluación de la Unidad I** entregada por la docencia.
