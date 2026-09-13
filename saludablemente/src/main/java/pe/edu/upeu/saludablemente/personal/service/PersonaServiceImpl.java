@@ -8,8 +8,11 @@ import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
 import pe.edu.upeu.saludablemente.personal.dto.PersonaRequestDto;
 import pe.edu.upeu.saludablemente.personal.dto.PersonaResponseDto;
 import pe.edu.upeu.saludablemente.personal.entity.CredencialPrograma;
+import pe.edu.upeu.saludablemente.personal.entity.EstadoCredencial;
 import pe.edu.upeu.saludablemente.personal.entity.Persona;
 import pe.edu.upeu.saludablemente.personal.entity.PreferenciaComunicacion;
+import pe.edu.upeu.saludablemente.personal.entity.Sexo;
+import pe.edu.upeu.saludablemente.personal.entity.TipoCredencial;
 import pe.edu.upeu.saludablemente.personal.mapper.PersonaMapper;
 import pe.edu.upeu.saludablemente.personal.repository.CredencialProgramaRepository;
 import pe.edu.upeu.saludablemente.personal.repository.PersonaRepository;
@@ -29,7 +32,6 @@ import java.util.UUID;
 public class PersonaServiceImpl implements PersonaService {
 
     private static final String ALGORITMO_HASH = "SHA-256";
-    private static final String ESTADO_CREDENCIAL_ACTIVA = "ACTIVA";
 
     private final PersonaRepository personaRepository;
     private final CredencialProgramaRepository credencialProgramaRepository;
@@ -56,22 +58,20 @@ public class PersonaServiceImpl implements PersonaService {
         Persona persona = personaMapper.toEntity(request);
         persona.setActivo(true);
 
-        PreferenciaComunicacion preferencia = PreferenciaComunicacion.builder()
-                .canalPreferido("WhatsApp")
-                .horarioContactoInicio(LocalTime.of(8, 0))
-                .horarioContactoFin(LocalTime.of(18, 0))
-                .aceptaRecordatorios(true)
-                .persona(persona)
-                .build();
+        PreferenciaComunicacion preferencia = new PreferenciaComunicacion();
+        preferencia.setCanalPreferido("WhatsApp");
+        preferencia.setHorarioContactoInicio(LocalTime.of(8, 0));
+        preferencia.setHorarioContactoFin(LocalTime.of(18, 0));
+        preferencia.setAceptaRecordatorios(true);
+        preferencia.setPersona(persona);
         persona.setPreferenciaComunicacion(preferencia);
 
-        CredencialPrograma credencial = CredencialPrograma.builder()
-                .codigoQrHash(generarQrHashUnico())
-                .tipoCredencial("GENERAL")
-                .fechaEmision(LocalDateTime.now())
-                .estado(ESTADO_CREDENCIAL_ACTIVA)
-                .persona(persona)
-                .build();
+        CredencialPrograma credencial = new CredencialPrograma();
+        credencial.setCodigoQrHash(generarQrHashUnico());
+        credencial.setTipoCredencial(TipoCredencial.GENERAL);
+        credencial.setFechaEmision(LocalDateTime.now());
+        credencial.setEstado(EstadoCredencial.ACTIVA);
+        credencial.setPersona(persona);
         persona.getCredenciales().add(credencial);
 
         return personaMapper.toResponse(personaRepository.save(persona));
@@ -89,7 +89,7 @@ public class PersonaServiceImpl implements PersonaService {
         persona.setApellidoMaterno(request.getApellidoMaterno());
         persona.setCelular(request.getCelular());
         persona.setFechaNacimiento(request.getFechaNacimiento());
-        persona.setSexo(request.getSexo());
+        persona.setSexo(request.getSexo() == null ? null : Sexo.valueOf(request.getSexo()));
         persona.setTallaPolo(request.getTallaPolo());
         return personaMapper.toResponse(personaRepository.save(persona));
     }
@@ -112,7 +112,7 @@ public class PersonaServiceImpl implements PersonaService {
         persona.setTallaPolo(null);
         persona.setIdTeam(null);
 
-        persona.getCredenciales().forEach(credencial -> credencial.setEstado("ANONIMIZADA"));
+        persona.getCredenciales().forEach(credencial -> credencial.setEstado(EstadoCredencial.ANONIMIZADA));
         personaRepository.save(persona);
     }
 
@@ -122,7 +122,7 @@ public class PersonaServiceImpl implements PersonaService {
         CredencialPrograma credencial = credencialProgramaRepository.findByCodigoQrHash(qrHash)
                 .orElseThrow(() -> new ResourceNotFoundException("Credencial QR no encontrada para el hash " + qrHash));
 
-        if (!ESTADO_CREDENCIAL_ACTIVA.equalsIgnoreCase(credencial.getEstado())) {
+        if (credencial.getEstado() != EstadoCredencial.ACTIVA) {
             throw new BusinessRuleException("La credencial QR no se encuentra ACTIVA");
         }
 
@@ -140,7 +140,7 @@ public class PersonaServiceImpl implements PersonaService {
 
     private void validarCelularNoDuplicado(String celular, Long idAExcluir) {
         Optional<Persona> existente = personaRepository.findByCelularAndActivoTrue(celular);
-        if (existente.isPresent() && !existente.get().getIdPersona().equals(idAExcluir)) {
+        if (existente.isPresent() && !existente.get().getId().equals(idAExcluir)) {
             throw new BusinessRuleException("Ya existe una persona activa registrada con el celular " + celular);
         }
     }

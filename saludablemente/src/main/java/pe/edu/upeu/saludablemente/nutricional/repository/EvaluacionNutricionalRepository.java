@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface EvaluacionNutricionalRepository extends JpaRepository<EvaluacionNutricional, Long> {
 
-    List<EvaluacionNutricional> findByPersonaId(Long idPersona);
+    List<EvaluacionNutricional> findByIdPersona(Long idPersona);
 }

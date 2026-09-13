@@ -1,47 +1,55 @@
 package pe.edu.upeu.saludablemente.personal.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "persona")
 public class Persona {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPersona;
+    @Column(name = "id_persona")
+    private Long id;
 
+    @Column(name = "nombres", nullable = false, length = 100)
     private String nombres;
 
+    @Column(name = "apellido_paterno", nullable = false, length = 100)
     private String apellidoPaterno;
 
+    @Column(name = "apellido_materno", nullable = false, length = 100)
     private String apellidoMaterno;
 
-    @Column(unique = true)
+    @Column(name = "celular", nullable = false, unique = true, length = 15)
     private String celular;
 
+    @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
-    private String sexo;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sexo", nullable = false, length = 10)
+    private Sexo sexo;
 
+    @Column(name = "talla_polo", length = 10)
     private String tallaPolo;
 
+    @Column(name = "id_team")
     private Long idTeam;
 
+    @Column(name = "activo", nullable = false)
     private Boolean activo;
 
-    @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private PreferenciaComunicacion preferenciaComunicacion;
 
     @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -1,0 +1,197 @@
+2026-09-09 11:32:00.761 [] INFO  p.e.u.s.SaludablementeApplication - Starting SaludablementeApplication using Java 21.0.12.1 with PID 5692 (C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente\target\classes started by ASUS in C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-09 11:32:00.768 [] DEBUG p.e.u.s.SaludablementeApplication - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-09 11:32:00.768 [] INFO  p.e.u.s.SaludablementeApplication - The following 1 profile is active: "dev"
+2026-09-09 11:32:00.828 [] INFO  o.s.b.d.restart.ChangeableUrls - The Class-Path manifest attribute in C:\Users\ASUS\.m2\repository\com\oracle\database\jdbc\ojdbc11\23.9.0.25.07\ojdbc11-23.9.0.25.07.jar referenced one or more files that do not exist: file:/C:/Users/ASUS/.m2/repository/com/oracle/database/jdbc/ojdbc11/23.9.0.25.07/oraclepki.jar
+2026-09-09 11:32:00.836 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-09 11:32:00.836 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-09 11:32:01.000 [] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2026-09-09 11:32:02.812 [] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web application could not be started as there was no org.springframework.boot.web.server.servlet.ServletWebServerFactory bean defined in the context.
+
+Action:
+
+Check your application's dependencies for a supported servlet web server.
+Check the configured web application type.
+
+2026-09-09 12:07:46.929 [] INFO  p.e.u.s.SaludablementeApplication - Starting SaludablementeApplication using Java 21.0.12.1 with PID 12548 (C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente\target\classes started by ASUS in C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-09 12:07:46.934 [] DEBUG p.e.u.s.SaludablementeApplication - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-09 12:07:46.937 [] INFO  p.e.u.s.SaludablementeApplication - The following 1 profile is active: "dev"
+2026-09-09 12:07:46.999 [] INFO  o.s.b.d.restart.ChangeableUrls - The Class-Path manifest attribute in C:\Users\ASUS\.m2\repository\com\oracle\database\jdbc\ojdbc11\23.9.0.25.07\ojdbc11-23.9.0.25.07.jar referenced one or more files that do not exist: file:/C:/Users/ASUS/.m2/repository/com/oracle/database/jdbc/ojdbc11/23.9.0.25.07/oraclepki.jar
+2026-09-09 12:07:47.000 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-09 12:07:47.000 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-09 12:07:47.151 [] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2026-09-09 12:07:48.183 [] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web application could not be started as there was no org.springframework.boot.web.server.servlet.ServletWebServerFactory bean defined in the context.
+
+Action:
+
+Check your application's dependencies for a supported servlet web server.
+Check the configured web application type.
+
+2026-09-09 12:25:15.020 [] INFO  p.e.u.s.SaludablementeApplication - Starting SaludablementeApplication using Java 21.0.12.1 with PID 14840 (C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente\target\classes started by ASUS in C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-09 12:25:15.020 [] DEBUG p.e.u.s.SaludablementeApplication - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-09 12:25:15.020 [] INFO  p.e.u.s.SaludablementeApplication - The following 1 profile is active: "dev"
+2026-09-09 12:25:15.090 [] INFO  o.s.b.d.restart.ChangeableUrls - The Class-Path manifest attribute in C:\Users\ASUS\.m2\repository\com\oracle\database\jdbc\ojdbc11\23.9.0.25.07\ojdbc11-23.9.0.25.07.jar referenced one or more files that do not exist: file:/C:/Users/ASUS/.m2/repository/com/oracle/database/jdbc/ojdbc11/23.9.0.25.07/oraclepki.jar
+2026-09-09 12:25:15.091 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-09 12:25:15.092 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-09 12:25:15.241 [] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2026-09-09 12:25:16.333 [] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web application could not be started as there was no org.springframework.boot.web.server.servlet.ServletWebServerFactory bean defined in the context.
+
+Action:
+
+Check your application's dependencies for a supported servlet web server.
+Check the configured web application type.
+
+2026-09-09 12:33:23.788 [] INFO  p.e.u.s.SaludablementeApplication - Starting SaludablementeApplication using Java 21.0.12.1 with PID 7644 (C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente\target\classes started by ASUS in C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-09 12:33:23.793 [] DEBUG p.e.u.s.SaludablementeApplication - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-09 12:33:23.794 [] INFO  p.e.u.s.SaludablementeApplication - The following 1 profile is active: "dev"
+2026-09-09 12:33:23.873 [] INFO  o.s.b.d.restart.ChangeableUrls - The Class-Path manifest attribute in C:\Users\ASUS\.m2\repository\com\oracle\database\jdbc\ojdbc11\23.9.0.25.07\ojdbc11-23.9.0.25.07.jar referenced one or more files that do not exist: file:/C:/Users/ASUS/.m2/repository/com/oracle/database/jdbc/ojdbc11/23.9.0.25.07/oraclepki.jar
+2026-09-09 12:33:23.874 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-09 12:33:23.875 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-09 12:33:24.044 [] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2026-09-09 12:33:25.268 [] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web application could not be started as there was no org.springframework.boot.web.server.servlet.ServletWebServerFactory bean defined in the context.
+
+Action:
+
+Check your application's dependencies for a supported servlet web server.
+Check the configured web application type.
+
+2026-09-09 12:38:32.982 [] INFO  p.e.u.s.SaludablementeApplication - Starting SaludablementeApplication using Java 21.0.12.1 with PID 2552 (C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente\target\classes started by ASUS in C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-09 12:38:32.982 [] DEBUG p.e.u.s.SaludablementeApplication - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-09 12:38:32.982 [] INFO  p.e.u.s.SaludablementeApplication - The following 1 profile is active: "dev"
+2026-09-09 12:38:33.344 [] INFO  o.s.b.d.restart.ChangeableUrls - The Class-Path manifest attribute in C:\Users\ASUS\.m2\repository\com\oracle\database\jdbc\ojdbc11\23.9.0.25.07\ojdbc11-23.9.0.25.07.jar referenced one or more files that do not exist: file:/C:/Users/ASUS/.m2/repository/com/oracle/database/jdbc/ojdbc11/23.9.0.25.07/oraclepki.jar
+2026-09-09 12:38:33.345 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-09 12:38:33.346 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-09 12:38:35.549 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-09 12:38:35.607 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 28 ms. Found 0 JPA repository interfaces.
+2026-09-09 12:38:36.934 [] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-09-09 12:38:36.971 [] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-09-09 12:38:36.971 [] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-09-09 12:38:37.069 [] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 3722 ms
+2026-09-09 12:38:37.511 [] INFO  c.tngtech.archunit.core.PluginLoader - Detected Java version 21.0.12.1
+2026-09-09 12:38:39.792 [] WARN  o.s.m.r.a.SpringModulithRuntimeAutoConfiguration$ApplicationModulesBootstrap - No application modules detected!
+2026-09-09 12:38:40.334 [] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-09 12:38:40.577 [] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.2.19.Final
+2026-09-09 12:38:41.755 [] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-09 12:38:41.846 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-09 12:38:45.325 [] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@32abdb3
+2026-09-09 12:38:45.330 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-09 12:38:47.286 [] WARN  org.hibernate.orm.jdbc - HHH100123: Low default JDBC fetch size: 10 (consider setting 'hibernate.jdbc.fetch_size')
+2026-09-09 12:38:47.312 [] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:oracle:thin:@localhost:1521/FREEPDB1]
+	Database driver: Oracle JDBC driver
+	Database dialect: OracleDialect
+	Database version: 23.26.3
+	Default catalog/schema: undefined/SALUDABLEMENTE_APP
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 10
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-09 12:38:49.124 [] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-09 12:38:49.163 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-09 12:38:51.832 [] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2026-09-09 12:38:52.227 [] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-09-09 12:38:52.792 [] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-09-09 12:38:52.804 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-09 12:38:52.819 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-09 12:38:58.220 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-09-09 12:38:58.285 [] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-09-09 12:38:58.350 [] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2026-09-09 13:58:51.710 [] INFO  p.e.u.s.SaludablementeApplication - Starting SaludablementeApplication using Java 21.0.12.1 with PID 14520 (C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente\target\classes started by ASUS in C:\Users\ASUS\Documents\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-09 13:58:51.718 [] DEBUG p.e.u.s.SaludablementeApplication - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-09 13:58:51.718 [] INFO  p.e.u.s.SaludablementeApplication - The following 1 profile is active: "dev"
+2026-09-09 13:58:51.833 [] INFO  o.s.b.d.restart.ChangeableUrls - The Class-Path manifest attribute in C:\Users\ASUS\.m2\repository\com\oracle\database\jdbc\ojdbc11\23.9.0.25.07\ojdbc11-23.9.0.25.07.jar referenced one or more files that do not exist: file:/C:/Users/ASUS/.m2/repository/com/oracle/database/jdbc/ojdbc11/23.9.0.25.07/oraclepki.jar
+2026-09-09 13:58:51.833 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-09 13:58:51.833 [] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-09 13:58:53.909 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-09 13:58:53.963 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 28 ms. Found 0 JPA repository interfaces.
+2026-09-09 13:58:55.859 [] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-09-09 13:58:55.892 [] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-09-09 13:58:55.892 [] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-09-09 13:58:56.009 [] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 4176 ms
+2026-09-09 13:58:56.443 [] INFO  c.tngtech.archunit.core.PluginLoader - Detected Java version 21.0.12.1
+2026-09-09 13:58:58.641 [] WARN  o.s.m.r.a.SpringModulithRuntimeAutoConfiguration$ApplicationModulesBootstrap - No application modules detected!
+2026-09-09 13:58:59.341 [] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-09 13:58:59.486 [] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.2.19.Final
+2026-09-09 13:59:00.970 [] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-09 13:59:01.058 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-09 13:59:03.689 [] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@fc30b8c
+2026-09-09 13:59:03.694 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-09 13:59:06.036 [] WARN  org.hibernate.orm.jdbc - HHH100123: Low default JDBC fetch size: 10 (consider setting 'hibernate.jdbc.fetch_size')
+2026-09-09 13:59:06.060 [] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:oracle:thin:@localhost:1521/FREEPDB1]
+	Database driver: Oracle JDBC driver
+	Database dialect: OracleDialect
+	Database version: 23.26.3
+	Default catalog/schema: undefined/SALUDABLEMENTE_APP
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 10
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-09 13:59:07.330 [] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-09 13:59:07.358 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-09 13:59:09.039 [] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2026-09-09 13:59:09.300 [] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-09-09 13:59:09.825 [] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-09-09 13:59:09.889 [] INFO  o.s.s.config.TaskSchedulerRouter - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+2026-09-09 13:59:09.937 [] INFO  p.e.u.s.SaludablementeApplication - Started SaludablementeApplication in 19.7 seconds (process running for 21.117)
+2026-09-09 13:59:09.977 [] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-09-09 13:59:09.977 [] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-09-09 13:59:42.624 [] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-09 13:59:42.625 [] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-09-09 13:59:42.630 [] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
+2026-09-09 14:01:06.999 [] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 5 class path changes (0 additions, 5 deletions, 0 modifications)
+2026-09-09 14:01:08.745 [] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-09-09 14:01:10.012 [] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-09-09 14:01:10.662 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-09 14:01:11.434 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-09 14:01:15.407 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

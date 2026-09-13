@@ -10,11 +10,12 @@ import pe.edu.upeu.saludablemente.nutricional.dto.EvaluacionNutricionalRequestDt
 import pe.edu.upeu.saludablemente.nutricional.dto.EvaluacionNutricionalResponseDto;
 import pe.edu.upeu.saludablemente.nutricional.entity.DetalleAntropometrico;
 import pe.edu.upeu.saludablemente.nutricional.entity.DetalleBioquimico;
+import pe.edu.upeu.saludablemente.nutricional.entity.EstadoEvaluacionNutricional;
 import pe.edu.upeu.saludablemente.nutricional.entity.EvaluacionNutricional;
 import pe.edu.upeu.saludablemente.nutricional.mapper.NutricionalMapper;
 import pe.edu.upeu.saludablemente.nutricional.repository.EvaluacionNutricionalRepository;
-import pe.edu.upeu.saludablemente.personal.entity.Persona;
-import pe.edu.upeu.saludablemente.personal.repository.PersonaRepository;
+import pe.edu.upeu.saludablemente.personal.dto.PersonaResponseDto;
+import pe.edu.upeu.saludablemente.personal.service.PersonaService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,11 +27,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EvaluacionNutricionalServiceImpl implements EvaluacionNutricionalService {
 
-    private static final String ESTADO_EN_PROCESO = "EN_PROCESO";
-    private static final String ESTADO_COMPLETA = "COMPLETA";
-
     private final EvaluacionNutricionalRepository evaluacionNutricionalRepository;
-    private final PersonaRepository personaRepository;
+    private final PersonaService personaService;
     private final NutricionalMapper nutricionalMapper;
 
     @Override
@@ -48,21 +46,19 @@ public class EvaluacionNutricionalServiceImpl implements EvaluacionNutricionalSe
     @Override
     @Transactional(readOnly = true)
     public List<EvaluacionNutricionalResponseDto> listarPorPersona(Long idPersona) {
-        personaRepository.findById(idPersona)
-                .orElseThrow(() -> new ResourceNotFoundException("Persona no encontrada: " + idPersona));
-        return evaluacionNutricionalRepository.findByPersonaId(idPersona).stream()
+        personaService.obtener(idPersona);
+        return evaluacionNutricionalRepository.findByIdPersona(idPersona).stream()
                 .map(nutricionalMapper::toResponse).toList();
     }
 
     @Override
     @Transactional
     public EvaluacionNutricionalResponseDto registrarAntropometria(EvaluacionNutricionalRequestDto request) {
-        Persona persona = personaRepository.findById(request.getIdPersona())
-                .orElseThrow(() -> new ResourceNotFoundException("Persona no encontrada: " + request.getIdPersona()));
+        PersonaResponseDto persona = personaService.obtener(request.getIdPersona());
 
         EvaluacionNutricional evaluacion = nutricionalMapper.toEntity(request);
-        if (evaluacion.getEstadoEvaluacion() == null || evaluacion.getEstadoEvaluacion().isBlank()) {
-            evaluacion.setEstadoEvaluacion(ESTADO_EN_PROCESO);
+        if (evaluacion.getEstadoEvaluacion() == null) {
+            evaluacion.setEstadoEvaluacion(EstadoEvaluacionNutricional.EN_PROCESO);
         }
 
         DetalleAntropometrico detalle = evaluacion.getDetalleAntropometrico();
@@ -85,7 +81,7 @@ public class EvaluacionNutricionalServiceImpl implements EvaluacionNutricionalSe
         detalle.setDxBioquimico(diagnosticoBioquimico(detalle));
 
         evaluacion.setDetalleBioquimico(detalle);
-        evaluacion.setEstadoEvaluacion(ESTADO_COMPLETA);
+        evaluacion.setEstadoEvaluacion(EstadoEvaluacionNutricional.COMPLETA);
         return nutricionalMapper.toResponse(evaluacionNutricionalRepository.save(evaluacion));
     }
 
@@ -100,7 +96,7 @@ public class EvaluacionNutricionalServiceImpl implements EvaluacionNutricionalSe
                 .orElseThrow(() -> new ResourceNotFoundException("Evaluacion nutricional no encontrada: " + idEvaluacion));
     }
 
-    private void calcularDiagnosticoAntropometrico(DetalleAntropometrico detalle, Persona persona) {
+    private void calcularDiagnosticoAntropometrico(DetalleAntropometrico detalle, PersonaResponseDto persona) {
         if (detalle.getEstaturaCm() == null || detalle.getEstaturaCm().compareTo(BigDecimal.ZERO) <= 0
                 || detalle.getPesoKg() == null || detalle.getPesoKg().compareTo(BigDecimal.ZERO) <= 0) {
             throw new BusinessRuleException("La estatura y el peso deben ser mayores a cero");

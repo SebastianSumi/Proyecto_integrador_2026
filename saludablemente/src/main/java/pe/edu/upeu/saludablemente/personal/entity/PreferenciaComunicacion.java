@@ -1,34 +1,37 @@
 package pe.edu.upeu.saludablemente.personal.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalTime;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "preferencia_comunicacion")
 public class PreferenciaComunicacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPreferencia;
+    @Column(name = "id_preferencia")
+    private Long id;
 
+    @Column(name = "canal_preferido", nullable = false, length = 50)
     private String canalPreferido;
 
+    @Column(name = "horario_contacto_inicio")
     private LocalTime horarioContactoInicio;
 
+    @Column(name = "horario_contacto_fin")
     private LocalTime horarioContactoFin;
 
+    @Column(name = "acepta_recordatorios", nullable = false)
     private Boolean aceptaRecordatorios;
 
-    @OneToOne
-    @JoinColumn(name = "id_persona")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_persona", nullable = false, unique = true)
     private Persona persona;
 }

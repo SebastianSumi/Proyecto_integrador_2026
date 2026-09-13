@@ -13,24 +13,34 @@ import pe.edu.upeu.saludablemente.aptitudfisica.entity.EvaluacionAptitud;
 @Mapper(componentModel = "spring")
 public interface AptitudFisicaMapper {
 
+    @Mapping(target = "idPrueba", source = "id")
     CatalogoPruebaDto toCatalogoPruebaDto(CatalogoPrueba catalogoPrueba);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "detalles", ignore = true)
+    CatalogoPrueba toCatalogoPrueba(CatalogoPruebaDto dto);
+
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "detalles", ignore = true)
     EvaluacionAptitud toEntity(EvaluacionAptitudRequestDto request);
 
-    @Mapping(target = "idPrueba", source = "catalogoPrueba.idPrueba")
+    @Mapping(target = "idDetalleAptitud", source = "id")
+    @Mapping(target = "idPrueba", source = "catalogoPrueba.id")
     @Mapping(target = "nombrePrueba", source = "catalogoPrueba.nombrePrueba")
     DetallePruebaFisicaDto toDetalleDto(DetallePruebaFisica detalle);
 
+    @Mapping(target = "idEvaluacionAptitud", source = "id")
     EvaluacionAptitudResponseDto toResponse(EvaluacionAptitud evaluacion);
 
     default DetallePruebaFisica toDetalle(DetallePruebaFisicaDto dto) {
         DetallePruebaFisica detalle = new DetallePruebaFisica();
-        detalle.setIdDetalleAptitud(dto.getIdDetalleAptitud());
+        detalle.setId(dto.getIdDetalleAptitud());
         detalle.setValorObtenido(dto.getValorObtenido());
         detalle.setPuntajeParcial(dto.getPuntajeParcial());
         if (dto.getIdPrueba() != null) {
-            detalle.setCatalogoPrueba(CatalogoPrueba.builder().idPrueba(dto.getIdPrueba()).build());
+            CatalogoPrueba prueba = new CatalogoPrueba();
+            prueba.setId(dto.getIdPrueba());
+            detalle.setCatalogoPrueba(prueba);
         }
         return detalle;
     }

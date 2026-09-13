@@ -1,5 +1,6 @@
 package pe.edu.upeu.saludablemente.personal.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import pe.edu.upeu.saludablemente.personal.entity.Persona;
 
@@ -10,5 +11,10 @@ public interface PersonaRepository extends JpaRepository<Persona, Long> {
 
     Optional<Persona> findByCelularAndActivoTrue(String celular);
 
+    @Override
+    @EntityGraph(attributePaths = "preferenciaComunicacion")
+    List<Persona> findAll();
+
+    @EntityGraph(attributePaths = "preferenciaComunicacion")
     List<Persona> findByActivoTrue();
 }

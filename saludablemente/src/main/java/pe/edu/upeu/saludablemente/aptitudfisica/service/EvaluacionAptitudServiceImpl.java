@@ -14,7 +14,7 @@ import pe.edu.upeu.saludablemente.aptitudfisica.repository.CatalogoPruebaReposit
 import pe.edu.upeu.saludablemente.aptitudfisica.repository.EvaluacionAptitudRepository;
 import pe.edu.upeu.saludablemente.exception.BusinessRuleException;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
-import pe.edu.upeu.saludablemente.personal.repository.PersonaRepository;
+import pe.edu.upeu.saludablemente.personal.service.PersonaService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -29,7 +29,7 @@ public class EvaluacionAptitudServiceImpl implements EvaluacionAptitudService {
 
     private final EvaluacionAptitudRepository evaluacionAptitudRepository;
     private final CatalogoPruebaRepository catalogoPruebaRepository;
-    private final PersonaRepository personaRepository;
+    private final PersonaService personaService;
     private final AptitudFisicaMapper aptitudFisicaMapper;
 
     @Override
@@ -47,17 +47,15 @@ public class EvaluacionAptitudServiceImpl implements EvaluacionAptitudService {
     @Override
     @Transactional(readOnly = true)
     public List<EvaluacionAptitudResponseDto> listarPorPersona(Long idPersona) {
-        personaRepository.findById(idPersona)
-                .orElseThrow(() -> new ResourceNotFoundException("Persona no encontrada: " + idPersona));
-        return evaluacionAptitudRepository.findByPersonaId(idPersona).stream()
+        personaService.obtener(idPersona);
+        return evaluacionAptitudRepository.findByIdPersona(idPersona).stream()
                 .map(aptitudFisicaMapper::toResponse).toList();
     }
 
     @Override
     @Transactional
     public EvaluacionAptitudResponseDto registrarEvaluacion(EvaluacionAptitudRequestDto request) {
-        personaRepository.findById(request.getIdPersona())
-                .orElseThrow(() -> new ResourceNotFoundException("Persona no encontrada: " + request.getIdPersona()));
+        personaService.obtener(request.getIdPersona());
 
         EvaluacionAptitud evaluacion = aptitudFisicaMapper.toEntity(request);
         evaluacion.getDetalles().clear();

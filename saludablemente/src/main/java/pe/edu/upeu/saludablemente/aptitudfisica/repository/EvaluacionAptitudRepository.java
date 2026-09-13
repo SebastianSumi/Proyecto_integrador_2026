@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface EvaluacionAptitudRepository extends JpaRepository<EvaluacionAptitud, Long> {
 
-    List<EvaluacionAptitud> findByPersonaId(Long idPersona);
+    List<EvaluacionAptitud> findByIdPersona(Long idPersona);
 }
