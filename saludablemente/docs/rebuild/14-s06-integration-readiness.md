@@ -35,23 +35,23 @@
 
 | Aspecto | Decisión de implementación | Estado |
 |---|---|---|
-| Alcance | Una configuración web transversal para `/api/**`. | Pendiente de código. |
-| Orígenes | Propiedad externa `allowed-origins`, distinta por ambiente. | Pendiente de que el equipo confirme el origen frontend autorizado. |
-| Métodos y headers | Propiedades externas para métodos permitidos y headers permitidos. | Pendiente de política del cliente. |
-| Credenciales y caché | Propiedades externas para credenciales y `max-age`. | Pendiente de política de credenciales. |
+| Alcance | Un `CorsFilter` transversal para `/api/**`. | Implementado. |
+| Orígenes | `app.cors.allowed-origins`; valor local temporal `http://localhost:4200`, sustituible con `CORS_ALLOWED_ORIGINS`. | Implementado; confirmar el origen de cada ambiente antes de desplegar. |
+| Métodos y headers | `app.cors.allowed-methods` y `app.cors.allowed-headers`, sustituibles con `CORS_ALLOWED_METHODS` y `CORS_ALLOWED_HEADERS`. | Implementado. |
+| Credenciales y caché | `app.cors.allow-credentials=false` y `app.cors.max-age=3600`, sustituibles con `CORS_ALLOW_CREDENTIALS` y `CORS_MAX_AGE`. | Implementado sin cookies ni credenciales. |
 | Controllers | Sin `@CrossOrigin` por recurso. | Decidido. |
 
-No se implementará una configuración efectiva hasta confirmar el origen frontend autorizado y la política de credenciales. Configurar valores de ejemplo o permisivos antes de esa decisión daría una garantía falsa y podría abrir el backend más de lo necesario.
+La configuración local autorizada permite únicamente Angular en `http://localhost:4200` y no permite credenciales. Cada ambiente debe reemplazar estos valores mediante variables de entorno; no se debe ampliar la lista de orígenes sin una necesidad de cliente confirmada.
 
 ### Plan de prueba CORS
 
 | Escenario | Request HTTP | Evidencia requerida | Estado |
 |---|---|---|---|
-| Origen permitido | Request a `/api/**` con `Origin` autorizado. | Cabecera `Access-Control-Allow-Origin` coherente con la propiedad. | No ejecutado. |
-| Origen rechazado | Request a `/api/**` con `Origin` no autorizado. | Ausencia de autorización CORS para ese origen. | No ejecutado. |
-| Preflight | `OPTIONS` con `Origin`, `Access-Control-Request-Method` y, si aplica, headers solicitados. | Métodos/headers/credenciales/max-age coincidentes con propiedades. | No ejecutado. |
+| Origen permitido | Request a `/api/**` con `Origin` autorizado. | Cabecera `Access-Control-Allow-Origin` coherente con la propiedad. | Cubierto por `CorsConfigTest`. |
+| Origen rechazado | Request a `/api/**` con `Origin` no autorizado. | Ausencia de autorización CORS para ese origen. | Cubierto por `CorsConfigTest`. |
+| Preflight | `OPTIONS` con `Origin`, `Access-Control-Request-Method` y, si aplica, headers solicitados. | Métodos/headers/credenciales/max-age coincidentes con propiedades. | Cubierto por `CorsConfigTest`. |
 
-Estas pruebas se ejecutarán con el backend iniciado. La documentación no declara CORS aprobado ni reemplaza la evidencia HTTP.
+Las pruebas MockMvc verifican la política HTTP sin depender de Oracle. Antes de la demo S06 se debe repetir los tres escenarios con el backend iniciado y el origen configurado para ese ambiente.
 
 ## Ruta de evidencia de Actividades
 
@@ -61,11 +61,11 @@ Estas pruebas se ejecutarán con el backend iniciado. La documentación no decla
 4. Registrar y cancelar una Inscripción; repetir cancelación y explicar idempotencia.
 5. Si V001/V002 fueron aplicadas, ejecutar además la prueba concurrente real acordada. Si no, declarar esa garantía pendiente.
 6. Verificar en consola un `INFO` de escritura y un `WARN` de error esperado sin datos sensibles.
-7. Cuando se confirmen origen y credenciales, ejecutar los tres escenarios CORS (permitido, rechazado y preflight) descritos en este documento. Para asociación ORM, cabecera–detalle, consultas/reporte y Modulith, seguir la [matriz S06](18-s06-evaluation-traceability.md); Actividades no los atribuye a sí misma.
+7. Repetir con el backend iniciado los tres escenarios CORS (permitido, rechazado y preflight) usando el origen configurado para la demo. Para asociación ORM, cabecera–detalle, consultas/reporte y Modulith, seguir la [matriz S06](18-s06-evaluation-traceability.md); Actividades no los atribuye a sí misma.
 
 ## Criterios de honestidad
 
-- No se afirmará CORS hasta confirmar origen y credenciales, contar con configuración por propiedad y ejecutar prueba HTTP.
+- No se afirmará CORS para un ambiente hasta configurar su origen, confirmar la política de credenciales y ejecutar prueba HTTP contra ese backend.
 - No se afirmará cabecera–detalle hasta probar una transacción atómica compuesta, con fallo y rollback.
 - No se publicará una relación JPA directa con módulos de compañeros: la colaboración usa contratos públicos.
 - No se declarará V001/V002 activa ni Oracle verificado hasta contar con evidencia de ejecución controlada.
