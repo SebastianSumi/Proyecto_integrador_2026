@@ -1,8 +1,12 @@
-# Preparación del módulo Metas: requisitos y dependencias
+# Módulo Metas: requisitos, alcance y dependencias
 
 **Decisión actual.** Metas puede iniciar como vertical autónoma con `personaId` escalar, sin relación JPA ni acceso a repositories externos. La integración con Personal y Evaluación Nutricional permanece diferida hasta que sus propietarios publiquen contratos públicos. Esta ficha separa ese núcleo implementable de las decisiones de integración pendientes.
 
-## Ruta rápida
+## Estado de la vertical
+
+La vertical local está implementada: entity, enum, DTOs, mapper MapStruct, repository, service transaccional, controller, excepciones de dominio y pruebas focalizadas. El cierre inicial registró `mvn test` 115/115 PASS; la comprobación actual, con las pruebas de traducción HTTP, registra 118/118 PASS. Este estado no implica que Personal ni Evaluación Nutricional estén integrados.
+
+## Ruta de integración futura
 
 1. Construir el núcleo propio de Metas con `personaId` obligatorio y reglas locales confirmadas.
 2. Personal publica un contrato para validar y consultar la persona activa.
@@ -79,21 +83,20 @@ El núcleo local puede comenzar. No se debe implementar la integración automát
 - [ ] Se confirma si una futura actualización desde Evaluación llega de forma síncrona o por evento.
 - [ ] Se valida que ningún contrato requiera acceso directo a repository externo.
 
-## Plan de implementación del núcleo
+## Vertical implementada
 
-1. Confirmar campos, relaciones por ID y estados; implementar `entity` y prueba focalizada.
-2. Crear DTOs de entrada/salida con validaciones basadas solo en reglas acordadas.
-3. Implementar mapper MapStruct y prueba directa.
-4. Agregar repository propio con consultas mínimas justificadas.
-5. Implementar service transaccional con creación, consulta, actualización de campos permitidos, confirmación explícita de cumplimiento y eliminación de `EN_CURSO`.
-6. Exponer controller `/api/v1` con `@Valid` y errores HTTP globales.
-7. Ejecutar prueba focalizada, `mvn test` y `git diff --check` por cada capa; actualizar la documentación afectada.
+- `entity`: `Meta` y `EstadoMeta`, con `personaId` obligatorio como padre lógico escalar.
+- `dto` y `mapper`: contratos de entrada/salida y MapStruct; la entity no se serializa.
+- `repository`: `JpaRepository` y consulta derivada por `personaId`, sin `EntityGraph` porque no hay asociaciones JPA.
+- `service`: frontera transaccional para crear, consultar, actualizar una meta `EN_CURSO`, confirmar cumplimiento y eliminar solo una meta en curso.
+- `controller`: endpoints documentados bajo `/api/v1/metas`, cuerpos validados con `@Valid` y errores HTTP delegados al handler global.
+- `exception`: fecha límite inválida se traduce a 400; recurso inexistente a 404; estado no permitido a 409.
 
-## Fuera de alcance de esta ficha
+## Fuera de alcance actual
 
-- No crea entity, DTO, mapper, repository, service, controller ni endpoints de Metas.
+- No integra aún con Personal ni Evaluación Nutricional.
 - No crea SQL, Oracle, migraciones, POM, Docker o configuración.
-- No decide DDL, relaciones JPA entre módulos, cálculo automático, sincronización de evaluaciones ni reglas de vencimiento no confirmadas.
+- No decide DDL, asociaciones JPA entre módulos, cálculo automático, sincronización de evaluaciones ni reglas de vencimiento no confirmadas.
 
 ## Referencias
 

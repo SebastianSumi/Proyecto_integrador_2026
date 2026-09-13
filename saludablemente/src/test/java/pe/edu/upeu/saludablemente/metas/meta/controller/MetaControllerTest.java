@@ -15,10 +15,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import pe.edu.upeu.saludablemente.exception.GlobalExceptionHandler;
+import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
 import pe.edu.upeu.saludablemente.metas.meta.dto.MetaCreateRequest;
 import pe.edu.upeu.saludablemente.metas.meta.dto.MetaResponse;
 import pe.edu.upeu.saludablemente.metas.meta.dto.MetaUpdateRequest;
 import pe.edu.upeu.saludablemente.metas.meta.entity.EstadoMeta;
+import pe.edu.upeu.saludablemente.metas.meta.exception.EstadoMetaNoPermitidoException;
+import pe.edu.upeu.saludablemente.metas.meta.exception.FechaLimiteMetaInvalidaException;
 import pe.edu.upeu.saludablemente.metas.meta.service.MetaService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -85,6 +88,17 @@ class MetaControllerTest {
     }
 
     @Test
+    void translatesMissingGoalThroughGlobalHandler() throws Exception {
+        when(service.findById(1L)).thenThrow(new ResourceNotFoundException("Meta no encontrada con id: 1"));
+
+        mockMvc.perform(get("/api/v1/metas/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Meta no encontrada con id: 1"));
+    }
+
+    @Test
     void createsGoalFromValidRequest() throws Exception {
         MetaCreateRequest request = createRequest();
         when(service.create(any(MetaCreateRequest.class))).thenReturn(response(1L, 3L, EstadoMeta.EN_CURSO));
@@ -113,6 +127,22 @@ class MetaControllerTest {
     }
 
     @Test
+    void translatesInvalidDeadlineThroughGlobalHandler() throws Exception {
+        MetaCreateRequest request = createRequest();
+        request.setFechaLimite(LocalDate.of(2026, 8, 31));
+        when(service.create(any(MetaCreateRequest.class)))
+                .thenThrow(new FechaLimiteMetaInvalidaException("La fecha límite no puede ser anterior a la fecha de inicio"));
+
+        mockMvc.perform(post("/api/v1/metas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("La fecha límite no puede ser anterior a la fecha de inicio"));
+    }
+
+    @Test
     void updatesGoalFromValidRequest() throws Exception {
         MetaUpdateRequest request = updateRequest();
         when(service.update(any(Long.class), any(MetaUpdateRequest.class)))
@@ -136,6 +166,17 @@ class MetaControllerTest {
                 .andExpect(jsonPath("$.estado").value("CUMPLIDA"));
 
         verify(service).complete(1L);
+    }
+
+    @Test
+    void translatesInvalidStateThroughGlobalHandler() throws Exception {
+        when(service.complete(1L)).thenThrow(new EstadoMetaNoPermitidoException("Solo se puede completar una meta EN_CURSO"));
+
+        mockMvc.perform(patch("/api/v1/metas/1/cumplimiento"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.error").value("Conflict"))
+                .andExpect(jsonPath("$.message").value("Solo se puede completar una meta EN_CURSO"));
     }
 
     @Test

@@ -40,6 +40,8 @@ Las verticales de `Actividad` e `Inscripcion` están completadas en Java: entity
 
 Las garantías ante carreras concurrentes están preparadas como migraciones Oracle manuales: `V001` para inscripción vigente y `V002` para agenda por lugar/fecha. Se activan únicamente tras ejecución controlada en Oracle; ver `15-activities-concurrency-oracle-design.md`.
 
-## Próximo paso documentado: Metas
+## Aplicación: Metas
 
-Metas depende de contratos públicos aún no definidos de Personal y Evaluación Nutricional. Antes de iniciar código, consultar [la ficha de requisitos y dependencias de Metas](17-metas-requirements-and-dependencies.md) y cerrar sus gates de integración.
+La vertical de `Meta` está completada en Java: entity, enum, DTOs, mapper MapStruct, repository, service transaccional, controller y excepciones de dominio traducidas por el handler global. Expone creación, consultas general y por persona, actualización de campos permitidos, cumplimiento explícito y eliminación de una meta `EN_CURSO` bajo `/api/v1/metas`.
+
+`personaId` es un padre lógico obligatorio y escalar: no se creó una asociación JPA ni acceso a repository de Personal. El cierre inicial registró `mvn test` 115/115 PASS; la comprobación actual, con las pruebas de traducción HTTP, registra 118/118 PASS. Personal y Evaluación Nutricional siguen diferidos hasta publicar contratos públicos; Metas no calcula el progreso automáticamente, `VENCIDA` no se activa aún y CORS continúa siendo una preocupación transversal de configuración. Ver [la ficha de requisitos y dependencias de Metas](17-metas-requirements-and-dependencies.md).
