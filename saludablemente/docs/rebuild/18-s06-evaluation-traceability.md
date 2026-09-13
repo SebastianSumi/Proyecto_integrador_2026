@@ -6,7 +6,7 @@
 
 | Criterio S06 | Evidencia existente | Brecha real | Acción, propietario y condición de prueba |
 |---|---|---|---|
-| 1. Proyecto, ORM, Oracle, REST, DTO y documentación | Maven, endpoints `/api/v1`, entities, DTOs y [LP2 demo](../lp2-demo.md). | No hay ejecución Oracle viva registrada ni clase bootstrap `@SpringBootApplication` en el código actual. | **Integración/equipo:** acordar e incorporar el bootstrap único del backend. **BD2/equipo:** habilitar esquema/datasource autorizado. **Pedro:** con esos prerrequisitos, arrancar backend y mostrar request exitosa contra Oracle, sin credenciales en repositorio. |
+| 1. Proyecto, ORM, Oracle, REST, DTO y documentación | Maven, endpoints `/api/v1`, entities, DTOs y [LP2 demo](../lp2-demo.md). | No hay ejecución Oracle viva registrada. | `SaludablementeApplication` ya aporta el bootstrap único. **BD2/equipo:** habilitar esquema/datasource autorizado. **Pedro:** con esos prerrequisitos, arrancar backend y mostrar request exitosa contra Oracle, sin credenciales en repositorio. |
 | 2. CRUD, validaciones, excepciones, logs y pruebas | CRUD local de Teams, Actividades y Metas; transiciones de Inscripción/Meta; 400/404/409. Services registran transiciones exitosas con `INFO`; el handler registra errores esperados con `WARN` e inesperados con `ERROR` y stack trace. | Falta observación en un backend iniciado y resultado Maven actualizado antes de demo. | **Pedro:** ejecutar `mvn test`; iniciar el backend y demostrar un caso válido y uno fallido, verificando las trazas sin datos sensibles. |
 | 3. Objetos relacionados mediante ORM, DTO y reglas de asociación | `Actividad.inscripciones` e `Inscripcion.actividad` son asociaciones ORM internas LAZY; `GET /api/v1/actividades/{id}/detalle` devuelve DTOs relacionados sin ciclos. `@EntityGraph` se limita a esa lectura. | Falta evidencia en vivo contra Oracle. | **Pedro:** demostrar el endpoint detallado en el backend conectado a BD2. No se atribuye este criterio a relaciones entre módulos. |
 | 4. Cabecera–detalle atómica, cálculos, estado, commit y rollback | No hay evidencia que satisfaga este criterio. | No existe DTO compuesto, operación de negocio acordada, cálculo ni prueba de rollback. Actividad–Inscripción actual no es cabecera–detalle. | **Equipo:** definir el agregado y su dueño. **Propietario asignado:** implementar una única operación transaccional; provocar fallo tras iniciar la operación y demostrar que no persiste ni cabecera ni detalle. |
@@ -20,12 +20,12 @@
 | Teams | Vertical CRUD de referencia, DTO/mapper/service/controller/errores. | Cierre histórico 26/26 PASS. | No sustituye demostración actual con Oracle y Modulith. |
 | Actividades | CRUD y regla de intervalo/solapamiento. | Pruebas focalizadas y cierre previo 83/83 PASS. | V002 solo protege carreras tras ejecución manual autorizada en Oracle. |
 | Inscripciones | Registro, duplicado normal, cancelación idempotente. | Pruebas focalizadas incluidas en cierre de Actividades. | V001 solo protege duplicado concurrente tras ejecución manual autorizada en Oracle. |
-| Metas | CRUD, cumplimiento explícito y eliminación condicionada. | La suite actual completa pasó 148/148 (2026-09-13). | No integra todavía Personal/Evaluación ni aporta asociación ORM relacionada. |
+| Metas | CRUD, cumplimiento explícito y eliminación condicionada. | La suite actual completa pasó 149/149 (2026-09-13), incluida la verificación Modulith. | No integra todavía Personal/Evaluación ni aporta asociación ORM relacionada. |
 
 ## Dependencias de infraestructura que no se deben falsear
 
 - **Oracle vivo:** se confirma únicamente al arrancar contra el esquema real de BD2 y ejecutar requests con datos reales.
-- **Bootstrap y Spring Modulith:** el POM incluye `spring-modulith-starter-core` y `spring-modulith-starter-test`, pero el árbol actual no contiene una clase `@SpringBootApplication`, módulos de negocio declarados ni una prueba con `ApplicationModules.of(...).verify()`. Por tanto, `mvn test` 148/148 PASS **no** es una verificación Modulith. La integración/equipo debe acordar el bootstrap único y los límites declarados; recién entonces corresponde añadir y ejecutar esa prueba.
+- **Bootstrap y Spring Modulith:** `SaludablementeApplication` es el bootstrap único y `SaludablementeApplicationTest` ejecuta `ApplicationModules.of(SaludablementeApplication.class).verify()` sobre la topología actual de paquetes (1/1 PASS, 2026-09-13). No se inventaron anotaciones ni fronteras para aprobarla. El equipo debe preservar este bootstrap y acordar límites explícitos antes de futuras ampliaciones; la prueba local no reemplaza Oracle, Swagger ni la integración compartida.
 - **Migraciones manuales V001/V002:** están preparadas, no se ejecutan automáticamente. Su aplicación y el resultado deben quedar registrados por el responsable autorizado.
 - **CORS:** existe una configuración única y transversal para `/api/**`, con `app.cors.*` y sobrescritura por variables de entorno. El valor de desarrollo autorizado es `http://localhost:4200`, con credenciales desactivadas; el ambiente compartido debe aportar sus propios valores. No lleva `@CrossOrigin` por controller.
 - **Logs:** respuestas de error no son logs. La convención está implementada, pero debe observarse en un backend iniciado antes de atribuir evidencia en vivo.
@@ -47,9 +47,9 @@ No se registran cuerpos HTTP, descripciones, nombres, correos, credenciales, tok
 - [ ] Ejecutar `mvn test` y registrar el total actual, sin reutilizar una cifra histórica si cambió.
 - [ ] Ejecutar `git diff --check` y verificar que no haya errores de espacios.
 - [ ] Confirmar con BD2 el Oracle/esquema autorizado y que el backend arranca conectado.
-- [ ] Confirmar que integración/equipo incorporó el bootstrap único y los límites de módulos acordados; sin ello no se puede arrancar la aplicación ni ejecutar una verificación Modulith real.
+- [x] Confirmar bootstrap único y verificación Modulith local: `SaludablementeApplicationTest` pasó 1/1 el 2026-09-13. El equipo debe preservar el bootstrap y acordar límites explícitos antes de ampliar módulos.
 - [ ] Confirmar si V001/V002 fueron aplicadas; si no, explicar que las garantías concurrentes no están activas.
-- [ ] Confirmar si existe evidencia de Spring Modulith verde; si no, declararlo pendiente.
+- [x] Registrar evidencia local de Spring Modulith: `ApplicationModules.of(SaludablementeApplication.class).verify()` pasó 1/1 el 2026-09-13.
 - [ ] Configurar el origen frontend y la política de credenciales del ambiente de demo mediante `CORS_*`.
 - [ ] No preparar una demo que afirme CORS en el ambiente compartido, logs o cabecera–detalle si siguen pendientes. Las consultas/reporte locales requieren todavía datos reales en la demo.
 
@@ -66,7 +66,7 @@ No se registran cuerpos HTTP, descripciones, nombres, correos, credenciales, tok
 | Brecha | Escenario mínimo verificable | Resultado esperado |
 |---|---|---|
 | Oracle | Arrancar backend con datasource BD2 y ejecutar un CRUD. | Persistencia y respuesta real sin error de conexión. |
-| Modulith | Tras integrar bootstrap único y límites declarados, ejecutar una prueba `ApplicationModules.of(...).verify()`. | Resultado verde visible; antes de ello no hay verificación ejecutable. |
+| Modulith | Ejecutar `SaludablementeApplicationTest`. | `ApplicationModules.of(SaludablementeApplication.class).verify()` pasa sobre la topología actual; revisar límites explícitos si el equipo amplía módulos. |
 | CORS | Request desde origen permitido, request desde origen rechazado y preflight `OPTIONS` si aplica. | Cabeceras configuradas desde propiedades, sin hard-codear; solo el origen permitido recibe autorización. |
 | Logs | Caso válido y caso fallido con el backend iniciado. | `INFO` para transición exitosa; `WARN` para 400/404/409 o `ERROR` con stack trace para 500, sin secretos. |
 | Asociación ORM | Consultar `GET /api/v1/actividades/{id}/detalle` con una actividad que tenga inscripciones. | Navegación controlada sin ciclo de serialización. |

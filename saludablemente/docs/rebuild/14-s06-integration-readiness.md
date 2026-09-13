@@ -29,11 +29,11 @@
 - `V002__activity_schedule_coordination.sql` está preparado para serializar la agenda por lugar/fecha; su garantía inicia solo después de ejecución manual autorizada y prueba concurrente real.
 - Estas migraciones no usan Flyway, no se ejecutan desde el backend y no prueban por sí solas que Oracle esté integrado.
 
-## Gate de integración: bootstrap y Modulith
+## Evidencia de integración: bootstrap y Modulith
 
-El POM contiene las dependencias de Spring Modulith, pero la revisión del árbol actual no encontró una clase `@SpringBootApplication`, paquetes de negocio declarados como módulos ni una prueba `ApplicationModules.of(...).verify()`. Por eso la suite local 148/148 PASS valida las verticales y sus pruebas unitarias/MockMvc, **no** una frontera Modulith integrada ni el arranque del backend.
+`SaludablementeApplication` es el bootstrap único con `@SpringBootApplication`; al ubicarse en `pe.edu.upeu.saludablemente`, Spring Boot detecta los componentes de los módulos actuales. `SaludablementeApplicationTest` ejecuta `ApplicationModules.of(SaludablementeApplication.class).verify()` sobre la estructura física declarada y pasó localmente (1/1, 2026-09-13).
 
-Este es un prerrequisito de integración del proyecto: el equipo debe acordar el bootstrap único y los límites de módulos antes de que Pedro pueda demostrar Oracle, Swagger o una verificación Modulith real. No se deben inventar esos límites desde Actividades ni declarar Modulith verde mientras no exista y pase esa prueba.
+La prueba confirma que las dependencias actuales no violan la topología que Spring Modulith infiere de los paquetes. No se añadieron anotaciones ni límites artificiales solo para aprobarla. Persisten los límites de integración: el equipo debe conservar este bootstrap único y acordar cualquier frontera explícita futura antes de ampliar módulos. Esta evidencia habilita la verificación local de Modulith, pero no reemplaza el arranque real con Oracle, Swagger ni una prueba de infraestructura compartida.
 
 ## Gate CORS transversal
 

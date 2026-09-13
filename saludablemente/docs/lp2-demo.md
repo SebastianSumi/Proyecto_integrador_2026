@@ -5,7 +5,7 @@
 ## Lectura rápida
 
 - **Implementado en Java:** verticales Teams, Actividades, Inscripciones y Metas, con DTOs, mappers, servicios transaccionales, controllers y pruebas focalizadas.
-- **Pendiente para afirmar cumplimiento integral de S06:** bootstrap único del backend, Spring Modulith verde, Oracle vivo, evidencia CORS contra el backend de demo, logs y una operación cabecera–detalle atómica. CORS local ya opera por propiedades para Angular en `http://localhost:4200`, sin credenciales; el ambiente compartido debe configurar sus propios valores. Las consultas/reportes de Actividades están implementados localmente, pero requieren demostración con datos reales.
+- **Pendiente para afirmar cumplimiento integral de S06:** Oracle vivo, evidencia CORS contra el backend de demo, logs y una operación cabecera–detalle atómica. El bootstrap único y la verificación local de Spring Modulith ya están disponibles. CORS local ya opera por propiedades para Angular en `http://localhost:4200`, sin credenciales; el ambiente compartido debe configurar sus propios valores. Las consultas/reportes de Actividades están implementados localmente, pero requieren demostración con datos reales.
 - **Ruta de evidencia:** usar la [matriz S06](rebuild/18-s06-evaluation-traceability.md) durante la demo; no presentar como terminada una fila pendiente.
 
 ## 1. Alcance arquitectónico del corte
@@ -13,6 +13,7 @@
 ```text
 saludablemente/                         # un único proyecto Maven / Spring Boot
 └── src/main/java/pe/edu/upeu/saludablemente/
+    ├── SaludablementeApplication.java   # bootstrap único Spring Boot
     ├── teams/team/                     # vertical CRUD de referencia
     ├── actividades/actividad/          # programación de actividades
     ├── actividades/inscripcion/        # registro y cancelación previa
@@ -24,8 +25,8 @@ El backend es un monolito modular: cada módulo conserva entity, DTO, mapper, re
 
 | Aspecto | Evidencia actual | Límite honesto |
 |---|---|---|
-| Proyecto único | Un único `pom.xml` Maven y contratos REST implementados. | Falta el bootstrap único `@SpringBootApplication`; sin él no se puede arrancar el backend ni demostrar Oracle/Swagger. |
-| Modularidad | Paquetes de negocio separados y convención documentada. | Las dependencias Modulith existen, pero faltan límites declarados y una prueba `ApplicationModules.of(...).verify()` verde. |
+| Proyecto único | Un único `pom.xml` Maven, contratos REST y `SaludablementeApplication` como bootstrap único. | Falta arrancar contra Oracle/BD2 y demostrar Swagger en vivo. |
+| Modularidad | Paquetes de negocio separados y `SaludablementeApplicationTest` con `ApplicationModules.of(...).verify()` verde (1/1, 2026-09-13). | La prueba refleja la topología actual; el equipo debe acordar límites explícitos antes de ampliar módulos. |
 | Persistencia | Entities y `JpaRepository` implementados. | No declarar persistencia Oracle validada hasta la demo conectada. |
 | Errores | Handler global y excepciones de dominio con 400/404/409. | No sustituye logs de trazabilidad. |
 
@@ -92,16 +93,16 @@ Oracle BD2 (evidencia pendiente en vivo)
 | Horario inválido/solapado | Pruebas de service de Actividad. | Rechazo secuencial; concurrencia real requiere Oracle + V002. |
 | Inscripción duplicada/cancelación | Pruebas de service de Inscripción. | Flujo normal e idempotencia cubiertos; carrera real requiere Oracle + V001. |
 | Meta | Pruebas entity/DTO/mapper/service/controller. | Crear, fechas, estado inicial, actualización, cumplimiento y borrado condicionado. |
-| Suite registrada | `mvn test` 148/148 PASS (2026-09-13). | Valida pruebas locales; no sustituye Oracle, bootstrap ni verificación Modulith. |
+| Suite registrada | `mvn test` 149/149 PASS, incluida la verificación focalizada de Modulith 1/1 (2026-09-13). | Valida pruebas locales; no sustituye Oracle ni evidencia en vivo. |
 | Integración Oracle | Sin evidencia de ejecución viva registrada aquí. | Pendiente: arrancar y demostrar conexión contra BD2. |
 
-No existe todavía evidencia de rollback de una cabecera–detalle, logs en un backend iniciado o Modulith verde. Además, el árbol actual no contiene bootstrap `@SpringBootApplication`, módulos de negocio declarados ni una prueba `ApplicationModules.of(...).verify()`; resolver ese prerrequisito de integración es necesario antes de ejecutar Swagger, Oracle o Modulith. CORS por propiedad tiene pruebas MockMvc de origen permitido, origen rechazado y preflight `OPTIONS`; falta repetirlas contra el backend/Oracle de demo con las variables del ambiente. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
+No existe todavía evidencia de rollback de una cabecera–detalle ni logs en un backend iniciado. `SaludablementeApplication` permite arrancar Spring Boot y `SaludablementeApplicationTest` verifica localmente la topología con `ApplicationModules.of(...).verify()` (1/1 PASS, 2026-09-13); aún falta ejecutar Swagger y Oracle en el ambiente autorizado. CORS por propiedad tiene pruebas MockMvc de origen permitido, origen rechazado y preflight `OPTIONS`; falta repetirlas contra el backend/Oracle de demo con las variables del ambiente. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
 
 ## 7. Trazabilidad con ADS y BD2
 
 | Elemento LP2 | ADS | BD2 | Evidencia/pendiente de Saludablemente |
 |---|---|---|---|
-| Monolito modular | Límites y arquitectura del proyecto integrador. | Un datasource y propiedad de tablas/esquemas. | Paquetes modulares implementados; integración/equipo debe acordar bootstrap y límites declarados antes de una prueba Modulith verde. |
+| Monolito modular | Límites y arquitectura del proyecto integrador. | Un datasource y propiedad de tablas/esquemas. | Bootstrap único y prueba Modulith local disponibles; integración/equipo debe acordar límites explícitos antes de ampliar módulos. |
 | ORM y CRUD | Diseño de recursos y responsabilidades. | Oracle real, tablas y restricciones. | CRUD Java implementado; falta conexión Oracle en vivo. |
 | Reglas de inscripción/agenda | Reglas de negocio de Actividades. | V001/V002 deben ser aplicadas manualmente y registradas. | Scripts preparados, no ejecutados según esta documentación. |
 | Asociación ORM/DTO relacionado | Modelo de relaciones aprobado. | FK/objetos relacionados del esquema real. | Pendiente: el diseño actual usa IDs escalares entre módulos. |
