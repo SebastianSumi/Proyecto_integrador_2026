@@ -13,6 +13,7 @@ public interface InscripcionMapper {
     @Mapping(target = "estado", ignore = true)
     @Mapping(target = "inscritaEn", ignore = true)
     @Mapping(target = "canceladaEn", ignore = true)
+    @Mapping(target = "actividad", ignore = true)
     Inscripcion toEntity(InscripcionRequest request);
 
     InscripcionResponse toResponse(Inscripcion inscripcion);

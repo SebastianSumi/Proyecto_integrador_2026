@@ -30,6 +30,7 @@ class InscripcionMapperTest {
         assertEquals(EstadoInscripcion.INSCRITA, inscripcion.getEstado());
         assertNull(inscripcion.getInscritaEn());
         assertNull(inscripcion.getCanceladaEn());
+        assertNull(inscripcion.getActividad());
     }
 
     @Test
