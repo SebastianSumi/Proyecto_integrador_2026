@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadRequest;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadDetalleResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.Actividad;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.EstadoActividad;
@@ -55,6 +56,8 @@ class ActividadServiceImplTest {
         when(mapper.toResponse(actividad)).thenReturn(response);
 
         assertEquals(List.of(response), service.findAll());
+
+        verify(repository, never()).findDetalleById(org.mockito.ArgumentMatchers.anyLong());
     }
 
     @Test
@@ -65,6 +68,34 @@ class ActividadServiceImplTest {
         when(mapper.toResponse(actividad)).thenReturn(response);
 
         assertEquals(response, service.findById(1L));
+    }
+
+    @Test
+    void returnsDetailedActivityUsingTheDedicatedRepositoryQuery() {
+        Actividad actividad = actividad(1L, "Caminata saludable");
+        ActividadDetalleResponse response = ActividadDetalleResponse.builder()
+                .id(1L)
+                .nombre("Caminata saludable")
+                .build();
+        when(repository.findDetalleById(1L)).thenReturn(Optional.of(actividad));
+        when(mapper.toDetalleResponse(actividad)).thenReturn(response);
+
+        assertEquals(response, service.findDetalleById(1L));
+
+        verify(repository).findDetalleById(1L);
+        verify(mapper).toDetalleResponse(actividad);
+        verify(repository, never()).findById(1L);
+    }
+
+    @Test
+    void failsWhenDetailedActivityDoesNotExist() {
+        when(repository.findDetalleById(99L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> service.findDetalleById(99L));
+
+        assertEquals("Actividad with id 99 was not found", exception.getMessage());
+        verifyNoInteractions(mapper);
     }
 
     @Test
@@ -85,6 +116,7 @@ class ActividadServiceImplTest {
         service.validateExists(1L);
 
         verify(repository).findById(1L);
+        verify(repository, never()).findDetalleById(org.mockito.ArgumentMatchers.anyLong());
         verifyNoInteractions(mapper);
     }
 

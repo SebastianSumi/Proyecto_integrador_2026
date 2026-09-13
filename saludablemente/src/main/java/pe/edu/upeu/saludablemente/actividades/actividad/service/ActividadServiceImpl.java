@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadRequest;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadDetalleResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.Actividad;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
@@ -36,6 +37,13 @@ public class ActividadServiceImpl implements ActividadService {
     @Override
     public ActividadResponse findById(Long id) {
         return mapper.toResponse(findActividad(id));
+    }
+
+    @Override
+    public ActividadDetalleResponse findDetalleById(Long id) {
+        Actividad actividad = repository.findDetalleById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Actividad with id " + id + " was not found"));
+        return mapper.toDetalleResponse(actividad);
     }
 
     @Override
