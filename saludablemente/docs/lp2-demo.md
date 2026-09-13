@@ -5,7 +5,7 @@
 ## Lectura rápida
 
 - **Implementado en Java:** verticales Teams, Actividades, Inscripciones y Metas, con DTOs, mappers, servicios transaccionales, controllers y pruebas focalizadas.
-- **Pendiente para afirmar cumplimiento integral de S06:** Oracle vivo, Spring Modulith verde, CORS por propiedades con prueba HTTP, logs, una asociación ORM con DTO relacionado, una operación cabecera–detalle atómica, y consultas/reportes empresariales.
+- **Pendiente para afirmar cumplimiento integral de S06:** Oracle vivo, Spring Modulith verde, CORS por propiedades con prueba HTTP, logs y una operación cabecera–detalle atómica. Las consultas/reportes de Actividades están implementados localmente, pero requieren demostración con datos reales.
 - **Ruta de evidencia:** usar la [matriz S06](rebuild/18-s06-evaluation-traceability.md) durante la demo; no presentar como terminada una fila pendiente.
 
 ## 1. Alcance arquitectónico del corte
@@ -44,6 +44,8 @@ La demo S06 debe ejecutarse con el backend conectado al Oracle real del equipo. 
 | `PATCH` | `/api/v1/teams/{id}/state` | Cambiar su estado. | Implementado en Java. |
 | `GET` | `/api/v1/actividades` y `/{id}` | Listar y consultar actividades. | Implementado en Java. |
 | `POST`, `PUT` | `/api/v1/actividades`, `/{id}` | Crear/actualizar programación; rechaza intervalos inválidos y solapamiento secuencial. | Implementado en Java; garantía concurrente requiere V002 ejecutada en Oracle. |
+| `GET` | `/api/v1/actividades/busqueda` | Buscar por estado y rango de fechas, con ordenamiento permitido; por defecto ordena por fecha. | Implementado en Java; demostrar con datos reales. |
+| `GET` | `/api/v1/actividades/resumen` | Contar actividades por estado dentro de un rango opcional. | Implementado en Java; demostrar con datos reales. |
 | `GET` | `/api/v1/inscripciones` y `/{id}` | Listar y consultar inscripciones. | Implementado en Java. |
 | `POST` | `/api/v1/inscripciones` | Registrar inscripción previa. | Implementado en Java; garantía concurrente requiere V001 ejecutada en Oracle. |
 | `PATCH` | `/api/v1/inscripciones/{id}/cancelacion` | Cancelar de forma idempotente. | Implementado en Java. |
@@ -52,7 +54,7 @@ La demo S06 debe ejecutarse con el backend conectado al Oracle real del equipo. 
 | `PATCH` | `/api/v1/metas/{id}/cumplimiento` | Confirmar cumplimiento supervisado. | Implementado en Java. |
 | `DELETE` | `/api/v1/metas/{id}` | Eliminar solo una meta `EN_CURSO`. | Implementado en Java. |
 
-**No atribuir al contrato actual:** endpoint de filtro combinado, ordenamiento, proyección, agregado, reporte, CORS o una operación cabecera–detalle. Son brechas S06 explícitas, no capacidades ocultas.
+**No atribuir al contrato actual:** CORS o una operación cabecera–detalle. Las consultas y el resumen existen en Java, pero su evidencia con datos reales sigue pendiente para S06.
 
 ## 4. DTO principales y límites de datos
 
@@ -93,7 +95,7 @@ Oracle BD2 (evidencia pendiente en vivo)
 | Suite registrada | Al cierre de Metas: `mvn test` 118/118 PASS. | Volver a ejecutar y mostrar el resultado actual antes de S06. |
 | Integración Oracle | Sin evidencia de ejecución viva registrada aquí. | Pendiente: arrancar y demostrar conexión contra BD2. |
 
-No existe todavía evidencia de rollback de una cabecera–detalle, filtros combinados, proyección/agregación/reporte, CORS por propiedad, logs o Modulith verde.
+No existe todavía evidencia de rollback de una cabecera–detalle, CORS por propiedad, logs o Modulith verde. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
 
 ## 7. Trazabilidad con ADS y BD2
 
@@ -104,7 +106,7 @@ No existe todavía evidencia de rollback de una cabecera–detalle, filtros comb
 | Reglas de inscripción/agenda | Reglas de negocio de Actividades. | V001/V002 deben ser aplicadas manualmente y registradas. | Scripts preparados, no ejecutados según esta documentación. |
 | Asociación ORM/DTO relacionado | Modelo de relaciones aprobado. | FK/objetos relacionados del esquema real. | Pendiente: el diseño actual usa IDs escalares entre módulos. |
 | Cabecera–detalle y rollback | Caso de uso compuesto aprobado. | Transacción/rollback verificable. | Pendiente de dueño, contrato y prueba; Actividad–Inscripción no se presenta como cabecera–detalle. |
-| Consultas y CORS | Requisitos de consulta y cliente web. | Datos reales/índices según BD2. | Pendiente de implementación y evidencia. |
+| Consultas y CORS | Requisitos de consulta y cliente web. | Datos reales/índices según BD2. | Búsqueda y resumen de Actividades implementados localmente; faltan demostración con datos reales y CORS. |
 
 ## 8. Rúbrica de evaluación
 
@@ -135,7 +137,7 @@ La calificación se asigna durante la revisión con evidencia en vivo. Esta tabl
 **Demo técnica — 5 min**
 
 - [ ] Ejecutar un CRUD propio con un caso válido y un error 400/409 real.
-- [ ] Mostrar Oracle, Modulith, cabecera–detalle, filtros/reporte, CORS y logs solo si cuentan con evidencia viva; de lo contrario, declarar cada pendiente.
+- [ ] Mostrar Oracle, Modulith, cabecera–detalle, CORS y logs solo si cuentan con evidencia viva; de lo contrario, declarar cada pendiente. Ejecutar filtros/reporte de Actividades con datos reales durante la demo.
 - [ ] Mostrar el resultado actual de pruebas aplicables.
 
 **Preguntas individuales — 5 min**

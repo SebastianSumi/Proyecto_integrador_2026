@@ -7,10 +7,10 @@
 | Criterio S06 | Evidencia existente | Brecha real | Acción, propietario y condición de prueba |
 |---|---|---|---|
 | 1. Proyecto, ORM, Oracle, REST, DTO y documentación | Spring Boot/Maven, endpoints `/api/v1`, entities, DTOs y [LP2 demo](../lp2-demo.md). | No hay ejecución Oracle viva registrada. | **BD2/equipo:** habilitar esquema/datasource autorizado. **Pedro:** arrancar backend y mostrar request exitosa contra Oracle, sin credenciales en repositorio. |
-| 2. CRUD, validaciones, excepciones, logs y pruebas | CRUD local de Teams, Actividades y Metas; transiciones de Inscripción/Meta; 400/404/409 y suite 126/126 PASS. | Logs transversales no están implementados/evidenciados; resultado Maven debe refrescarse antes de demo. | **Equipo de integración:** acordar logs. **Pedro:** ejecutar `mvn test` y demostrar CRUD válido + 400 en vivo. |
+| 2. CRUD, validaciones, excepciones, logs y pruebas | CRUD local de Teams, Actividades y Metas; transiciones de Inscripción/Meta; 400/404/409 y suite actual 139/139 PASS (2026-09-13). | Logs transversales no están implementados/evidenciados; resultado Maven debe refrescarse antes de demo. | **Equipo de integración:** acordar logs. **Pedro:** ejecutar `mvn test` y demostrar CRUD válido + 400 en vivo. |
 | 3. Objetos relacionados mediante ORM, DTO y reglas de asociación | `Actividad.inscripciones` e `Inscripcion.actividad` son asociaciones ORM internas LAZY; `GET /api/v1/actividades/{id}/detalle` devuelve DTOs relacionados sin ciclos. `@EntityGraph` se limita a esa lectura. | Falta evidencia en vivo contra Oracle. | **Pedro:** demostrar el endpoint detallado en el backend conectado a BD2. No se atribuye este criterio a relaciones entre módulos. |
 | 4. Cabecera–detalle atómica, cálculos, estado, commit y rollback | No hay evidencia que satisfaga este criterio. | No existe DTO compuesto, operación de negocio acordada, cálculo ni prueba de rollback. Actividad–Inscripción actual no es cabecera–detalle. | **Equipo:** definir el agregado y su dueño. **Propietario asignado:** implementar una única operación transaccional; provocar fallo tras iniciar la operación y demostrar que no persiste ni cabecera ni detalle. |
-| 5. Filtros, ordenamiento, proyecciones, agregados, reporte y CORS | Listados básicos; docs separan CORS como transversal. | Faltan filtro combinado, `Sort`, proyección, agregado/reporte y CORS por propiedades con prueba HTTP. | **Equipo:** seleccionar caso de uso y contrato. **Propietario:** implementar consulta y reporte; **integración:** configurar CORS mediante propiedades y probar preflight/origen permitido en vivo. |
+| 5. Filtros, ordenamiento, proyecciones, agregados, reporte y CORS | Actividades expone búsqueda combinable y resumen por estado: `GET /api/v1/actividades/busqueda` y `GET /api/v1/actividades/resumen`. | La evidencia local cubre parámetros, ordenamiento permitido, proyección y agregado; falta demostración con datos reales y CORS por propiedades con prueba HTTP. | **Pedro:** demostrar ambas consultas contra datos reales. **Integración:** configurar CORS mediante propiedades y probar preflight/origen permitido en vivo. |
 | 6. Sustentación | Aporte de Pedro: Actividades/Inscripciones/Metas y documentación de reglas. | La sustentación individual aún no se ha ejecutado. | **Pedro:** seguir checklist de demo, explicar decisiones y responder preguntas de S1–S5 con código/evidencia visible. |
 
 ## Evidencia de módulos disponible
@@ -20,7 +20,7 @@
 | Teams | Vertical CRUD de referencia, DTO/mapper/service/controller/errores. | Cierre histórico 26/26 PASS. | No sustituye demostración actual con Oracle y Modulith. |
 | Actividades | CRUD y regla de intervalo/solapamiento. | Pruebas focalizadas y cierre previo 83/83 PASS. | V002 solo protege carreras tras ejecución manual autorizada en Oracle. |
 | Inscripciones | Registro, duplicado normal, cancelación idempotente. | Pruebas focalizadas incluidas en cierre de Actividades. | V001 solo protege duplicado concurrente tras ejecución manual autorizada en Oracle. |
-| Metas | CRUD, cumplimiento explícito y eliminación condicionada. | Cierre de vertical: suite 118/118 PASS. | No integra todavía Personal/Evaluación ni aporta asociación ORM relacionada. |
+| Metas | CRUD, cumplimiento explícito y eliminación condicionada. | El cierre de vertical está subsumido por la suite actual 139/139 PASS (2026-09-13). | No integra todavía Personal/Evaluación ni aporta asociación ORM relacionada. |
 
 ## Dependencias de infraestructura que no se deben falsear
 
@@ -39,7 +39,7 @@
 - [ ] Confirmar con BD2 el Oracle/esquema autorizado y que el backend arranca conectado.
 - [ ] Confirmar si V001/V002 fueron aplicadas; si no, explicar que las garantías concurrentes no están activas.
 - [ ] Confirmar si existe evidencia de Spring Modulith verde; si no, declararlo pendiente.
-- [ ] No preparar una demo que afirme filtros, reporte, CORS, logs, asociación ORM o cabecera–detalle si siguen pendientes.
+- [ ] No preparar una demo que afirme CORS, logs o cabecera–detalle si siguen pendientes. Las consultas/reporte locales requieren todavía datos reales en la demo.
 
 ### Secuencia de cinco minutos de demo técnica
 
@@ -47,7 +47,7 @@
 2. Ejecutar un CRUD propio: crear/consultar/actualizar una Actividad o Meta.
 3. Provocar un error real: intervalo inválido, solapamiento secuencial, inscripción duplicada normal o actualización de Meta no permitida; mostrar 400/409.
 4. Explicar el límite modular: Inscripción usa `ActividadService`; Meta usa `personaId` escalar y no repository externo.
-5. Si Oracle, Modulith, CORS, logs, cabecera–detalle o reportes no tienen evidencia, nombrarlos como pendientes y mostrar la fila correspondiente de esta matriz.
+5. Si Oracle, Modulith, CORS, logs o cabecera–detalle no tienen evidencia, nombrarlos como pendientes y mostrar la fila correspondiente de esta matriz. Ejecutar búsqueda y resumen con datos reales antes de atribuirles evidencia S06.
 
 ### Evidencia en vivo requerida para cerrar brechas
 

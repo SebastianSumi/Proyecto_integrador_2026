@@ -5,6 +5,8 @@ import jakarta.validation.Validation;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortHandlerMethodArgumentResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +19,10 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadRequest;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadDetalleResponse;
 import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadAgregado;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResumen;
 import pe.edu.upeu.saludablemente.actividades.actividad.entity.EstadoActividad;
+import pe.edu.upeu.saludablemente.actividades.actividad.exception.CriterioConsultaActividadInvalidoException;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
 import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
 import pe.edu.upeu.saludablemente.actividades.actividad.service.ActividadService;
@@ -49,6 +54,7 @@ class ActividadControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(new ActividadController(service))
                 .setControllerAdvice(new GlobalExceptionHandler())
+                .setCustomArgumentResolvers(new SortHandlerMethodArgumentResolver())
                 .setValidator(new SpringValidatorAdapter(Validation.buildDefaultValidatorFactory().getValidator()))
                 .build();
     }
@@ -89,6 +95,88 @@ class ActividadControllerTest {
                 .andExpect(jsonPath("$.inscripciones[0].actividadId").doesNotExist());
 
         verify(service).findDetalleById(7L);
+    }
+
+    @Test
+    void searchesActivitiesWithOptionalFiltersAndSort() throws Exception {
+        when(service.search(
+                EstadoActividad.PROGRAMADA,
+                LocalDate.of(2026, 10, 1),
+                LocalDate.of(2026, 10, 31),
+                Sort.by(Sort.Order.desc("nombre"))
+        )).thenReturn(List.of(resumen(7L, "Caminata")));
+
+        mockMvc.perform(get("/api/v1/actividades/busqueda")
+                        .param("estado", "PROGRAMADA")
+                        .param("desde", "2026-10-01")
+                        .param("hasta", "2026-10-31")
+                        .param("sort", "nombre,desc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(7L))
+                .andExpect(jsonPath("$[0].nombre").value("Caminata"));
+
+        verify(service).search(
+                EstadoActividad.PROGRAMADA,
+                LocalDate.of(2026, 10, 1),
+                LocalDate.of(2026, 10, 31),
+                Sort.by(Sort.Order.desc("nombre"))
+        );
+    }
+
+    @Test
+    void searchesActivitiesByDateWhenSortIsOmitted() throws Exception {
+        when(service.search(null, null, null, Sort.by("fecha")))
+                .thenReturn(List.of(resumen(7L, "Caminata")));
+
+        mockMvc.perform(get("/api/v1/actividades/busqueda"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(7L));
+
+        verify(service).search(null, null, null, Sort.by("fecha"));
+    }
+
+    @Test
+    void returnsActivityAggregatesForDateRange() throws Exception {
+        when(service.getAggregates(LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31)))
+                .thenReturn(List.of(new ActividadAgregado(EstadoActividad.PROGRAMADA, 3L)));
+
+        mockMvc.perform(get("/api/v1/actividades/resumen")
+                        .param("desde", "2026-10-01")
+                        .param("hasta", "2026-10-31"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].estado").value("PROGRAMADA"))
+                .andExpect(jsonPath("$[0].total").value(3));
+
+        verify(service).getAggregates(LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31));
+    }
+
+    @Test
+    void mapsInvalidSearchDateRangeToBadRequest() throws Exception {
+        when(service.search(any(), any(), any(), any()))
+                .thenThrow(new CriterioConsultaActividadInvalidoException(
+                        "La fecha desde no puede ser posterior a la fecha hasta"
+                ));
+
+        mockMvc.perform(get("/api/v1/actividades/busqueda")
+                        .param("desde", "2026-10-31")
+                        .param("hasta", "2026-10-01"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("La fecha desde no puede ser posterior a la fecha hasta"));
+    }
+
+    @Test
+    void mapsInvalidSearchSortToBadRequest() throws Exception {
+        when(service.search(any(), any(), any(), any()))
+                .thenThrow(new CriterioConsultaActividadInvalidoException(
+                        "No se permite ordenar actividades por: createdAt"
+                ));
+
+        mockMvc.perform(get("/api/v1/actividades/busqueda")
+                        .param("sort", "createdAt,asc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("No se permite ordenar actividades por: createdAt"));
     }
 
     @Test
@@ -204,6 +292,18 @@ class ActividadControllerTest {
                 .estado(EstadoActividad.PROGRAMADA)
                 .creadorId(5L)
                 .build();
+    }
+
+    private ActividadResumen resumen(Long id, String nombre) {
+        return new ActividadResumen(
+                id,
+                nombre,
+                LocalDate.of(2026, 10, 15),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Sala principal",
+                EstadoActividad.PROGRAMADA
+        );
     }
 
     private ActividadDetalleResponse detalleResponse(Long id) {
