@@ -24,6 +24,7 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 16. [Diseño de concurrencia Oracle para Actividades](rebuild/15-activities-concurrency-oracle-design.md)
 17. [Scripts Oracle manuales](../database/oracle/manual-migrations/README.md)
 18. [Requisitos y fundamento de Actividades](rebuild/16-activities-module-requirements-and-rationale.md)
+19. [Ficha de dependencias y preparación de Metas](rebuild/17-metas-requirements-and-dependencies.md)
 
 ## Estado de Teams
 

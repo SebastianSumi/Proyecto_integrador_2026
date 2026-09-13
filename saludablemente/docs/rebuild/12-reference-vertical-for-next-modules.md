@@ -39,3 +39,7 @@ La vertical incluye `entity`, DTO, mapper MapStruct, repository, service, contro
 Las verticales de `Actividad` e `Inscripcion` están completadas en Java: entity, DTO, mapper, repository, service, controller y manejo HTTP de errores. `ActividadServiceImpl` aplica intervalo válido y solapamiento al crear/actualizar; `InscripcionServiceImpl` verifica la existencia de la actividad mediante `ActividadService`, impide duplicados vigentes y cancela de forma idempotente. El modelo conserva `LocalDate` y `LocalTime` sin decidir DDL ni la representación física Oracle de `TIME`.
 
 Las garantías ante carreras concurrentes están preparadas como migraciones Oracle manuales: `V001` para inscripción vigente y `V002` para agenda por lugar/fecha. Se activan únicamente tras ejecución controlada en Oracle; ver `15-activities-concurrency-oracle-design.md`.
+
+## Próximo paso documentado: Metas
+
+Metas depende de contratos públicos aún no definidos de Personal y Evaluación Nutricional. Antes de iniciar código, consultar [la ficha de requisitos y dependencias de Metas](17-metas-requirements-and-dependencies.md) y cerrar sus gates de integración.
