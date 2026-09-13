@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,14 +91,14 @@ class InscripcionServiceImplTest {
         assertEquals(response, service.register(request));
         assertEquals(EstadoInscripcion.INSCRITA, mapped.getEstado());
         assertTrue(mapped.getInscritaEn().isBefore(LocalDateTime.now().plusSeconds(1)));
-        verify(actividadService).findById(10L);
+        verify(actividadService).validateExists(10L);
     }
 
     @Test
     void rejectsRegistrationWhenActivityDoesNotExist() {
         InscripcionRequest request = request();
-        when(actividadService.findById(10L))
-                .thenThrow(new ResourceNotFoundException("Actividad with id 10 was not found"));
+        doThrow(new ResourceNotFoundException("Actividad with id 10 was not found"))
+                .when(actividadService).validateExists(10L);
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> service.register(request));

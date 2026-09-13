@@ -73,6 +73,27 @@ class ActividadServiceImplTest {
     }
 
     @Test
+    void validatesThatActivityExists() {
+        Actividad actividad = actividad(1L, "Caminata saludable");
+        when(repository.findById(1L)).thenReturn(Optional.of(actividad));
+
+        service.validateExists(1L);
+
+        verify(repository).findById(1L);
+        verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void failsValidationWhenActivityDoesNotExist() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> service.validateExists(99L));
+
+        assertEquals("Actividad with id 99 was not found", exception.getMessage());
+    }
+
+    @Test
     void createsActivityWhenScheduleIsAvailable() {
         ActividadRequest request = request("Caminata saludable");
         Actividad mapped = actividad(null, "Caminata saludable");

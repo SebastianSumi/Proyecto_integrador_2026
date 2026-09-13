@@ -40,7 +40,7 @@ public class InscripcionServiceImpl implements InscripcionService {
     @Override
     @Transactional
     public InscripcionResponse register(InscripcionRequest request) {
-        actividadService.findById(request.getActividadId());
+        actividadService.validateExists(request.getActividadId());
 
         if (repository.existsByActividadIdAndPersonaIdAndEstado(
                 request.getActividadId(), request.getPersonaId(), EstadoInscripcion.INSCRITA)) {

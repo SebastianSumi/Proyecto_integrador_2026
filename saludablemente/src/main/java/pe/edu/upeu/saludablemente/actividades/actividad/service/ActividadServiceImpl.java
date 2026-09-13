@@ -35,6 +35,11 @@ public class ActividadServiceImpl implements ActividadService {
     }
 
     @Override
+    public void validateExists(Long id) {
+        findActividad(id);
+    }
+
+    @Override
     @Transactional
     public ActividadResponse create(ActividadRequest request) {
         validarIntervaloHorario(request);

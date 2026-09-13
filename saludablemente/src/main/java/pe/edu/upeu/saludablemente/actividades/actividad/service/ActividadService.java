@@ -11,6 +11,8 @@ public interface ActividadService {
 
     ActividadResponse findById(Long id);
 
+    void validateExists(Long id);
+
     ActividadResponse create(ActividadRequest request);
 
     ActividadResponse update(Long id, ActividadRequest request);
