@@ -37,6 +37,7 @@ No se define aquí la firma Java, endpoint ni evento de esos contratos. Deben ac
 
 - `personaId` es obligatorio e inmutable después de crear la meta; representa al padre lógico de la Meta.
 - El núcleo no puede comprobar todavía que la persona exista o esté activa: esa validación se añadirá mediante el contrato público de Personal.
+- El repository consulta por personaId escalar. No requiere @EntityGraph, porque Meta no declara asociaciones JPA que cargar; se reevalúa solo si un contrato futuro justifica una asociación propia.
 - `valorActual` puede registrarse o actualizarse por la operación supervisada, pero Metas no lo deriva ni lo recalcula desde Evaluación Nutricional.
 - La confirmación de cumplimiento es explícita por el supervisor; no se deduce con `>=` ni `<=` porque la dirección depende del indicador.
 - Una meta `EN_CURSO` puede eliminarse. Una `CUMPLIDA` no se elimina para conservar el historial del objetivo alcanzado.
