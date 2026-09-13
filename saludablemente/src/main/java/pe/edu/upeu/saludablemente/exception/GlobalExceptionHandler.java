@@ -47,6 +47,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ActividadSolapadaException.class)
     public ResponseEntity<Map<String, Object>> handleScheduleConflict(ActividadSolapadaException exception) {
+        return conflictResponse(exception);
+    }
+
+    @ExceptionHandler(InscripcionVigenteException.class)
+    public ResponseEntity<Map<String, Object>> handleEnrollmentConflict(InscripcionVigenteException exception) {
+        return conflictResponse(exception);
+    }
+
+    private ResponseEntity<Map<String, Object>> conflictResponse(RuntimeException exception) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now().toString());
         body.put("status", HttpStatus.CONFLICT.value());

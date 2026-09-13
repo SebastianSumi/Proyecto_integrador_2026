@@ -38,7 +38,7 @@ Saludablemente está en reconstrucción controlada. La limpieza legacy fue ejecu
 
 Las capas `entity`, `dto`, `mapper`, `repository`, `service` y `controller` de `Actividad` están completadas. `ActividadServiceImpl` lista, obtiene, crea y actualiza dentro de fronteras transaccionales, y rechaza solapamientos de horario. `ActividadController` expone esas operaciones bajo `/api/v1/actividades`, valida los DTO de entrada y el manejo global centraliza 400, 404 y 409.
 
-Para `Inscripcion`, las capas `entity`, `dto`, `mapper` y `repository` están completadas. El repository declara únicamente la consulta derivada de existencia por actividad, persona y estado; el futuro service la usará con `INSCRITA` para impedir una segunda inscripción vigente. Service y controller permanecen diferidos; la unicidad no se implementa en el DTO ni en la entidad.
+Para `Inscripcion`, las capas `entity`, `dto`, `mapper`, `repository`, `service` y `controller` están completadas. El registro impide una segunda inscripción vigente con 409, y la cancelación se publica como transición idempotente bajo `/api/v1/inscripciones/{id}/cancelacion`; conserva el historial en vez de eliminarlo. La unicidad no se implementa en el DTO ni en la entidad.
 
 ## Documentos históricos
 
