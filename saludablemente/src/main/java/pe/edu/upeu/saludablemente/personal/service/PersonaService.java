@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PersonaService {
 
-    List<PersonaResponseDto> listar(boolean soloActivos);
+    List<PersonaResponseDto> listar(Boolean activo, String nombres, String celular);
 
     PersonaResponseDto obtener(Long idPersona);
 

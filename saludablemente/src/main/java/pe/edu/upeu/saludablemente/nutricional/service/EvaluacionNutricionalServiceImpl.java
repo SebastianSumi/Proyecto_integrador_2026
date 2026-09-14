@@ -1,12 +1,15 @@
 package pe.edu.upeu.saludablemente.nutricional.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upeu.saludablemente.exception.BusinessRuleException;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
 import pe.edu.upeu.saludablemente.nutricional.dto.DetalleBioquimicoDto;
+import pe.edu.upeu.saludablemente.nutricional.dto.EvaluacionNutricionalAgregadoDto;
 import pe.edu.upeu.saludablemente.nutricional.dto.EvaluacionNutricionalRequestDto;
+import pe.edu.upeu.saludablemente.nutricional.dto.EvaluacionNutricionalResumenDto;
 import pe.edu.upeu.saludablemente.nutricional.dto.EvaluacionNutricionalResponseDto;
 import pe.edu.upeu.saludablemente.nutricional.entity.DetalleAntropometrico;
 import pe.edu.upeu.saludablemente.nutricional.entity.DetalleBioquimico;
@@ -19,6 +22,7 @@ import pe.edu.upeu.saludablemente.personal.service.PersonaService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,22 +37,40 @@ public class EvaluacionNutricionalServiceImpl implements EvaluacionNutricionalSe
 
     @Override
     @Transactional(readOnly = true)
-    public List<EvaluacionNutricionalResponseDto> listar() {
-        return evaluacionNutricionalRepository.findAll().stream().map(nutricionalMapper::toResponse).toList();
+    public List<EvaluacionNutricionalResponseDto> listar(Long personaId,
+                                                         EstadoEvaluacionNutricional estado,
+                                                         String periodoSemestral,
+                                                         LocalDate desde,
+                                                         LocalDate hasta) {
+        validarPersonaSiCorresponde(personaId);
+        return evaluacionNutricionalRepository.buscar(personaId, estado, periodoSemestral, desde, hasta, Sort.by("id"))
+                .stream()
+                .map(nutricionalMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EvaluacionNutricionalResumenDto> listarResumen(Long personaId,
+                                                               EstadoEvaluacionNutricional estado,
+                                                               String periodoSemestral,
+                                                               LocalDate desde,
+                                                               LocalDate hasta) {
+        validarPersonaSiCorresponde(personaId);
+        return evaluacionNutricionalRepository.buscarResumen(personaId, estado, periodoSemestral, desde, hasta, Sort.by("id"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public EvaluacionNutricionalAgregadoDto obtenerAgregados(Long personaId, EstadoEvaluacionNutricional estado) {
+        validarPersonaSiCorresponde(personaId);
+        return evaluacionNutricionalRepository.agregados(personaId, estado);
     }
 
     @Override
     @Transactional(readOnly = true)
     public EvaluacionNutricionalResponseDto obtener(Long idEvaluacion) {
         return nutricionalMapper.toResponse(buscarOFallar(idEvaluacion));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<EvaluacionNutricionalResponseDto> listarPorPersona(Long idPersona) {
-        personaService.obtener(idPersona);
-        return evaluacionNutricionalRepository.findByIdPersona(idPersona).stream()
-                .map(nutricionalMapper::toResponse).toList();
     }
 
     @Override
@@ -89,6 +111,12 @@ public class EvaluacionNutricionalServiceImpl implements EvaluacionNutricionalSe
     @Transactional
     public void eliminar(Long idEvaluacion) {
         evaluacionNutricionalRepository.delete(buscarOFallar(idEvaluacion));
+    }
+
+    private void validarPersonaSiCorresponde(Long personaId) {
+        if (personaId != null) {
+            personaService.obtener(personaId);
+        }
     }
 
     private EvaluacionNutricional buscarOFallar(Long idEvaluacion) {

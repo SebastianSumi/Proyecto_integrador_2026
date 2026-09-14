@@ -29,11 +29,13 @@ public class CatalogoPruebaController {
 
     private final CatalogoPruebaService catalogoPruebaService;
 
-    @Operation(summary = "Lista el catalogo de pruebas fisicas (por defecto, solo activos)")
+    @Operation(summary = "Lista el catalogo de pruebas fisicas (por defecto, solo activos); admite filtro por nombre")
     @GetMapping
     public ResponseEntity<List<CatalogoPruebaDto>> listar(
-            @RequestParam(defaultValue = "true") boolean soloActivos) {
-        return ResponseEntity.ok(catalogoPruebaService.listar(soloActivos));
+            @RequestParam(defaultValue = "true") boolean soloActivos,
+            @RequestParam(required = false) String nombre) {
+        Boolean activo = soloActivos ? true : null;
+        return ResponseEntity.ok(catalogoPruebaService.listar(activo, nombre));
     }
 
     @Operation(summary = "Consulta una prueba del catalogo por id")

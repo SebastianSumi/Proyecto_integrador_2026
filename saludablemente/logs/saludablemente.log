@@ -85,3 +85,257 @@
 2026-09-13 14:33:49.198 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-09-13 14:33:49.230 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2026-09-13 14:33:49.230 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-09-13 19:07:00.866 [] INFO  p.e.u.s.a.c.CatalogoPruebaControllerTest - Starting CatalogoPruebaControllerTest using Java 21.0.12.1 with PID 32 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:07:00.869 [] DEBUG p.e.u.s.a.c.CatalogoPruebaControllerTest - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-13 19:07:00.871 [] INFO  p.e.u.s.a.c.CatalogoPruebaControllerTest - The following 1 profile is active: "dev"
+2026-09-13 19:07:10.910 [] DEBUG p.e.u.s.filter.CorrelationIdFilter - Filter 'correlationIdFilter' configured for use
+2026-09-13 19:07:10.931 [] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-09-13 19:07:10.932 [] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-09-13 19:07:10.947 [] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 12 ms
+2026-09-13 19:07:11.048 [] INFO  p.e.u.s.a.c.CatalogoPruebaControllerTest - Started CatalogoPruebaControllerTest in 13.529 seconds (process running for 19.647)
+2026-09-13 19:07:16.581 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.aptitudfisica.controller.EvaluacionAptitudControllerTest]: EvaluacionAptitudControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:16.641 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.aptitudfisica.controller.EvaluacionAptitudControllerTest
+2026-09-13 19:07:16.643 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.aptitudfisica.controller.EvaluacionAptitudControllerTest]: EvaluacionAptitudControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:16.724 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.aptitudfisica.controller.EvaluacionAptitudControllerTest
+2026-09-13 19:07:16.753 [] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-09-13 19:07:17.003 [] INFO  p.e.u.s.a.c.EvaluacionAptitudControllerTest - Starting EvaluacionAptitudControllerTest using Java 21.0.12.1 with PID 32 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:07:17.004 [] DEBUG p.e.u.s.a.c.EvaluacionAptitudControllerTest - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-13 19:07:17.004 [] INFO  p.e.u.s.a.c.EvaluacionAptitudControllerTest - The following 1 profile is active: "dev"
+2026-09-13 19:07:19.784 [] DEBUG p.e.u.s.filter.CorrelationIdFilter - Filter 'correlationIdFilter' configured for use
+2026-09-13 19:07:19.784 [] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-09-13 19:07:19.784 [] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-09-13 19:07:19.784 [] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2026-09-13 19:07:19.853 [] INFO  p.e.u.s.a.c.EvaluacionAptitudControllerTest - Started EvaluacionAptitudControllerTest in 3.101 seconds (process running for 28.458)
+2026-09-13 19:07:20.577 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.aptitudfisica.repository.EvaluacionAptitudRepositoryTest]: EvaluacionAptitudRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:20.870 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.aptitudfisica.repository.EvaluacionAptitudRepositoryTest
+2026-09-13 19:07:20.879 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.aptitudfisica.repository.EvaluacionAptitudRepositoryTest]: EvaluacionAptitudRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:20.985 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.aptitudfisica.repository.EvaluacionAptitudRepositoryTest
+2026-09-13 19:07:21.026 [] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-09-13 19:07:21.285 [] INFO  p.e.u.s.a.r.EvaluacionAptitudRepositoryTest - Starting EvaluacionAptitudRepositoryTest using Java 21.0.12.1 with PID 32 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:07:21.287 [] INFO  p.e.u.s.a.r.EvaluacionAptitudRepositoryTest - The following 1 profile is active: "test"
+2026-09-13 19:07:22.873 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-13 19:07:23.273 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 349 ms. Found 9 JPA repository interfaces.
+2026-09-13 19:07:24.201 [] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-13 19:07:24.527 [] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.2.19.Final
+2026-09-13 19:07:26.030 [] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-13 19:07:26.164 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-13 19:07:27.622 [] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-09-13 19:07:27.632 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-13 19:07:27.913 [] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:testdb]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: TESTDB/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-13 19:07:32.087 [] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-13 19:07:32.407 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-13 19:07:32.747 [] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-13 19:07:40.652 [] INFO  p.e.u.s.a.r.EvaluacionAptitudRepositoryTest - Started EvaluacionAptitudRepositoryTest in 19.622 seconds (process running for 49.251)
+2026-09-13 19:07:42.081 [] INFO  c.tngtech.archunit.core.PluginLoader - Detected Java version 21.0.12.1
+2026-09-13 19:07:53.665 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.nutricional.controller.EvaluacionNutricionalControllerTest]: EvaluacionNutricionalControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:53.759 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.nutricional.controller.EvaluacionNutricionalControllerTest
+2026-09-13 19:07:53.759 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.nutricional.controller.EvaluacionNutricionalControllerTest]: EvaluacionNutricionalControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:53.782 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.nutricional.controller.EvaluacionNutricionalControllerTest
+2026-09-13 19:07:53.807 [] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-09-13 19:07:54.071 [] INFO  p.e.u.s.n.c.EvaluacionNutricionalControllerTest - Starting EvaluacionNutricionalControllerTest using Java 21.0.12.1 with PID 32 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:07:54.072 [] DEBUG p.e.u.s.n.c.EvaluacionNutricionalControllerTest - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-13 19:07:54.073 [] INFO  p.e.u.s.n.c.EvaluacionNutricionalControllerTest - The following 1 profile is active: "dev"
+2026-09-13 19:07:55.973 [] DEBUG p.e.u.s.filter.CorrelationIdFilter - Filter 'correlationIdFilter' configured for use
+2026-09-13 19:07:55.973 [] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-09-13 19:07:55.973 [] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-09-13 19:07:55.981 [] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 8 ms
+2026-09-13 19:07:56.015 [] INFO  p.e.u.s.n.c.EvaluacionNutricionalControllerTest - Started EvaluacionNutricionalControllerTest in 2.207 seconds (process running for 64.614)
+2026-09-13 19:07:56.419 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.nutricional.repository.EvaluacionNutricionalRepositoryTest]: EvaluacionNutricionalRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:56.549 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.nutricional.repository.EvaluacionNutricionalRepositoryTest
+2026-09-13 19:07:56.549 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.nutricional.repository.EvaluacionNutricionalRepositoryTest]: EvaluacionNutricionalRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:56.606 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.nutricional.repository.EvaluacionNutricionalRepositoryTest
+2026-09-13 19:07:56.951 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.personal.controller.PersonaControllerTest]: PersonaControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:57.145 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.personal.controller.PersonaControllerTest
+2026-09-13 19:07:57.147 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.personal.controller.PersonaControllerTest]: PersonaControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:57.177 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.personal.controller.PersonaControllerTest
+2026-09-13 19:07:57.185 [] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-09-13 19:07:57.564 [] INFO  p.e.u.s.p.c.PersonaControllerTest - Starting PersonaControllerTest using Java 21.0.12.1 with PID 32 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:07:57.564 [] DEBUG p.e.u.s.p.c.PersonaControllerTest - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-13 19:07:57.564 [] INFO  p.e.u.s.p.c.PersonaControllerTest - The following 1 profile is active: "dev"
+2026-09-13 19:07:58.531 [] DEBUG p.e.u.s.filter.CorrelationIdFilter - Filter 'correlationIdFilter' configured for use
+2026-09-13 19:07:58.532 [] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-09-13 19:07:58.532 [] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-09-13 19:07:58.534 [] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 2 ms
+2026-09-13 19:07:58.565 [] INFO  p.e.u.s.p.c.PersonaControllerTest - Started PersonaControllerTest in 1.381 seconds (process running for 67.164)
+2026-09-13 19:07:58.834 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.personal.repository.PersonaRepositoryTest]: PersonaRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:58.980 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.personal.repository.PersonaRepositoryTest
+2026-09-13 19:07:58.981 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.personal.repository.PersonaRepositoryTest]: PersonaRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:59.036 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.personal.repository.PersonaRepositoryTest
+2026-09-13 19:07:59.560 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.SaludablementeApplicationTests]: SaludablementeApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:59.606 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.SaludablementeApplicationTests
+2026-09-13 19:07:59.614 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.SaludablementeApplicationTests]: SaludablementeApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:07:59.616 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.SaludablementeApplicationTests
+2026-09-13 19:07:59.626 [] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-09-13 19:07:59.880 [] INFO  p.e.u.s.SaludablementeApplicationTests - Starting SaludablementeApplicationTests using Java 21.0.12.1 with PID 32 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:07:59.880 [] INFO  p.e.u.s.SaludablementeApplicationTests - The following 1 profile is active: "test"
+2026-09-13 19:08:04.171 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-13 19:08:04.337 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 162 ms. Found 9 JPA repository interfaces.
+2026-09-13 19:08:05.589 [] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-13 19:08:05.704 [] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-13 19:08:05.708 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Starting...
+2026-09-13 19:08:05.717 [] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:testdb user=SA
+2026-09-13 19:08:05.717 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Start completed.
+2026-09-13 19:08:05.719 [] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:testdb]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: TESTDB/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-13 19:08:06.128 [] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-13 19:08:06.204 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-13 19:08:07.036 [] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-13 19:08:09.069 [] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2026-09-13 19:08:09.278 [] INFO  o.s.s.config.TaskSchedulerRouter - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+2026-09-13 19:08:09.286 [] INFO  p.e.u.s.SaludablementeApplicationTests - Started SaludablementeApplicationTests in 9.661 seconds (process running for 77.896)
+2026-09-13 19:08:09.311 [] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-09-13 19:08:09.311 [] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-09-13 19:08:09.432 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-13 19:08:09.453 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-13 19:08:09.465 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-09-13 19:08:09.488 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-13 19:08:09.491 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Shutdown initiated...
+2026-09-13 19:08:09.543 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Shutdown completed.
+2026-09-13 19:12:17.632 [] INFO  p.e.u.s.a.c.CatalogoPruebaControllerTest - Starting CatalogoPruebaControllerTest using Java 21.0.12.1 with PID 12748 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:12:17.635 [] DEBUG p.e.u.s.a.c.CatalogoPruebaControllerTest - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-13 19:12:17.637 [] INFO  p.e.u.s.a.c.CatalogoPruebaControllerTest - The following 1 profile is active: "dev"
+2026-09-13 19:12:28.299 [] DEBUG p.e.u.s.filter.CorrelationIdFilter - Filter 'correlationIdFilter' configured for use
+2026-09-13 19:12:28.320 [] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-09-13 19:12:28.321 [] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-09-13 19:12:28.337 [] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 5 ms
+2026-09-13 19:12:28.431 [] INFO  p.e.u.s.a.c.CatalogoPruebaControllerTest - Started CatalogoPruebaControllerTest in 13.593 seconds (process running for 19.013)
+2026-09-13 19:12:30.147 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.aptitudfisica.controller.EvaluacionAptitudControllerTest]: EvaluacionAptitudControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:12:30.237 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.aptitudfisica.controller.EvaluacionAptitudControllerTest
+2026-09-13 19:12:30.239 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.aptitudfisica.controller.EvaluacionAptitudControllerTest]: EvaluacionAptitudControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:12:30.322 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.aptitudfisica.controller.EvaluacionAptitudControllerTest
+2026-09-13 19:12:30.339 [] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-09-13 19:12:30.519 [] INFO  p.e.u.s.a.c.EvaluacionAptitudControllerTest - Starting EvaluacionAptitudControllerTest using Java 21.0.12.1 with PID 12748 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:12:30.520 [] DEBUG p.e.u.s.a.c.EvaluacionAptitudControllerTest - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-13 19:12:30.521 [] INFO  p.e.u.s.a.c.EvaluacionAptitudControllerTest - The following 1 profile is active: "dev"
+2026-09-13 19:12:31.908 [] DEBUG p.e.u.s.filter.CorrelationIdFilter - Filter 'correlationIdFilter' configured for use
+2026-09-13 19:12:31.910 [] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-09-13 19:12:31.920 [] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-09-13 19:12:31.925 [] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 4 ms
+2026-09-13 19:12:31.949 [] INFO  p.e.u.s.a.c.EvaluacionAptitudControllerTest - Started EvaluacionAptitudControllerTest in 1.611 seconds (process running for 22.532)
+2026-09-13 19:12:32.586 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.aptitudfisica.repository.EvaluacionAptitudRepositoryTest]: EvaluacionAptitudRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:12:32.745 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.aptitudfisica.repository.EvaluacionAptitudRepositoryTest
+2026-09-13 19:12:32.746 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.aptitudfisica.repository.EvaluacionAptitudRepositoryTest]: EvaluacionAptitudRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:12:32.810 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.aptitudfisica.repository.EvaluacionAptitudRepositoryTest
+2026-09-13 19:12:32.821 [] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-09-13 19:12:32.979 [] INFO  p.e.u.s.a.r.EvaluacionAptitudRepositoryTest - Starting EvaluacionAptitudRepositoryTest using Java 21.0.12.1 with PID 12748 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:12:32.980 [] INFO  p.e.u.s.a.r.EvaluacionAptitudRepositoryTest - The following 1 profile is active: "test"
+2026-09-13 19:12:33.778 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-13 19:12:34.087 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 255 ms. Found 9 JPA repository interfaces.
+2026-09-13 19:12:34.818 [] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-13 19:12:35.145 [] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.2.19.Final
+2026-09-13 19:12:36.616 [] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-13 19:12:36.877 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-13 19:12:38.535 [] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-09-13 19:12:38.539 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-13 19:12:38.823 [] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:testdb]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: TESTDB/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-13 19:12:43.099 [] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-13 19:12:43.396 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-13 19:12:43.776 [] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-13 19:12:53.189 [] INFO  p.e.u.s.a.r.EvaluacionAptitudRepositoryTest - Started EvaluacionAptitudRepositoryTest in 20.339 seconds (process running for 43.772)
+2026-09-13 19:12:56.706 [] INFO  c.tngtech.archunit.core.PluginLoader - Detected Java version 21.0.12.1
+2026-09-13 19:13:08.242 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.nutricional.controller.EvaluacionNutricionalControllerTest]: EvaluacionNutricionalControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:13:08.327 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.nutricional.controller.EvaluacionNutricionalControllerTest
+2026-09-13 19:13:08.327 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.nutricional.controller.EvaluacionNutricionalControllerTest]: EvaluacionNutricionalControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:13:08.351 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.nutricional.controller.EvaluacionNutricionalControllerTest
+2026-09-13 19:13:08.374 [] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-09-13 19:13:08.578 [] INFO  p.e.u.s.n.c.EvaluacionNutricionalControllerTest - Starting EvaluacionNutricionalControllerTest using Java 21.0.12.1 with PID 12748 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:13:08.578 [] DEBUG p.e.u.s.n.c.EvaluacionNutricionalControllerTest - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-13 19:13:08.578 [] INFO  p.e.u.s.n.c.EvaluacionNutricionalControllerTest - The following 1 profile is active: "dev"
+2026-09-13 19:13:12.073 [] DEBUG p.e.u.s.filter.CorrelationIdFilter - Filter 'correlationIdFilter' configured for use
+2026-09-13 19:13:12.073 [] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-09-13 19:13:12.073 [] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-09-13 19:13:12.073 [] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2026-09-13 19:13:12.090 [] INFO  p.e.u.s.n.c.EvaluacionNutricionalControllerTest - Started EvaluacionNutricionalControllerTest in 3.729 seconds (process running for 62.679)
+2026-09-13 19:13:12.415 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.nutricional.repository.EvaluacionNutricionalRepositoryTest]: EvaluacionNutricionalRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:13:12.536 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.nutricional.repository.EvaluacionNutricionalRepositoryTest
+2026-09-13 19:13:12.536 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.nutricional.repository.EvaluacionNutricionalRepositoryTest]: EvaluacionNutricionalRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:13:12.578 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.nutricional.repository.EvaluacionNutricionalRepositoryTest
+2026-09-13 19:13:13.132 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.personal.controller.PersonaControllerTest]: PersonaControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:13:13.240 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.personal.controller.PersonaControllerTest
+2026-09-13 19:13:13.240 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.personal.controller.PersonaControllerTest]: PersonaControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:13:13.257 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.personal.controller.PersonaControllerTest
+2026-09-13 19:13:13.273 [] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-09-13 19:13:13.382 [] INFO  p.e.u.s.p.c.PersonaControllerTest - Starting PersonaControllerTest using Java 21.0.12.1 with PID 12748 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:13:13.382 [] DEBUG p.e.u.s.p.c.PersonaControllerTest - Running with Spring Boot v4.0.7, Spring v7.0.8
+2026-09-13 19:13:13.382 [] INFO  p.e.u.s.p.c.PersonaControllerTest - The following 1 profile is active: "dev"
+2026-09-13 19:13:14.965 [] DEBUG p.e.u.s.filter.CorrelationIdFilter - Filter 'correlationIdFilter' configured for use
+2026-09-13 19:13:14.965 [] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-09-13 19:13:14.965 [] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-09-13 19:13:14.965 [] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2026-09-13 19:13:14.991 [] INFO  p.e.u.s.p.c.PersonaControllerTest - Started PersonaControllerTest in 1.718 seconds (process running for 65.582)
+2026-09-13 19:13:15.216 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.personal.repository.PersonaRepositoryTest]: PersonaRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:13:15.342 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.personal.repository.PersonaRepositoryTest
+2026-09-13 19:13:15.342 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.personal.repository.PersonaRepositoryTest]: PersonaRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:13:15.381 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.personal.repository.PersonaRepositoryTest
+2026-09-13 19:13:15.677 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.SaludablementeApplicationTests]: SaludablementeApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:13:15.751 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.SaludablementeApplicationTests
+2026-09-13 19:13:15.759 [] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [pe.edu.upeu.saludablemente.SaludablementeApplicationTests]: SaludablementeApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-13 19:13:15.761 [] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration pe.edu.upeu.saludablemente.SaludablementeApplication for test class pe.edu.upeu.saludablemente.SaludablementeApplicationTests
+2026-09-13 19:13:15.769 [] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2026-09-13 19:13:15.955 [] INFO  p.e.u.s.SaludablementeApplicationTests - Starting SaludablementeApplicationTests using Java 21.0.12.1 with PID 12748 (started by ASUS in D:\T\02_Proyectos\Proyecto_integrador_2026\saludablemente)
+2026-09-13 19:13:15.957 [] INFO  p.e.u.s.SaludablementeApplicationTests - The following 1 profile is active: "test"
+2026-09-13 19:13:17.803 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-13 19:13:17.970 [] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 144 ms. Found 9 JPA repository interfaces.
+2026-09-13 19:13:19.530 [] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-13 19:13:20.147 [] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-13 19:13:20.156 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Starting...
+2026-09-13 19:13:20.164 [] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:testdb user=SA
+2026-09-13 19:13:20.164 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Start completed.
+2026-09-13 19:13:20.164 [] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:testdb]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: TESTDB/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-13 19:13:21.251 [] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-13 19:13:21.555 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-13 19:13:22.903 [] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-13 19:13:25.496 [] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2026-09-13 19:13:25.860 [] INFO  o.s.s.config.TaskSchedulerRouter - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+2026-09-13 19:13:25.870 [] INFO  p.e.u.s.SaludablementeApplicationTests - Started SaludablementeApplicationTests in 10.101 seconds (process running for 76.456)
+2026-09-13 19:13:25.887 [] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-09-13 19:13:25.887 [] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-09-13 19:13:26.019 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-13 19:13:26.043 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-13 19:13:26.087 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-09-13 19:13:26.104 [] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-13 19:13:26.112 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Shutdown initiated...
+2026-09-13 19:13:26.128 [] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Shutdown completed.

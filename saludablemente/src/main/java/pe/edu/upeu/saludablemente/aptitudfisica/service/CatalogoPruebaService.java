@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CatalogoPruebaService {
 
-    List<CatalogoPruebaDto> listar(boolean soloActivos);
+    List<CatalogoPruebaDto> listar(Boolean activo, String nombre);
 
     CatalogoPruebaDto obtener(Long id);
 

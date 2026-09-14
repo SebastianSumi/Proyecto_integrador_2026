@@ -30,11 +30,14 @@ public class PersonaController {
 
     private final PersonaService personaService;
 
-    @Operation(summary = "Lista el personal registrado (por defecto, solo activos)")
+    @Operation(summary = "Lista el personal registrado (por defecto, solo activos); admite filtros dinamicos")
     @GetMapping
     public ResponseEntity<List<PersonaResponseDto>> listar(
-            @RequestParam(defaultValue = "true") boolean soloActivos) {
-        return ResponseEntity.ok(personaService.listar(soloActivos));
+            @RequestParam(defaultValue = "true") boolean soloActivos,
+            @RequestParam(required = false) String nombres,
+            @RequestParam(required = false) String celular) {
+        Boolean activo = soloActivos ? true : null;
+        return ResponseEntity.ok(personaService.listar(activo, nombres, celular));
     }
 
     @Operation(summary = "Consulta a una persona por id")

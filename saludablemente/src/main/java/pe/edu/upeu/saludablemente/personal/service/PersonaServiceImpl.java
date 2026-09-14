@@ -1,6 +1,7 @@
 package pe.edu.upeu.saludablemente.personal.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upeu.saludablemente.exception.BusinessRuleException;
@@ -39,9 +40,11 @@ public class PersonaServiceImpl implements PersonaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PersonaResponseDto> listar(boolean soloActivos) {
-        List<Persona> personas = soloActivos ? personaRepository.findByActivoTrue() : personaRepository.findAll();
-        return personas.stream().map(personaMapper::toResponse).toList();
+    public List<PersonaResponseDto> listar(Boolean activo, String nombres, String celular) {
+        return personaRepository.buscar(activo, nombres, celular, Sort.by("id"))
+                .stream()
+                .map(personaMapper::toResponse)
+                .toList();
     }
 
     @Override

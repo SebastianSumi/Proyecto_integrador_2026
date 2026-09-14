@@ -11,6 +11,8 @@ import pe.edu.upeu.saludablemente.aptitudfisica.service.CatalogoPruebaService;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -69,5 +71,15 @@ class CatalogoPruebaControllerTest {
 
         mockMvc.perform(get("/api/v1/catalogo-pruebas/{id}", 99L))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void listarConFiltroNombreRetorna200() throws Exception {
+        when(catalogoPruebaService.listar(any(), any()))
+                .thenReturn(List.of(CatalogoPruebaDto.builder().idPrueba(1L).nombrePrueba("Carrera 100m").build()));
+
+        mockMvc.perform(get("/api/v1/catalogo-pruebas").param("nombre", "carrera"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nombrePrueba").value("Carrera 100m"));
     }
 }

@@ -7,7 +7,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import pe.edu.upeu.saludablemente.aptitudfisica.dto.DetallePruebaFisicaDto;
+import pe.edu.upeu.saludablemente.aptitudfisica.dto.EvaluacionAptitudAgregadoDto;
 import pe.edu.upeu.saludablemente.aptitudfisica.dto.EvaluacionAptitudRequestDto;
+import pe.edu.upeu.saludablemente.aptitudfisica.dto.EvaluacionAptitudResumenDto;
 import pe.edu.upeu.saludablemente.aptitudfisica.dto.EvaluacionAptitudResponseDto;
 import pe.edu.upeu.saludablemente.aptitudfisica.service.EvaluacionAptitudService;
 import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
@@ -82,5 +84,32 @@ class EvaluacionAptitudControllerTest {
 
         mockMvc.perform(get("/api/v1/evaluaciones-aptitud/{id}", 99L))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void listarResumenRetorna200() throws Exception {
+        when(evaluacionAptitudService.listarResumen(any(), any(), any(), any()))
+                .thenReturn(List.of(EvaluacionAptitudResumenDto.builder()
+                        .idEvaluacionAptitud(1L)
+                        .idPersona(1L)
+                        .cantidadDetalles(2)
+                        .build()));
+
+        mockMvc.perform(get("/api/v1/evaluaciones-aptitud/resumen").param("sincronizado", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].cantidadDetalles").value(2));
+    }
+
+    @Test
+    void agregadosRetorna200() throws Exception {
+        when(evaluacionAptitudService.obtenerAgregados(1L))
+                .thenReturn(EvaluacionAptitudAgregadoDto.builder()
+                        .totalEvaluaciones(3L)
+                        .sumaPuntajeGlobal(new BigDecimal("45.00"))
+                        .build());
+
+        mockMvc.perform(get("/api/v1/evaluaciones-aptitud/agregados").param("personaId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalEvaluaciones").value(3));
     }
 }

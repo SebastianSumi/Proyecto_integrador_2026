@@ -1,6 +1,7 @@
 package pe.edu.upeu.saludablemente.aptitudfisica.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upeu.saludablemente.aptitudfisica.dto.CatalogoPruebaDto;
@@ -20,11 +21,11 @@ public class CatalogoPruebaServiceImpl implements CatalogoPruebaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CatalogoPruebaDto> listar(boolean soloActivos) {
-        List<CatalogoPrueba> pruebas = soloActivos
-                ? catalogoPruebaRepository.findByActivoTrue()
-                : catalogoPruebaRepository.findAll();
-        return pruebas.stream().map(aptitudFisicaMapper::toCatalogoPruebaDto).toList();
+    public List<CatalogoPruebaDto> listar(Boolean activo, String nombre) {
+        return catalogoPruebaRepository.buscar(activo, nombre, Sort.by("id"))
+                .stream()
+                .map(aptitudFisicaMapper::toCatalogoPruebaDto)
+                .toList();
     }
 
     @Override

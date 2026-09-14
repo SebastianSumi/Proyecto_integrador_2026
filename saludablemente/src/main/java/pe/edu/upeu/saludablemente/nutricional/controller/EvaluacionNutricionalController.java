@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,10 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import pe.edu.upeu.saludablemente.nutricional.dto.DetalleBioquimicoDto;
+import pe.edu.upeu.saludablemente.nutricional.dto.EvaluacionNutricionalAgregadoDto;
 import pe.edu.upeu.saludablemente.nutricional.dto.EvaluacionNutricionalRequestDto;
+import pe.edu.upeu.saludablemente.nutricional.dto.EvaluacionNutricionalResumenDto;
 import pe.edu.upeu.saludablemente.nutricional.dto.EvaluacionNutricionalResponseDto;
+import pe.edu.upeu.saludablemente.nutricional.entity.EstadoEvaluacionNutricional;
 import pe.edu.upeu.saludablemente.nutricional.service.EvaluacionNutricionalService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(name = "Evaluacion Nutricional")
@@ -30,14 +35,34 @@ public class EvaluacionNutricionalController {
 
     private final EvaluacionNutricionalService evaluacionNutricionalService;
 
-    @Operation(summary = "Lista las evaluaciones nutricionales; admite navegacion por persona")
+    @Operation(summary = "Lista las evaluaciones nutricionales; admite filtros dinamicos (persona, estado, periodo y fechas)")
     @GetMapping
     public ResponseEntity<List<EvaluacionNutricionalResponseDto>> listar(
-            @RequestParam(required = false) Long personaId) {
-        if (personaId != null) {
-            return ResponseEntity.ok(evaluacionNutricionalService.listarPorPersona(personaId));
-        }
-        return ResponseEntity.ok(evaluacionNutricionalService.listar());
+            @RequestParam(required = false) Long personaId,
+            @RequestParam(required = false) EstadoEvaluacionNutricional estado,
+            @RequestParam(required = false) String periodoSemestral,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta) {
+        return ResponseEntity.ok(evaluacionNutricionalService.listar(personaId, estado, periodoSemestral, desde, hasta));
+    }
+
+    @Operation(summary = "Lista resumenes ligeros de evaluaciones nutricionales (proyeccion DTO)")
+    @GetMapping("/resumen")
+    public ResponseEntity<List<EvaluacionNutricionalResumenDto>> listarResumen(
+            @RequestParam(required = false) Long personaId,
+            @RequestParam(required = false) EstadoEvaluacionNutricional estado,
+            @RequestParam(required = false) String periodoSemestral,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta) {
+        return ResponseEntity.ok(evaluacionNutricionalService.listarResumen(personaId, estado, periodoSemestral, desde, hasta));
+    }
+
+    @Operation(summary = "Metricas de evaluaciones nutricionales (total y promedio de IMC y grasa)")
+    @GetMapping("/agregados")
+    public ResponseEntity<EvaluacionNutricionalAgregadoDto> agregados(
+            @RequestParam(required = false) Long personaId,
+            @RequestParam(required = false) EstadoEvaluacionNutricional estado) {
+        return ResponseEntity.ok(evaluacionNutricionalService.obtenerAgregados(personaId, estado));
     }
 
     @Operation(summary = "Consulta una evaluacion nutricional por id")

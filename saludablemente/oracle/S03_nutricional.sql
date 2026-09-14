@@ -1,0 +1,89 @@
+-- =============================================================================
+-- MÓDULO: NUTRICIONAL
+-- =============================================================================
+-- Esquema: SLB_NUTRICIONAL
+-- Tablas: EVALUACION_NUTRICIONAL, DETALLE_ANTROPOMETRICO, DETALLE_BIOQUIMICO
+
+-- =============================================================================
+-- 1. CREACIÓN DEL USUARIO / ESQUEMA DEL MÓDULO
+-- =============================================================================
+CREATE USER SLB_NUTRICIONAL IDENTIFIED BY "123456"
+  DEFAULT TABLESPACE USERS
+  TEMPORARY TABLESPACE TEMP
+  QUOTA UNLIMITED ON USERS;
+
+-- =============================================================================
+-- 2. ASIGNACIÓN DE PRIVILEGIOS
+-- =============================================================================
+GRANT CREATE SESSION TO SLB_NUTRICIONAL;
+GRANT CREATE TABLE TO SLB_NUTRICIONAL;
+GRANT CREATE SEQUENCE TO SLB_NUTRICIONAL;
+GRANT CREATE TRIGGER TO SLB_NUTRICIONAL;
+
+-- =============================================================================
+-- 3. CAMBIO DE CONTEXTO AL ESQUEMA CREADO
+-- =============================================================================
+ALTER SESSION SET CURRENT_SCHEMA = SLB_NUTRICIONAL;
+
+-- =============================================================================
+-- 4. CREACIÓN DE TABLAS DEL MÓDULO
+-- =============================================================================
+
+-- -----------------------------------------------------------------------------
+-- 4.1. EVALUACION_NUTRICIONAL
+-- ID_PERSONA: referencia lógica a SLB_PERSONAL.PERSONA (sin FK entre esquemas).
+-- -----------------------------------------------------------------------------
+CREATE TABLE EVALUACION_NUTRICIONAL (
+    ID_EVALUACION NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT PK_EVALUACION_NUTRICIONAL PRIMARY KEY,
+    ID_PERSONA NUMBER NOT NULL,
+    FECHA_EVALUACION DATE NOT NULL,
+    PERIODO_SEMESTRAL VARCHAR2(20) NOT NULL,
+    ESTADO_EVALUACION VARCHAR2(30) NOT NULL,
+    OBSERVACIONES CLOB,
+    FECHA_CREACION TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- -----------------------------------------------------------------------------
+-- 4.2. DETALLE_ANTROPOMETRICO
+-- -----------------------------------------------------------------------------
+CREATE TABLE DETALLE_ANTROPOMETRICO (
+    ID_ANTROPOMETRICO NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT PK_DETALLE_ANTROPOMETRICO PRIMARY KEY,
+    ESTATURA_CM NUMBER(5, 2) NOT NULL,
+    PESO_KG NUMBER(5, 2) NOT NULL,
+    PERIMETRO_ABDOMINAL_CM NUMBER(5, 2),
+    IMC NUMBER(4, 2) NOT NULL,
+    PORCENTAJE_GRASA NUMBER(4, 2),
+    PORCENTAJE_MASA_MUSCULAR NUMBER(4, 2),
+    PORCENTAJE_GRASA_VISCERAL NUMBER(4, 2),
+    DX_IMC VARCHAR2(50),
+    DX_PERIMETRO_ABDOMINAL VARCHAR2(50),
+    DX_GRASA VARCHAR2(50),
+    DX_MASA_MUSCULAR VARCHAR2(50),
+    DX_GRASA_VISCERAL VARCHAR2(50),
+    ID_EVALUACION NUMBER NOT NULL,
+    FECHA_CREACION TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT UQ_DETALLE_ANTROPOMETRICO_EVALUACION UNIQUE (ID_EVALUACION),
+    CONSTRAINT FK_DETALLE_ANTROPOMETRICO_EVALUACION FOREIGN KEY (ID_EVALUACION)
+        REFERENCES EVALUACION_NUTRICIONAL(ID_EVALUACION) ON DELETE CASCADE
+);
+
+-- -----------------------------------------------------------------------------
+-- 4.3. DETALLE_BIOQUIMICO
+-- -----------------------------------------------------------------------------
+CREATE TABLE DETALLE_BIOQUIMICO (
+    ID_BIOQUIMICO NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT PK_DETALLE_BIOQUIMICO PRIMARY KEY,
+    GLUCOSA NUMBER(5, 2),
+    COLESTEROL NUMBER(5, 2),
+    TRIGLICERIDOS NUMBER(5, 2),
+    PRESION_SISTOLICA NUMBER(3),
+    PRESION_DIASTOLICA NUMBER(3),
+    DX_BIOQUIMICO VARCHAR2(100),
+    ARCHIVO_ORIGEN VARCHAR2(255),
+    FECHA_IMPORTACION TIMESTAMP,
+    ID_USUARIO_IMPORTADOR NUMBER,
+    ID_EVALUACION NUMBER,
+    FECHA_CREACION TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT UQ_DETALLE_BIOQUIMICO_EVALUACION UNIQUE (ID_EVALUACION),
+    CONSTRAINT FK_DETALLE_BIOQUIMICO_EVALUACION FOREIGN KEY (ID_EVALUACION)
+        REFERENCES EVALUACION_NUTRICIONAL(ID_EVALUACION) ON DELETE CASCADE
+);

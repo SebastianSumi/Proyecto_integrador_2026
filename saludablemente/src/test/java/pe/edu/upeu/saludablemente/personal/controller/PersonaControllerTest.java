@@ -13,6 +13,7 @@ import pe.edu.upeu.saludablemente.personal.service.PersonaService;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -76,5 +77,15 @@ class PersonaControllerTest {
 
         mockMvc.perform(get("/api/v1/personas/{id}", 99L))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void listarConFiltrosDinamicosRetorna200() throws Exception {
+        when(personaService.listar(any(), any(), any()))
+                .thenReturn(List.of(PersonaResponseDto.builder().idPersona(1L).nombres("Juan").build()));
+
+        mockMvc.perform(get("/api/v1/personas").param("nombres", "Juan"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].idPersona").value(1));
     }
 }
