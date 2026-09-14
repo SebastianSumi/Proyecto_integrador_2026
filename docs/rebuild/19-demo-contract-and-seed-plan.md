@@ -21,7 +21,7 @@
 | W5 — real header-detail demo | Aptitud Física | `EvaluacionAptitudServiceImpl.registrarEvaluacion(...)` and `DetallePruebaFisica` | Seed catalog tests and a valid person first; prove success and rollback with one invalid detail. Aptitud owns aggregate calculations. |
 | W6 — remaining module demo records | Each module owner | Their own public services/entities | Seed only required minimal happy-path records and prerequisites; scalar cross-module IDs remain logical unless a public service contract exists. |
 
-**W3 status (2026-09-14):** Personal exposes `validateActivePersona(Long)` and covers active, missing, and inactive outcomes. Activities consumption remains W4 and must be implemented without importing a Personal repository.
+**W3/W4 status (2026-09-14):** Personal exposes `validateActivePersona(Long)` and covers active, missing, and inactive outcomes. Activities consumes it before agenda locking in create/update, with no Personal repository dependency. Seed design remains W5/W6.
 
 ## Ordered implementation plan
 

@@ -1,0 +1,409 @@
+package pe.edu.upeu.saludablemente.actividades.actividad.service;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadAgregado;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadRequest;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadDetalleResponse;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResumen;
+import pe.edu.upeu.saludablemente.actividades.actividad.entity.Actividad;
+import pe.edu.upeu.saludablemente.actividades.actividad.entity.EstadoActividad;
+import pe.edu.upeu.saludablemente.actividades.actividad.exception.ActividadSolapadaException;
+import pe.edu.upeu.saludablemente.actividades.actividad.exception.CriterioConsultaActividadInvalidoException;
+import pe.edu.upeu.saludablemente.actividades.actividad.exception.HorarioActividadInvalidoException;
+import pe.edu.upeu.saludablemente.actividades.actividad.mapper.ActividadMapper;
+import pe.edu.upeu.saludablemente.actividades.actividad.repository.ActividadRepository;
+import pe.edu.upeu.saludablemente.actividades.actividad.repository.AgendaActividadLock;
+import pe.edu.upeu.saludablemente.exception.ResourceNotFoundException;
+import pe.edu.upeu.saludablemente.exception.BusinessRuleException;
+import pe.edu.upeu.saludablemente.personal.service.PersonaService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class ActividadServiceImplTest {
+
+    @Mock
+    private ActividadRepository repository;
+
+    @Mock
+    private ActividadMapper mapper;
+
+    @Mock
+    private AgendaActividadLock agendaActividadLock;
+
+    @Mock
+    private PersonaService personaService;
+
+    @InjectMocks
+    private ActividadServiceImpl service;
+
+    @Test
+    void findsAllActivities() {
+        Actividad actividad = actividad(1L, "Caminata saludable");
+        ActividadResponse response = response(1L, "Caminata saludable");
+        when(repository.findAll()).thenReturn(List.of(actividad));
+        when(mapper.toResponse(actividad)).thenReturn(response);
+
+        assertEquals(List.of(response), service.findAll());
+
+        verify(repository, never()).findDetalleById(org.mockito.ArgumentMatchers.anyLong());
+    }
+
+    @Test
+    void returnsActivityById() {
+        Actividad actividad = actividad(1L, "Caminata saludable");
+        ActividadResponse response = response(1L, "Caminata saludable");
+        when(repository.findById(1L)).thenReturn(Optional.of(actividad));
+        when(mapper.toResponse(actividad)).thenReturn(response);
+
+        assertEquals(response, service.findById(1L));
+    }
+
+    @Test
+    void returnsDetailedActivityUsingTheDedicatedRepositoryQuery() {
+        Actividad actividad = actividad(1L, "Caminata saludable");
+        ActividadDetalleResponse response = ActividadDetalleResponse.builder()
+                .id(1L)
+                .nombre("Caminata saludable")
+                .build();
+        when(repository.findDetalleById(1L)).thenReturn(Optional.of(actividad));
+        when(mapper.toDetalleResponse(actividad)).thenReturn(response);
+
+        assertEquals(response, service.findDetalleById(1L));
+
+        verify(repository).findDetalleById(1L);
+        verify(mapper).toDetalleResponse(actividad);
+        verify(repository, never()).findById(1L);
+    }
+
+    @Test
+    void failsWhenDetailedActivityDoesNotExist() {
+        when(repository.findDetalleById(99L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> service.findDetalleById(99L));
+
+        assertEquals("Actividad with id 99 was not found", exception.getMessage());
+        verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void searchesActivitiesWithAnAllowedSort() {
+        LocalDate desde = LocalDate.of(2026, 9, 1);
+        LocalDate hasta = LocalDate.of(2026, 9, 30);
+        Sort sort = Sort.by(Sort.Order.desc("fecha"), Sort.Order.asc("nombre"));
+        ActividadResumen resumen = new ActividadResumen(
+                1L, "Caminata saludable", LocalDate.of(2026, 9, 12),
+                LocalTime.of(8, 0), LocalTime.of(9, 0), "Parque central", EstadoActividad.PROGRAMADA
+        );
+        when(repository.buscar(EstadoActividad.PROGRAMADA, desde, hasta, sort)).thenReturn(List.of(resumen));
+
+        assertEquals(List.of(resumen), service.search(EstadoActividad.PROGRAMADA, desde, hasta, sort));
+
+        verify(repository).buscar(EstadoActividad.PROGRAMADA, desde, hasta, sort);
+    }
+
+    @Test
+    void rejectsSearchWithAReversedDateRange() {
+        LocalDate desde = LocalDate.of(2026, 9, 30);
+        LocalDate hasta = LocalDate.of(2026, 9, 1);
+
+        CriterioConsultaActividadInvalidoException exception = assertThrows(
+                CriterioConsultaActividadInvalidoException.class,
+                () -> service.search(null, desde, hasta, Sort.unsorted())
+        );
+
+        assertEquals("La fecha desde no puede ser posterior a la fecha hasta", exception.getMessage());
+        verify(repository, never()).buscar(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void rejectsSearchWithAnUnauthorizedSortProperty() {
+        Sort sort = Sort.by("inscripciones.personaId");
+
+        CriterioConsultaActividadInvalidoException exception = assertThrows(
+                CriterioConsultaActividadInvalidoException.class,
+                () -> service.search(null, null, null, sort)
+        );
+
+        assertEquals("No se permite ordenar actividades por: inscripciones.personaId", exception.getMessage());
+        verify(repository, never()).buscar(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void returnsAggregatesForTheRequestedDateRange() {
+        LocalDate desde = LocalDate.of(2026, 9, 1);
+        LocalDate hasta = LocalDate.of(2026, 9, 30);
+        ActividadAgregado agregado = new ActividadAgregado(EstadoActividad.PROGRAMADA, 3L);
+        when(repository.agregados(desde, hasta)).thenReturn(List.of(agregado));
+
+        assertEquals(List.of(agregado), service.getAggregates(desde, hasta));
+
+        verify(repository).agregados(desde, hasta);
+    }
+
+    @Test
+    void rejectsAggregateWithAReversedDateRange() {
+        LocalDate desde = LocalDate.of(2026, 9, 30);
+        LocalDate hasta = LocalDate.of(2026, 9, 1);
+
+        CriterioConsultaActividadInvalidoException exception = assertThrows(
+                CriterioConsultaActividadInvalidoException.class,
+                () -> service.getAggregates(desde, hasta)
+        );
+
+        assertEquals("La fecha desde no puede ser posterior a la fecha hasta", exception.getMessage());
+        verify(repository, never()).agregados(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void failsWhenActivityDoesNotExist() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> service.findById(99L));
+
+        assertEquals("Actividad with id 99 was not found", exception.getMessage());
+    }
+
+    @Test
+    void validatesThatActivityExists() {
+        Actividad actividad = actividad(1L, "Caminata saludable");
+        when(repository.findById(1L)).thenReturn(Optional.of(actividad));
+
+        service.validateExists(1L);
+
+        verify(repository).findById(1L);
+        verify(repository, never()).findDetalleById(org.mockito.ArgumentMatchers.anyLong());
+        verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void failsValidationWhenActivityDoesNotExist() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> service.validateExists(99L));
+
+        assertEquals("Actividad with id 99 was not found", exception.getMessage());
+    }
+
+    @Test
+    void createsActivityWhenScheduleIsAvailable() {
+        ActividadRequest request = request("Caminata saludable");
+        Actividad mapped = actividad(null, "Caminata saludable");
+        Actividad saved = actividad(1L, "Caminata saludable");
+        ActividadResponse response = response(1L, "Caminata saludable");
+        when(repository.existeSolapamiento("Parque central", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), null))
+                .thenReturn(false);
+        when(mapper.toEntity(request)).thenReturn(mapped);
+        when(repository.save(mapped)).thenReturn(saved);
+        when(mapper.toResponse(saved)).thenReturn(response);
+
+        assertEquals(response, service.create(request));
+
+        verify(personaService).validateActivePersona(request.getCreadorId());
+    }
+
+    @Test
+    void locksScheduleBeforeCheckingOverlapWhenCreating() {
+        ActividadRequest request = request("Caminata saludable");
+        Actividad mapped = actividad(null, "Caminata saludable");
+        Actividad saved = actividad(1L, "Caminata saludable");
+        ActividadResponse response = response(1L, "Caminata saludable");
+        when(repository.existeSolapamiento("Parque central", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), null))
+                .thenReturn(false);
+        when(mapper.toEntity(request)).thenReturn(mapped);
+        when(repository.save(mapped)).thenReturn(saved);
+        when(mapper.toResponse(saved)).thenReturn(response);
+
+        service.create(request);
+
+        org.mockito.InOrder order = inOrder(agendaActividadLock, repository);
+        order.verify(agendaActividadLock).lock("Parque central", request.getFecha());
+        order.verify(repository).existeSolapamiento(
+                "Parque central", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), null
+        );
+    }
+
+    @Test
+    void rejectsCreationWhenScheduleOverlaps() {
+        ActividadRequest request = request("Caminata saludable");
+        when(repository.existeSolapamiento("Parque central", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), null))
+                .thenReturn(true);
+
+        assertThrows(ActividadSolapadaException.class, () -> service.create(request));
+
+        verify(mapper, never()).toEntity(request);
+        verify(repository, never()).save(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void rejectsCreationWhenCreatorDoesNotExistBeforeLockingSchedule() {
+        ActividadRequest request = request("Caminata saludable");
+        doThrow(new ResourceNotFoundException("Persona no encontrada: " + request.getCreadorId()))
+                .when(personaService).validateActivePersona(request.getCreadorId());
+
+        assertThrows(ResourceNotFoundException.class, () -> service.create(request));
+
+        verifyNoInteractions(agendaActividadLock, repository, mapper);
+    }
+
+    @Test
+    void rejectsUpdateWhenCreatorIsInactiveBeforeLockingSchedule() {
+        ActividadRequest request = request("Caminata actualizada");
+        Actividad existing = actividad(1L, "Caminata anterior");
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        doThrow(new BusinessRuleException("La persona con id " + request.getCreadorId() + " no se encuentra activa"))
+                .when(personaService).validateActivePersona(request.getCreadorId());
+
+        assertThrows(BusinessRuleException.class, () -> service.update(1L, request));
+
+        verifyNoInteractions(agendaActividadLock, mapper);
+        verify(repository, never()).save(existing);
+    }
+
+    @Test
+    void rejectsCreationWhenStartTimeIsNotBeforeEndTime() {
+        ActividadRequest request = request("Caminata saludable");
+        request.setHoraFin(request.getHoraInicio());
+
+        HorarioActividadInvalidoException exception = assertThrows(HorarioActividadInvalidoException.class,
+                () -> service.create(request));
+
+        assertEquals("La hora de inicio debe ser anterior a la hora de fin", exception.getMessage());
+        verifyNoInteractions(repository, mapper);
+    }
+
+    @Test
+    void updatesActivityWhileExcludingItsOwnSchedule() {
+        ActividadRequest request = request("Caminata actualizada");
+        Actividad existing = actividad(1L, "Caminata anterior");
+        Actividad saved = actividad(1L, "Caminata actualizada");
+        ActividadResponse response = response(1L, "Caminata actualizada");
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.existeSolapamiento("Parque central", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), 1L))
+                .thenReturn(false);
+        when(repository.save(existing)).thenReturn(saved);
+        when(mapper.toResponse(saved)).thenReturn(response);
+
+        assertEquals(response, service.update(1L, request));
+        assertEquals("Caminata actualizada", existing.getNombre());
+        verify(personaService).validateActivePersona(request.getCreadorId());
+    }
+
+    @Test
+    void locksChangedScheduleKeysInDeterministicOrderBeforeCheckingOverlap() {
+        ActividadRequest request = request("Caminata actualizada");
+        request.setLugar("Parque A");
+        request.setFecha(LocalDate.of(2026, 9, 13));
+        Actividad existing = actividad(1L, "Caminata anterior");
+        existing.setLugar("Sala Z");
+        existing.setFecha(LocalDate.of(2026, 9, 12));
+        Actividad saved = actividad(1L, "Caminata actualizada");
+        ActividadResponse response = response(1L, "Caminata actualizada");
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.existeSolapamiento("Parque A", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), 1L))
+                .thenReturn(false);
+        when(repository.save(existing)).thenReturn(saved);
+        when(mapper.toResponse(saved)).thenReturn(response);
+
+        service.update(1L, request);
+
+        org.mockito.InOrder order = inOrder(repository, agendaActividadLock);
+        order.verify(repository).findById(1L);
+        order.verify(agendaActividadLock).lock("Parque A", LocalDate.of(2026, 9, 13));
+        order.verify(agendaActividadLock).lock("Sala Z", LocalDate.of(2026, 9, 12));
+        order.verify(repository).existeSolapamiento(
+                "Parque A", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), 1L
+        );
+    }
+
+    @Test
+    void rejectsUpdateWhenScheduleOverlapsAnotherActivity() {
+        ActividadRequest request = request("Caminata actualizada");
+        Actividad existing = actividad(1L, "Caminata anterior");
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.existeSolapamiento("Parque central", request.getFecha(), request.getHoraInicio(), request.getHoraFin(), 1L))
+                .thenReturn(true);
+
+        assertThrows(ActividadSolapadaException.class, () -> service.update(1L, request));
+
+        verify(repository, never()).save(existing);
+    }
+
+    @Test
+    void declaresReadOnlyDefaultAndWriteTransactions() throws Exception {
+        Transactional classTransaction = ActividadServiceImpl.class.getAnnotation(Transactional.class);
+
+        assertTrue(classTransaction.readOnly());
+        assertFalse(ActividadServiceImpl.class.getMethod("create", ActividadRequest.class)
+                .getAnnotation(Transactional.class).readOnly());
+        assertFalse(ActividadServiceImpl.class.getMethod("update", Long.class, ActividadRequest.class)
+                .getAnnotation(Transactional.class).readOnly());
+        assertTrue(ActividadServiceImpl.class.getMethod("search", EstadoActividad.class, LocalDate.class,
+                LocalDate.class, Sort.class).getAnnotation(Transactional.class).readOnly());
+        assertTrue(ActividadServiceImpl.class.getMethod("getAggregates", LocalDate.class, LocalDate.class)
+                .getAnnotation(Transactional.class).readOnly());
+    }
+
+    private ActividadRequest request(String nombre) {
+        ActividadRequest request = new ActividadRequest();
+        request.setNombre(nombre);
+        request.setFecha(LocalDate.of(2026, 9, 12));
+        request.setHoraInicio(LocalTime.of(8, 0));
+        request.setHoraFin(LocalTime.of(9, 0));
+        request.setLugar("Parque central");
+        request.setCreadorId(7L);
+        return request;
+    }
+
+    private Actividad actividad(Long id, String nombre) {
+        Actividad actividad = new Actividad();
+        actividad.setId(id);
+        actividad.setNombre(nombre);
+        actividad.setFecha(LocalDate.of(2026, 9, 12));
+        actividad.setHoraInicio(LocalTime.of(8, 0));
+        actividad.setHoraFin(LocalTime.of(9, 0));
+        actividad.setLugar("Parque central");
+        actividad.setEstado(EstadoActividad.PROGRAMADA);
+        actividad.setCreadorId(7L);
+        return actividad;
+    }
+
+    private ActividadResponse response(Long id, String nombre) {
+        return ActividadResponse.builder()
+                .id(id)
+                .nombre(nombre)
+                .fecha(LocalDate.of(2026, 9, 12))
+                .horaInicio(LocalTime.of(8, 0))
+                .horaFin(LocalTime.of(9, 0))
+                .lugar("Parque central")
+                .estado(EstadoActividad.PROGRAMADA)
+                .creadorId(7L)
+                .build();
+    }
+}
