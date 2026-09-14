@@ -28,6 +28,7 @@ Saludablemente tiene las verticales Java de **Teams**, **Actividades**, **Inscri
 20. [Producto LP2 Unidad I de Saludablemente](lp2-demo.md)
 21. [Matriz de trazabilidad S06](rebuild/18-s06-evaluation-traceability.md)
 22. [Guía de merge de módulos de Pedro](merge-pedro-modules.md)
+23. [Plan de contrato y seed sintético para demo](rebuild/19-demo-contract-and-seed-plan.md)
 
 ## Estado de Teams
 
