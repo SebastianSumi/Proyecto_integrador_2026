@@ -1,13 +1,15 @@
 # Verifies static local Oracle harness assets without starting Docker or Oracle.
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$required = @('compose-dev.yml', '.env.example', 'src/main/resources/application-local-oracle.yml', 'database/oracle/local/README.md', 'database/oracle/local/CANONICAL_JPA_SCHEMA_INVENTORY.md', 'database/oracle/local/init/00-create-schema-users.sh', 'database/oracle/local/init/01-create-schema-objects.sh', 'database/oracle/local/init/99-grant-runtime-access.sh')
+$required = @('compose-dev.yml', '.env.example', 'src/main/resources/application.yaml', 'src/main/resources/application-dev.yml', 'database/oracle/local/README.md', 'database/oracle/local/CANONICAL_JPA_SCHEMA_INVENTORY.md', 'database/oracle/local/init/00-create-schema-users.sh', 'database/oracle/local/init/01-create-schema-objects.sh', 'database/oracle/local/init/02-create-runtime-objects.sh', 'database/oracle/local/init/02-event-publication.sql.template', 'database/oracle/local/init/99-grant-runtime-access.sh')
 foreach ($relative in $required) { if (-not (Test-Path (Join-Path $root $relative))) { throw "Missing required asset: $relative" } }
 $compose = Get-Content (Join-Path $root 'compose-dev.yml') -Raw
 if ($compose -notmatch 'gvenzl/oracle-free:23\.5-slim-faststart') { throw 'Compose must pin the reviewed Oracle image.' }
 if ($compose -match 'ORACLE_PASSWORD:\s*\d') { throw 'Compose contains a literal Oracle password.' }
 if ($compose -notmatch 'container-entrypoint-initdb\.d') { throw 'Compose must mount the local init scripts.' }
-$profile = Get-Content (Join-Path $root 'src/main/resources/application-local-oracle.yml') -Raw
+$application = Get-Content (Join-Path $root 'src/main/resources/application.yaml') -Raw
+if ($application -notmatch 'optional:file:\.env\.local\[\.properties\]') { throw 'Application config must optionally import .env.local.' }
+$profile = Get-Content (Join-Path $root 'src/main/resources/application-dev.yml') -Raw
 if ($profile -notmatch 'ddl-auto: validate') { throw 'Local Oracle profile must validate only.' }
 $initDirectory = Join-Path $root 'database/oracle/local/init'
 $initFiles = Get-ChildItem $initDirectory -File

@@ -1,6 +1,9 @@
 spring:
   application:
     name: saludablemente
+  config:
+    # Local-only Docker credentials are optional and ignored by Git. The file uses KEY=value syntax.
+    import: optional:file:.env.local[.properties]
   profiles:
     default: dev
 

@@ -7,18 +7,13 @@ This folder provisions a disposable **local** Oracle Free database from the curr
 1. Run the interactive helper from the repository root: `./scripts/setup-local-oracle.ps1`. It prompts without echoing passwords, validates identifiers/ports, and writes the Git-ignored `.env.local`. Keep passwords simple (letters, digits, underscore) because initialization passes them to SQL*Plus.
 2. Start a fresh database: `docker compose --env-file .env.local -f compose-dev.yml up -d oracle`.
 3. Wait until `docker compose --env-file .env.local -f compose-dev.yml ps` reports `healthy`.
-4. Load only the runtime datasource values into the current PowerShell session; Spring Boot does not read Docker Compose's `.env.local` automatically:
+4. Start the backend from the repository root:
 
    ```powershell
-   Get-Content .env.local | Where-Object { $_ -match '^(DB_URL|DB_USERNAME|DB_PASSWORD)=' } | ForEach-Object {
-     $key, $value = $_ -split '=', 2
-     Set-Item -Path "Env:$key" -Value $value
-   }
-   $env:SPRING_PROFILES_ACTIVE = 'local-oracle'
    mvn spring-boot:run
    ```
 
-   Hibernate uses `ddl-auto: validate`; it never creates tables.
+   `application.yaml` optionally imports the Git-ignored `.env.local`, and the default `dev` profile consumes its `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD`. Hibernate uses `ddl-auto: validate`; it never creates tables. No manual PowerShell environment export or `local-oracle` profile is required.
 5. Stop without deleting data: `docker compose --env-file .env.local -f compose-dev.yml down`.
 
 ## Reset
@@ -61,4 +56,4 @@ After V002 succeeds, run `../manual-migrations/V002__activity_schedule_runtime_g
 
 ## Verified local runtime evidence (2026-09-14)
 
-Oracle Free 23.5 started healthy at the local mapped port. The backend started with profile local-oracle and ddl-auto: validate, initialized the JPA EntityManagerFactory, and returned 200 from /actuator/health, /v3/api-docs, and /api/v1/teams. This is local Oracle evidence only; it does not prove BD2, manual V001/V002, or a concurrent Oracle workload.
+Oracle Free 23.5 started healthy at the local mapped port. The backend started with the default `dev` profile and `ddl-auto: validate`, initialized the JPA EntityManagerFactory, and returned 200 from /actuator/health, /v3/api-docs, and /api/v1/teams. This is local Oracle evidence only; it does not prove BD2, manual V001/V002, or a concurrent Oracle workload.
