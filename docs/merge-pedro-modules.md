@@ -22,10 +22,10 @@ Esta guía sirve para integrar Teams, Actividades, Inscripciones, Metas y su sop
 | Elemento | Decisión de integración | Motivo |
 |---|---|---|
 | Bootstrap | Un único `SaludablementeApplication` bajo `pe.edu.upeu.saludablemente`. | Detecta los componentes actuales y permite el arranque Spring Boot. |
-| CORS | Un `CorsFilter` para `/api/**`, configurable por `app.cors.*` y `CORS_*`. | Evita políticas contradictorias y orígenes codificados en controllers. |
+| CORS | Un `CorsConfigurationSource` consumido por Spring Security para `/api/**`, configurable por `app.cors.*` y `CORS_*`. | Evita políticas contradictorias y orígenes codificados en controllers. |
 | OpenAPI | `OpenApiConfig` con los metadatos de Swagger: título, versión y descripción. | Mejora la presentación del contrato; Springdoc sigue descubriendo endpoints automáticamente. |
 | Modularidad | Cada módulo conserva sus capas y solo consume servicios públicos de otros módulos. | Prohíbe acceder al repository de otro módulo. |
-| Verificación | `SaludablementeApplicationTest` con `ApplicationModules.of(...).verify()`. | Detecta dependencias físicas inválidas en la topología actual. |
+| Verificación | `ModularityTests` con `ApplicationModules.of(...).verify()`. | Detecta dependencias físicas inválidas en la topología actual. |
 
 ## Checklist obligatorio antes de aprobar el merge
 
