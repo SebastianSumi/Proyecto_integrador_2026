@@ -163,3 +163,17 @@ La calificación se asigna durante la revisión con evidencia en vivo. Esta tabl
 - Seguimiento operativo: [Matriz de trazabilidad S06](rebuild/18-s06-evaluation-traceability.md).
 - Alcance de Actividades: [requisitos y fundamento](rebuild/16-activities-module-requirements-and-rationale.md).
 - Alcance de Metas: [requisitos y dependencias](rebuild/17-metas-requirements-and-dependencies.md).
+## Local seed execution status
+
+The manual SQL seed was executed successfully using the `SALUDABLEMENTE_APP`
+account against the local Oracle container. Re-running the data scripts did not
+duplicate demo data. The recommendation confidence precision issue (`0.90`
+rounding to `1`) was corrected in commit `eb408a2`; after re-execution, the
+recommendation detail was inserted correctly.
+
+The backend and Swagger UI responded successfully on port `8080`, and the
+Maven suite passed locally with 210 tests and zero failures.
+
+This document must not be used as BD2/team evidence or as a statement that S06
+is complete. The next required evidence is the manual Swagger demonstration;
+BD2 validation remains a separate later activity.

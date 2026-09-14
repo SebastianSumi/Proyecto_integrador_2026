@@ -42,3 +42,25 @@
 - Aptitud Física persists its header and details atomically; its existing rollback test stays green.
 - Full Maven suite, local Oracle validation, static verifier, and `git diff --check` pass before demo claims.
 
+## Local execution evidence
+
+The manual Oracle demo seed has been executed successfully with the
+`SALUDABLEMENTE_APP` runtime account. The Oracle local container was healthy,
+the backend and Swagger UI answered successfully on port `8080`, and a second
+execution of the data scripts completed without duplicating the demo data.
+
+The initial recommendation confidence value required a precision correction:
+the value `0.90` was being rounded to `1`. The seed was corrected in commit
+`eb408a2` and re-executed; its dependent recommendation detail was inserted
+correctly.
+
+The Maven suite also passed locally: 210 tests, with zero failures.
+
+This is local Oracle evidence only. It is not yet evidence of execution on the
+team's BD2 environment and does not complete the S06 evaluation by itself.
+
+### Next evidence
+
+Run the manual Swagger demonstration against the seeded local database,
+including success and error scenarios, then record separate evidence after the
+team's BD2 environment is available.

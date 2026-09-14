@@ -52,3 +52,13 @@ Para `Inscripcion`, las capas `entity`, `dto`, `mapper`, `repository`, `service`
 
 `external-module-recommendations.md`, `next-iteration.md`, `pedro-module-roadmap.md` y `project-architecture.md` describen el legado eliminado. Se conservan como evidencia; no son instrucciones de implementación para la reconstrucción.
 
+## Current local demo evidence
+
+The local Oracle demo seed has been executed successfully and verified as
+idempotent by running the data scripts twice. The local Oracle container was
+healthy, and the backend and Swagger UI returned successfully on port `8080`.
+The local Maven suite passed with 210 tests and no failures.
+
+These results are local-only. The remaining steps are a manual Swagger demo and
+separate evidence against the team's BD2 environment; neither is implied by
+this local verification.
