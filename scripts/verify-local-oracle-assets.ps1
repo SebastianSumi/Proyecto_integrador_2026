@@ -14,4 +14,3 @@ $ddl = (Get-ChildItem (Join-Path $root 'database/oracle/local/init') -Filter '*.
 foreach ($table in $requiredTables) { if ($ddl -notmatch "CREATE TABLE $table") { throw "DDL omits mapped table: $table" } }
 Write-Output 'Local Oracle asset checks passed.'
 
-
