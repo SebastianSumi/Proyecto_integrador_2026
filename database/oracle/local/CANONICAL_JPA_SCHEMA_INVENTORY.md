@@ -152,4 +152,3 @@
 ## Explicitly out of scope
 
 This document does not create Docker assets, DDL, users, data, migrations, configuration, entities, tests, commits or a remote push. It also does not replace Oracle BD2 evidence; it prepares a reproducible local Oracle review baseline.
-
