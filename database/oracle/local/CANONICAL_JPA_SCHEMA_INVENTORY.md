@@ -15,7 +15,7 @@
 | Topic | Canonical decision |
 |---|---|
 | Source of truth | JPA `@Table`, `@Column`, identifier annotations and mapped associations in `src/main/java`. |
-| Application account | One least-privilege runtime account needs `CREATE SESSION` plus only the DML/sequence privileges granted by each owner. Do **not** grant `DBA`. |
+| Application account | One least-privilege runtime account owns `EVENT_PUBLICATION`, needs `CREATE SESSION`, and receives only the DML/sequence privileges granted by each owner. Do **not** grant `DBA`. |
 | IDs | `GenerationType.IDENTITY` requires Oracle identity columns; UUID mappings require `RAW(16)`; the one named sequence must exist exactly as mapped. |
 | Cross-module IDs | Scalar IDs such as `idPersona`, `idTeam`, `actividadId` are logical references unless an entity declares `@JoinColumn`; do not invent cross-schema FKs. |
 | Enum storage | Fields annotated `@Enumerated(EnumType.STRING)` require `VARCHAR2` sized for the mapped enum. |
@@ -125,7 +125,7 @@
 3. Create physical child tables and only the same-schema FKs listed above.
 4. Add unique constraints: person phone, credential hash, preference/evaluation one-to-ones, alert resolution, corrective-action code, attendance pair and retention type.
 5. Create the five module-owned mapped table sets whose existing SQL may be used only after column-by-column reconciliation: alert, audit, export, report and recommendation.
-6. Create `SALUDABLEMENTE_APP.EVENT_PUBLICATION` only if Spring Modulith persistent publication registry is enabled for the final runtime configuration.
+6. Create `SALUDABLEMENTE_APP.EVENT_PUBLICATION`, because `spring-modulith-starter-jpa` scans its current publication entity in every runtime. Create `EVENT_PUBLICATION_ARCHIVE` only if the team explicitly enables archive completion mode.
 7. Apply V001 then V002, after their preconditions confirm `SALUDABLEMENTE_OWNER` objects exist and are empty/consistent.
 8. Seed only the required `CATALOGO_PRUEBA` rows and test persons; run `ddl-auto: validate`, then integration tests.
 

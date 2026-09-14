@@ -24,6 +24,7 @@ Run it only when a fresh schema is intended. The init scripts run only for a new
 
 - Ten owner schemas from `CANONICAL_JPA_SCHEMA_INVENTORY.md`.
 - The least-privilege runtime user supplied through `DB_USERNAME`/`DB_PASSWORD`.
+- `SALUDABLEMENTE_APP.EVENT_PUBLICATION`, owned by the runtime account for Spring Modulith's current JPA publication mode.
 - All currently mapped tables, identity keys, `RAW(16)` UUID keys, composite keys, same-schema FKs and `SEQ_ACCION_CORRECTIVA`.
 - No FK for scalar cross-module IDs.
 
@@ -37,7 +38,7 @@ After V002 succeeds, run `../manual-migrations/V002__activity_schedule_runtime_g
 
 ## Deferred runtime validation
 
-- `spring-modulith-starter-jpa` is present. Before claiming a fully validated Oracle runtime, decide whether its persistent publication registry is enabled; create and grant its exact table only if the final configuration requires it.
+- `spring-modulith-starter-jpa` requires `EVENT_PUBLICATION` in the runtime schema and the harness provisions it. If the team switches Modulith completion mode to archive, add and validate `EVENT_PUBLICATION_ARCHIVE` before enabling that mode.
 - `NoticiaEntity.contenido` and `NotificacionEntity.mensaje` map with `@Lob`, while Oracle local DDL uses `CLOB`. The mapping is aligned; prove it with the first `ddl-auto: validate` Oracle boot.
 
 ## Boundaries
