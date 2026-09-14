@@ -11,7 +11,6 @@ services:
       ORACLE_PASSWORD: ${ORACLE_PASSWORD:?Set ORACLE_PASSWORD in .env.local}
       APP_USER: ${DB_USERNAME:-SALUDABLEMENTE_APP}
       APP_USER_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env.local}
-      ORACLE_DATABASE: FREEPDB1
       LOCAL_ORACLE_OWNER_PASSWORD: ${LOCAL_ORACLE_OWNER_PASSWORD:?Set LOCAL_ORACLE_OWNER_PASSWORD in .env.local}
     volumes:
       - oracle-data:/opt/oracle/oradata
