@@ -49,7 +49,9 @@ public class CatalogoPruebaServiceImpl implements CatalogoPruebaService {
         prueba.setNombrePrueba(request.getNombrePrueba());
         prueba.setUnidadMedida(request.getUnidadMedida());
         prueba.setDescripcion(request.getDescripcion());
-        prueba.setActivo(request.getActivo());
+        if (request.getActivo() != null) {
+            prueba.setActivo(request.getActivo());
+        }
         return aptitudFisicaMapper.toCatalogoPruebaDto(catalogoPruebaRepository.save(prueba));
     }
 

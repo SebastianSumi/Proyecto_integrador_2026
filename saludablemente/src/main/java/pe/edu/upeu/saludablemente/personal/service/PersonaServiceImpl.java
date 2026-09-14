@@ -84,6 +84,9 @@ public class PersonaServiceImpl implements PersonaService {
     @Transactional
     public PersonaResponseDto actualizar(Long idPersona, PersonaRequestDto request) {
         Persona persona = buscarOFallar(idPersona);
+        if (Boolean.FALSE.equals(persona.getActivo())) {
+            throw new BusinessRuleException("No se puede actualizar la persona con id " + idPersona + " porque se encuentra inactiva o anonimizada");
+        }
         validarCelularNoDuplicado(request.getCelular(), idPersona);
 
         persona.setIdTeam(request.getIdTeam());

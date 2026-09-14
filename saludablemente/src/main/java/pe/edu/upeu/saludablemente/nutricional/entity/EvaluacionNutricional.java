@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "evaluacion_nutricional")
+@Table(name = "EVALUACION_NUTRICIONAL", schema = "SLB_NUTRICIONAL")
 public class EvaluacionNutricional {
 
     @Id

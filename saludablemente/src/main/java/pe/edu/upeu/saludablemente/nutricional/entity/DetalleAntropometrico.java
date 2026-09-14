@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "detalle_antropometrico")
+@Table(name = "detalle_antropometrico",  schema = "SLB_NUTRICIONAL")
 public class DetalleAntropometrico {
 
     @Id

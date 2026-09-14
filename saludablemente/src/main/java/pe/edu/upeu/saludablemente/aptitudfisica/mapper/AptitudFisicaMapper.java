@@ -22,6 +22,8 @@ public interface AptitudFisicaMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "detalles", ignore = true)
+    @Mapping(target = "puntajeGlobal", ignore = true)
+    @Mapping(target = "diagnosticoAptitud", ignore = true)
     EvaluacionAptitud toEntity(EvaluacionAptitudRequestDto request);
 
     @Mapping(target = "idDetalleAptitud", source = "id")

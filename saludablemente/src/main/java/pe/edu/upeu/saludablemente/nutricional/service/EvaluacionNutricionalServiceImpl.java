@@ -95,14 +95,28 @@ public class EvaluacionNutricionalServiceImpl implements EvaluacionNutricionalSe
     public EvaluacionNutricionalResponseDto vincularBioquimico(Long idEvaluacion, DetalleBioquimicoDto detalleDto) {
         EvaluacionNutricional evaluacion = buscarOFallar(idEvaluacion);
 
-        DetalleBioquimico detalle = nutricionalMapper.toBioquimico(detalleDto);
-        detalle.setEvaluacionNutricional(evaluacion);
-        if (detalle.getFechaImportacion() == null) {
+        DetalleBioquimico detalle = evaluacion.getDetalleBioquimico();
+        if (detalle == null) {
+            detalle = nutricionalMapper.toBioquimico(detalleDto);
+            detalle.setEvaluacionNutricional(evaluacion);
+            evaluacion.setDetalleBioquimico(detalle);
+        } else {
+            detalle.setGlucosa(detalleDto.getGlucosa());
+            detalle.setColesterol(detalleDto.getColesterol());
+            detalle.setTrigliceridos(detalleDto.getTrigliceridos());
+            detalle.setPresionSistolica(detalleDto.getPresionSistolica());
+            detalle.setPresionDiastolica(detalleDto.getPresionDiastolica());
+            detalle.setArchivoOrigen(detalleDto.getArchivoOrigen());
+            detalle.setIdUsuarioImportador(detalleDto.getIdUsuarioImportador());
+        }
+
+        if (detalleDto.getFechaImportacion() != null) {
+            detalle.setFechaImportacion(detalleDto.getFechaImportacion());
+        } else if (detalle.getFechaImportacion() == null) {
             detalle.setFechaImportacion(LocalDateTime.now());
         }
         detalle.setDxBioquimico(diagnosticoBioquimico(detalle));
 
-        evaluacion.setDetalleBioquimico(detalle);
         evaluacion.setEstadoEvaluacion(EstadoEvaluacionNutricional.COMPLETA);
         return nutricionalMapper.toResponse(evaluacionNutricionalRepository.save(evaluacion));
     }

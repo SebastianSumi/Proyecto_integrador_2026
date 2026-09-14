@@ -14,6 +14,9 @@ import pe.edu.upeu.saludablemente.personal.entity.PreferenciaComunicacion;
 public interface PersonaMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "activo", ignore = true)
+    @Mapping(target = "preferenciaComunicacion", ignore = true)
+    @Mapping(target = "credenciales", ignore = true)
     Persona toEntity(PersonaRequestDto request);
 
     @Mapping(target = "idPersona", source = "id")

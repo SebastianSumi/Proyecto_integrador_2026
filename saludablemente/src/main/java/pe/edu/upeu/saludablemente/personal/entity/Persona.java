@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "persona")
+@Table(name = "PERSONA", schema = "SLB_PERSONAL")
 public class Persona {
 
     @Id
@@ -33,11 +33,11 @@ public class Persona {
     @Column(name = "celular", nullable = false, unique = true, length = 15)
     private String celular;
 
-    @Column(name = "fecha_nacimiento", nullable = false)
+    @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sexo", nullable = false, length = 10)
+    @Column(name = "sexo", length = 10)
     private Sexo sexo;
 
     @Column(name = "talla_polo", length = 10)

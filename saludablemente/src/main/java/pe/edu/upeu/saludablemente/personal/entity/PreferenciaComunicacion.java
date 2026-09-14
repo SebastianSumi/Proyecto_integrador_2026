@@ -11,7 +11,7 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "preferencia_comunicacion")
+@Table(name = "preferencia_comunicacion", schema = "SLB_PERSONAL")
 public class PreferenciaComunicacion {
 
     @Id

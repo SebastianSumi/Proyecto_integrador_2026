@@ -14,18 +14,21 @@ import pe.edu.upeu.saludablemente.nutricional.entity.EvaluacionNutricional;
 public interface NutricionalMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "evaluacionNutricional", ignore = true)
     DetalleAntropometrico toAntropometrico(DetalleAntropometricoDto dto);
 
     @Mapping(target = "idAntropometrico", source = "id")
     DetalleAntropometricoDto toAntropometricoDto(DetalleAntropometrico detalle);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "evaluacionNutricional", ignore = true)
     DetalleBioquimico toBioquimico(DetalleBioquimicoDto dto);
 
     @Mapping(target = "idBioquimico", source = "id")
     DetalleBioquimicoDto toBioquimicoDto(DetalleBioquimico detalle);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "detalleBioquimico", ignore = true)
     EvaluacionNutricional toEntity(EvaluacionNutricionalRequestDto request);
 
     @Mapping(target = "idEvaluacion", source = "id")
