@@ -18,7 +18,7 @@
 - **W4 – missing resource mapping:** complete for Recomendaciones IA. Missing recommendation detail/confirmation now uses shared `ResourceNotFoundException` and returns `404`.
 - **W5 – Team lifecycle:** confirmed logical state transition; no DELETE is required.
 
-## Remaining work before the seed
+## Seed implementation status`r`n`r`nManual, idempotent Oracle seed scripts are prepared under `database/oracle/demo/`. They were statically reviewed but deliberately **not executed**; the next evidence is a manual run against the local Oracle baseline, followed by Swagger checks.`r`n`r`n## Remaining work before live seed verification
 
 1. Update the module/API reference pages with the verified contracts above.
 2. Inventory every entity and its insertion prerequisites in dependency order.
@@ -41,3 +41,4 @@
 - A repeated seed run leaves synthetic record counts stable.
 - Aptitud Física persists its header and details atomically; its existing rollback test stays green.
 - Full Maven suite, local Oracle validation, static verifier, and `git diff --check` pass before demo claims.
+
