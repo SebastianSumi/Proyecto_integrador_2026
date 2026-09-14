@@ -1,0 +1,78 @@
+package pe.edu.upeu.saludablemente.actividades.actividad.controller;
+
+import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.web.SortDefault;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadRequest;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadDetalleResponse;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResponse;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadAgregado;
+import pe.edu.upeu.saludablemente.actividades.actividad.dto.ActividadResumen;
+import pe.edu.upeu.saludablemente.actividades.actividad.entity.EstadoActividad;
+import pe.edu.upeu.saludablemente.actividades.actividad.service.ActividadService;
+
+@RestController
+@RequestMapping("/api/v1/actividades")
+@RequiredArgsConstructor
+public class ActividadController {
+
+    private final ActividadService service;
+
+    @GetMapping
+    public List<ActividadResponse> findAll() {
+        return service.findAll();
+    }
+
+    @GetMapping("/busqueda")
+    public List<ActividadResumen> search(
+            @RequestParam(required = false) EstadoActividad estado,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
+            @SortDefault(sort = "fecha") Sort sort
+    ) {
+        return service.search(estado, desde, hasta, sort);
+    }
+
+    @GetMapping("/resumen")
+    public List<ActividadAgregado> getAggregates(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta
+    ) {
+        return service.getAggregates(desde, hasta);
+    }
+
+    @GetMapping("/{id}")
+    public ActividadResponse findById(@PathVariable Long id) {
+        return service.findById(id);
+    }
+
+    @GetMapping("/{id}/detalle")
+    public ActividadDetalleResponse findDetalleById(@PathVariable Long id) {
+        return service.findDetalleById(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ActividadResponse create(@Valid @RequestBody ActividadRequest request) {
+        return service.create(request);
+    }
+
+    @PutMapping("/{id}")
+    public ActividadResponse update(@PathVariable Long id, @Valid @RequestBody ActividadRequest request) {
+        return service.update(id, request);
+    }
+}

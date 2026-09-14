@@ -1,0 +1,74 @@
+# Contrato inicial del módulo Actividades
+
+## Decisión de frontera
+
+Actividades es un módulo transaccional de Pedro. Su agregado raíz es `Actividad`, responsable de programar una actividad. Ser transaccional no convierte automáticamente a `Asistencia` en una entidad interna: Asistencias pertenece a otro módulo y solo puede relacionarse mediante un contrato público futuro.
+
+## Estructura objetivo
+
+```text
+actividades/
+├── actividad/
+│   ├── entity/          # Actividad y EstadoActividad
+│   ├── dto/             # contratos HTTP futuros
+│   ├── mapper/          # conversiones futuras
+│   ├── repository/      # persistencia propia futura
+│   ├── service/         # reglas y frontera transaccional futura
+│   └── controller/      # API futura bajo /api/v1
+└── inscripcion/         # registro previo de una persona en una actividad
+    ├── entity/
+    ├── dto/
+    ├── mapper/
+    ├── repository/
+    ├── service/
+    └── controller/
+```
+
+## Entidad revisada
+
+`Actividad` mapea los hechos confirmados: identificador, nombre, fecha, hora de inicio, hora de fin, lugar, estado y creador. Usa `SALUDABLEMENTE_OWNER.ACTIVIDADES`, la misma convención física provisional de `Team`; ese nombre no constituye DDL ni cierra la migración Oracle. `EstadoActividad` inicia en `PROGRAMADA` y contempla `EN_CURSO`, `FINALIZADA` y `CANCELADA`.
+
+El creador se conserva como `creadorId`, no como relación JPA a una entidad de Seguridad inexistente. La futura capa de servicio validará esa dependencia mediante un contrato público. La regla de solapamiento por lugar tampoco vive aún en la entidad: requiere consultas y pertenece a servicio/repository.
+
+`LocalDate` y `LocalTime` preservan la semántica del modelo lógico en Java. No constituyen una decisión de DDL ni resuelven la traducción Oracle de `TIME`, que sigue pendiente.
+
+La entidad no contiene anotaciones Bean Validation ni reglas que consulten persistencia: las restricciones de forma están en `ActividadRequest` y las reglas de negocio en `ActividadService`. El servicio valida `horaInicio < horaFin` antes de consultar solapamientos y devuelve 400 para un intervalo inválido; la regla de solapamiento continúa siendo un conflicto 409.
+
+## Entidad de Inscripción
+
+`Inscripcion` representa el estado actual de la intención previa de participar. Conserva `actividadId` y `personaId` como identificadores escalares de escritura. Además, mantiene una relación JPA interna, LAZY y de solo lectura hacia `Actividad`, que permite navegar el detalle desde la actividad sin modificar el flujo de registro; no existe relación JPA hacia Personal. Sus marcas `inscritaEn` y `canceladaEn` expresan el ciclo vigente o cancelado de la misma inscripción, y `EstadoInscripcion` inicia en `INSCRITA` o puede pasar a `CANCELADA`.
+
+La regla acordada es una sola inscripción vigente por persona y actividad. Antes de consultar el duplicado, `InscripcionService` invoca `ActividadService.validateExists(actividadId)`: el contrato expresa solo la validación de existencia y conserva la respuesta 404 para una actividad inexistente, sin construir un DTO que no se usará. Luego consulta el repository con estado `INSCRITA` y responde conflicto 409 ante un duplicado vigente. Al cancelar, la transición `INSCRITA → CANCELADA` registra `canceladaEn`; repetir la cancelación es idempotente y devuelve la representación existente sin alterar esa marca. La entidad no consulta persistencia ni intenta resolver unicidad por sí sola.
+
+## DTO de Inscripción
+
+`InscripcionRequest` acepta exclusivamente `actividadId` y `personaId`, ambos obligatorios y positivos. `InscripcionResponse` expone identificador, IDs, estado y marcas de ciclo; estado, `inscritaEn` y `canceladaEn` permanecen bajo control del backend.
+
+## Límites actuales
+
+- `Inscripcion` es una decisión aprobada dentro de Actividades; entity, DTO, mapper, repository, service y controller están implementados. `InscripcionMapper` convierte request a entity ignorando id, estado y marcas de ciclo, que son gestionados por backend; la conversión a response expone el ciclo completo. `InscripcionRepository` hereda `JpaRepository<Inscripcion, Long>` y declara solamente `existsByActividadIdAndPersonaIdAndEstado`, usado por `InscripcionService` con `INSCRITA` para impedir una segunda inscripción vigente. El servicio lista, obtiene, registra y cancela de forma idempotente; conserva esa consulta para UX y ejecuta `saveAndFlush` al registrar. Tras aplicar la migración manual Oracle `V001__enrollment_active_uniqueness.sql`, solo la violación identificada de `UK_INSCRIPCION_VIGENTE` se traduce a 409; otros errores de integridad se propagan. El controller publica esas operaciones en `/api/v1/inscripciones`, con `POST` validado y `PATCH /{id}/cancelacion` para la transición que preserva historial.
+- `Asistencia` pertenece a Francisco; Actividades no accederá a su repository ni lo modelará como hijo interno.
+- `ActividadRequest` y `ActividadResponse` están implementados; request valida nombre, fecha, horarios, lugar y creador, mientras response no expone la entidad JPA.
+- `ActividadMapper` usa MapStruct para `ActividadRequest -> Actividad` y `Actividad -> ActividadResponse`; no consulta repositories ni aplica reglas.
+- `ActividadRepository` hereda `JpaRepository<Actividad, Long>` y declara `existeSolapamiento`, una consulta explícita por lugar, fecha y rango horario con parámetros en orden natural: inicio y fin. También declara `findDetalleById`: su `@EntityGraph(attributePaths = "inscripciones")` aplica exclusivamente a la vista de lectura detallada `ActividadDetalleResponse`, para cargar esa colección antes del mapeo sin volver eager a `findById` ni a listados. Esto habilita navegación relacionada; no convierte el flujo en una operación cabecera-detalle compuesta. Para la consulta operativa S06 declara `buscar(estado, desde, hasta, Sort)`, una proyección plana `ActividadResumen` con filtros opcionales y ordenamiento delegado a Spring Data, y `agregados(desde, hasta)`, que cuenta actividades agrupadas por estado. Ambas consultas JPQL no usan `EntityGraph` porque no requieren relaciones. `ActividadService` expone ambas lecturas: rechaza un rango con `desde > hasta` y solo permite ordenar por `id`, `nombre`, `fecha`, `horaInicio`, `horaFin`, `lugar` o `estado`; así no se envían propiedades arbitrarias a Spring Data. El controller las publica en `GET /api/v1/actividades/busqueda` y `GET /api/v1/actividades/resumen`. La búsqueda admite `estado`, `desde`, `hasta` y `sort`; sin `sort`, usa `fecha` como orden predeterminado. El resumen admite `desde` y `hasta` y devuelve los conteos por estado.
+- La prueba comportamental de repository se difiere hasta una infraestructura de persistencia autorizada; no se reemplaza por mocks ni reflexión. Esto aplica a `ActividadRepository` e `InscripcionRepository`.
+- `ActividadService` expone listar, obtener, obtener detalle, validar existencia, crear y actualizar. `findDetalleById` es de solo lectura y utiliza exclusivamente `findDetalleById` del repository para mapear `ActividadDetalleResponse`; `findById` y `validateExists` conservan su carga plana. `InscripcionService` usa `validateExists` como contrato intermodular antes de registrar, sin acceder al repository de Actividad. `ActividadServiceImpl` usa transacciones de escritura, valida el intervalo horario antes de consultar el solapamiento y lanza `ActividadSolapadaException` ante la regla real.
+- `ActividadController` publica listado, lectura plana, lectura detallada, creación y actualización en `/api/v1/actividades`. `GET /{id}/detalle` devuelve `ActividadDetalleResponse` con `InscripcionDetalleResponse` planos, mediante la consulta dedicada que carga la asociación interna; es una vista de navegación, no una creación compuesta cabecera-detalle. Aplica `@Valid` en crear y actualizar para activar las restricciones declaradas en `ActividadRequest` antes de invocar el servicio.
+- Las excepciones de negocio siguen siendo propiedad de `actividad` o `inscripcion`. Extienden `BusinessConflictException` o `BusinessValidationException`, bases compartidas que el `GlobalExceptionHandler` traduce a 409 o 400 sin importar módulos. Las validaciones de DTO y recursos ausentes conservan 400 y 404, respectivamente.
+- Las garantías concurrentes de inscripción y agenda se entregan como DDL Oracle manual versionado en `database/oracle/manual-migrations/`; no hay Flyway, configuración ni ejecución automática.
+
+## Concurrencia Oracle con activación manual
+
+Las consultas previas a guardar detectan conflictos en el flujo normal. Para inscripción vigente, `V001__enrollment_active_uniqueness.sql` añade el índice Oracle al ejecutarse manualmente. Para solapamientos, `V002__activity_schedule_coordination.sql` crea una agenda bloqueable y `ActividadServiceImpl` bloquea las claves afectadas —en orden determinista al cambiar lugar o fecha— antes de reutilizar la consulta de solapamiento. Ambas garantías quedan activas solo después de ejecutar las migraciones en el Oracle de la aplicación; los detalles operativos están en `15-activities-concurrency-oracle-design.md`.
+
+## Paquetes, `package-info` y CORS
+
+El paquete raíz `actividades` agrupa sus submódulos `actividad` e `inscripcion`. Un futuro `actividades/package-info.java` declara el límite de Spring Modulith y, si se necesita colaboración externa, expone solamente un contrato público explícito. No configura CORS, endpoints ni transacciones.
+
+CORS es infraestructura transversal del backend, no una responsabilidad de `dto/`, `package-info.java` ni de un controller. Para S06 se configurará después mediante propiedades por entorno y una configuración global bajo `/api/**`; no se fijarán orígenes ni credenciales en código. Su evidencia será una prueba HTTP y la propiedad visible por entorno.
+
+El paquete `dto/` de Actividad empezará con `ActividadRequest` y `ActividadResponse`. Si una operación cabecera-detalle real queda aprobada, sus DTO compuestos se nombrarán por el dominio —por ejemplo, `ActividadConInscripcionesRequest`— y no se copiarán nombres como `DetalleVentaRequest` o `VentaAgregado` de BOMERP.
+
+## Verificación
+
+`ActividadTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `InscripcionTest` cubre estado inicial, accesores y mapeo JPA esencial sin Oracle. `ActividadDtoTest` cubre validación de entrada y respuesta pública. `ActividadMapperTest` cubre ambas direcciones y los campos gestionados por entidad. `InscripcionMapperTest` cubre el mapeo de IDs de entrada, el aislamiento de campos gestionados por backend y la representación completa del ciclo. `ActividadRepositoryContractTest` verifica que solo la consulta detallada declare su `EntityGraph`. `ActividadServiceImplTest` cubre lectura plana y detallada, no encontrado, validación explícita de existencia, crear, actualizar, transacciones, rechazo de solapamiento, bloqueo previo de agenda, orden determinista al cambiar agenda e intervalo horario inválido. `ActividadControllerTest` cubre listado, lectura plana, detalle relacionado, crear, actualizar, detalle no encontrado y las respuestas 400, 404 y 409. `InscripcionServiceImplTest` cubre listado, consulta, no encontrado, registro, actividad ausente por el contrato de Actividad, duplicado vigente, primera cancelación, repetición idempotente y límites transaccionales. `InscripcionControllerTest` cubre lista, consulta, registro, cancelación, validación 400, ausencia 404, duplicado 409 y repetición idempotente de cancelación.
