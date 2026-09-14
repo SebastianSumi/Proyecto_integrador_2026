@@ -39,11 +39,15 @@ After V002 succeeds, run `../manual-migrations/V002__activity_schedule_runtime_g
 ## Deferred runtime validation
 
 - `spring-modulith-starter-jpa` requires `EVENT_PUBLICATION` in the runtime schema and the harness provisions it. If the team switches Modulith completion mode to archive, add and validate `EVENT_PUBLICATION_ARCHIVE` before enabling that mode.
-- `NoticiaEntity.contenido` and `NotificacionEntity.mensaje` map with `@Lob`, while Oracle local DDL uses `CLOB`. The mapping is aligned; prove it with the first `ddl-auto: validate` Oracle boot.
+- `NoticiaEntity.contenido` and `NotificacionEntity.mensaje` map with `@Lob`, while Oracle local DDL uses `CLOB`. The mapping is aligned and was validated by a successful `ddl-auto: validate` Oracle local boot on 2026-09-14.
 
 ## Boundaries
 
 - Do not commit `.env.local`, passwords, container dumps or Oracle data.
 - This proves a local Oracle runtime only after the container and `ddl-auto: validate` boot are executed. It does not prove BD2 access.
 - The real S06 header-detail aggregate is `EvaluacionAptitud -> DetallePruebaFisica`; no artificial composite operation is added here.
-- The mapped `Map<String,Object>` / `CLOB` recommendation detail still requires Hibernate runtime proof before it can be claimed as validated.
+- The mapped `Map<String,Object>` / `CLOB` recommendation detail was included in the successful Hibernate runtime validation on 2026-09-14.
+
+## Verified local runtime evidence (2026-09-14)
+
+Oracle Free 23.5 started healthy at the local mapped port. The backend started with profile local-oracle and ddl-auto: validate, initialized the JPA EntityManagerFactory, and returned 200 from /actuator/health, /v3/api-docs, and /api/v1/teams. This is local Oracle evidence only; it does not prove BD2, manual V001/V002, or a concurrent Oracle workload.

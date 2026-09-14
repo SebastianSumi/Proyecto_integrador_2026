@@ -109,6 +109,6 @@ La configuración integrada separa entornos: `application-dev.yml` toma `DB_URL`
 - [Requisitos y dependencias de Metas](17-metas-requirements-and-dependencies.md)
 - [Guía de merge de módulos de Pedro](../merge-pedro-modules.md)
 
-## Local Oracle harness (integration preparation, not evidence yet)
+## Local Oracle harness (verified local evidence)
 
-A reproducible local Oracle Free harness is documented in [`database/oracle/local/README.md`](../../database/oracle/local/README.md). It is intentionally inactive until Docker is started with an ignored `.env.local`; it creates the schemas derived from the canonical JPA inventory and runs Hibernate only with `ddl-auto: validate`. V001/V002 remain manual after base provisioning. Docker was unavailable while this change was prepared, so no container health, Oracle validation boot, CRUD or concurrent proof is asserted yet.
+A reproducible local Oracle Free harness is documented in [`database/oracle/local/README.md`](../../database/oracle/local/README.md). It is intentionally inactive until Docker is started with an ignored `.env.local`; it creates the schemas derived from the canonical JPA inventory and runs Hibernate only with `ddl-auto: validate`. V001/V002 remain manual after base provisioning. On 2026-09-14, Oracle Free 23.5 was healthy and the backend completed `ddl-auto: validate` with profile `local-oracle`; `/actuator/health`, `/v3/api-docs` and `GET /api/v1/teams` each returned `200`. This proves the local harness and baseline read path, not BD2, manual V001/V002, write behavior, or concurrent Oracle proof.
