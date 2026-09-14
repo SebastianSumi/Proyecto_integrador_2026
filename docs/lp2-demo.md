@@ -5,7 +5,7 @@
 ## Lectura rápida
 
 - **Implementado en Java:** verticales Teams, Actividades, Inscripciones y Metas, con DTOs, mappers, servicios transaccionales, controllers y pruebas focalizadas.
-- **Pendiente para afirmar cumplimiento integral de S06:** Oracle vivo, evidencia CORS contra el backend de demo, logs y una operación cabecera–detalle atómica. El bootstrap único, la verificación local de Spring Modulith y los metadatos de Swagger ya están disponibles. CORS local ya opera por propiedades para Angular en `http://localhost:4200`, sin credenciales; el ambiente compartido debe configurar sus propios valores. Las consultas/reportes de Actividades están implementados localmente, pero requieren demostración con datos reales.
+- **Pendiente para afirmar cumplimiento integral de S06:** Oracle vivo y repetición de las evidencias locales contra Oracle autorizado. El agregado real `EvaluacionAptitud -> DetallePruebaFisica` ya tiene prueba H2 de éxito y rollback; CORS, Spring Modulith y Swagger tienen evidencia local. El ambiente compartido debe configurar sus valores CORS y las consultas/reportes de Actividades requieren demostración con datos reales.
 - **Ruta de evidencia:** usar la [matriz S06](rebuild/18-s06-evaluation-traceability.md) durante la demo; no presentar como terminada una fila pendiente.
 
 ## 1. Alcance arquitectónico del corte
@@ -55,7 +55,7 @@ La demo S06 debe ejecutarse con el backend conectado al Oracle real del equipo. 
 | `PATCH` | `/api/v1/metas/{id}/cumplimiento` | Confirmar cumplimiento supervisado. | Implementado en Java. |
 | `DELETE` | `/api/v1/metas/{id}` | Eliminar solo una meta `EN_CURSO`. | Implementado en Java. |
 
-**No atribuir al contrato actual:** una operación cabecera–detalle. CORS usa una única configuración transversal para `/api/**`, con `app.cors.*` y sobrescritura por `CORS_*`; no se usa `@CrossOrigin` por controller. El valor local autorizado permite Angular en `http://localhost:4200` sin credenciales; confirmar y configurar el origen del ambiente de demo antes de presentarlo. Las consultas y el resumen existen en Java, pero su evidencia con datos reales sigue pendiente para S06.
+**Cabecera–detalle S06:** `EvaluacionAptitud -> DetallePruebaFisica` registra una solicitud compuesta de forma transaccional, calcula puntaje/diagnóstico y cuenta con una prueba H2 de commit y rollback. Actividad–Inscripción sigue sin presentarse como cabecera–detalle. CORS usa una única configuración transversal para `/api/**`, con `app.cors.*` y sobrescritura por `CORS_*`; no se usa `@CrossOrigin` por controller. El valor local autorizado permite Angular en `http://localhost:4200` sin credenciales; confirmar y configurar el origen del ambiente de demo antes de presentarlo. Las consultas y el resumen existen en Java, pero su evidencia con datos reales sigue pendiente para S06.
 
 ## 4. DTO principales y límites de datos
 
@@ -93,11 +93,11 @@ Oracle BD2 (evidencia pendiente en vivo)
 | Horario inválido/solapado | Pruebas de service de Actividad. | Rechazo secuencial; concurrencia real requiere Oracle + V002. |
 | Inscripción duplicada/cancelación | Pruebas de service de Inscripción. | Flujo normal e idempotencia cubiertos; carrera real requiere Oracle + V001. |
 | Meta | Pruebas entity/DTO/mapper/service/controller. | Crear, fechas, estado inicial, actualización, cumplimiento y borrado condicionado. |
-| Suite registrada | `mvn test` 196/196 PASS, incluida la verificación focalizada de Modulith 1/1, el perfil H2, CORS/Security y OpenAPI (2026-09-13). | Valida pruebas locales; no sustituye Oracle. |
+| Suite registrada | La suite local incluye `EvaluacionAptitudTransactionalIntegrationTest`: 1 cabecera y 2 detalles con cálculo, más rollback completo ante falla posterior dentro de la misma transacción H2. | La evidencia H2 valida la atomicidad local; no sustituye Oracle. |
 | Runtime H2 local | Perfil `test` en puerto 8087: health 200, OpenAPI 200, Swagger redirect/UI 200, Teams 200, CORS permitido/rechazado/preflight y POST Team 201 con `INFO` after-commit. El proceso se detuvo al finalizar. | Prueba local de arranque y contratos HTTP; no usa Oracle ni persiste fuera de H2 en memoria. |
 | Integración Oracle | Sin evidencia de ejecución viva contra BD2 registrada aquí. | Pendiente: arrancar y demostrar conexión contra BD2. |
 
-No existe todavía evidencia de rollback de una cabecera–detalle. `SaludablementeApplication` permite arrancar Spring Boot y `ModularityTests` verifica localmente la topología con `ApplicationModules.of(...).verify()` (1/1 PASS, 2026-09-13). El runtime H2 local comprobó Swagger, CORS y un log `INFO` posterior a commit; aún falta repetir estas evidencias contra Oracle/BD2 autorizado. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
+Existe evidencia local H2 de rollback del agregado `EvaluacionAptitud -> DetallePruebaFisica`; falta repetirla contra Oracle autorizado. `SaludablementeApplication` permite arrancar Spring Boot y `ModularityTests` verifica localmente la topología con `ApplicationModules.of(...).verify()` (1/1 PASS, 2026-09-13). El runtime H2 local comprobó Swagger, CORS y un log `INFO` posterior a commit; aún falta repetir estas evidencias contra Oracle/BD2 autorizado. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
 
 ## 7. Trazabilidad con ADS y BD2
 
@@ -107,7 +107,7 @@ No existe todavía evidencia de rollback de una cabecera–detalle. `Saludableme
 | ORM y CRUD | Diseño de recursos y responsabilidades. | Oracle real, tablas y restricciones. | CRUD Java implementado; falta conexión Oracle en vivo. |
 | Reglas de inscripción/agenda | Reglas de negocio de Actividades. | V001/V002 deben ser aplicadas manualmente y registradas. | Scripts preparados, no ejecutados según esta documentación. |
 | Asociación ORM/DTO relacionado | Modelo de relaciones aprobado. | FK/objetos relacionados del esquema real. | Pendiente: el diseño actual usa IDs escalares entre módulos. |
-| Cabecera–detalle y rollback | Caso de uso compuesto aprobado. | Transacción/rollback verificable. | Pendiente de dueño, contrato y prueba; Actividad–Inscripción no se presenta como cabecera–detalle. |
+| Cabecera–detalle y rollback | `EvaluacionAptitud -> DetallePruebaFisica` es el caso compuesto existente. | Transacción/rollback verificable. | Prueba H2 cubre commit y rollback; repetir contra Oracle autorizado. Actividad–Inscripción no se presenta como cabecera–detalle. |
 | Consultas y CORS | Requisitos de consulta y cliente web. | Datos reales/índices según BD2. | Búsqueda y resumen de Actividades implementados localmente; CORS transversal para `/api/**` permite temporalmente `http://localhost:4200` sin credenciales. Falta backend iniciado y valores del ambiente compartido. |
 
 ## 8. Rúbrica de evaluación
