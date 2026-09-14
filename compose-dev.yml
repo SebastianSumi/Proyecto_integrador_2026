@@ -6,12 +6,12 @@ services:
     container_name: saludablemente-oracle-local
     restart: unless-stopped
     ports:
-      - "${ORACLE_PORT:-1522}:1521"
+      - "${ORACLE_PORT:-1524}:1521"
     environment:
       ORACLE_PASSWORD: ${ORACLE_PASSWORD:?Set ORACLE_PASSWORD in .env.local}
       APP_USER: ${DB_USERNAME:-SALUDABLEMENTE_APP}
       APP_USER_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env.local}
-      LOCAL_ORACLE_OWNER_PASSWORD: ${LOCAL_ORACLE_OWNER_PASSWORD:?Set LOCAL_ORACLE_OWNER_PASSWORD in .env.local}
+      SCHEMA_OWNER_PASSWORD: ${SCHEMA_OWNER_PASSWORD:?Set SCHEMA_OWNER_PASSWORD in .env.local}
     volumes:
       - oracle-data:/opt/oracle/oradata
       - ./database/oracle/local/init:/container-entrypoint-initdb.d:ro

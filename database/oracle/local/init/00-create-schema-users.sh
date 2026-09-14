@@ -3,7 +3,7 @@ set -euo pipefail
 
 # This runs only while gvenzl initializes a fresh data volume. It never stores a password.
 # Passwords are supplied by Docker environment variables from the ignored .env.local file.
-OWNER_PASSWORD="${LOCAL_ORACLE_OWNER_PASSWORD:?LOCAL_ORACLE_OWNER_PASSWORD is required}"
+OWNER_PASSWORD="${SCHEMA_OWNER_PASSWORD:?SCHEMA_OWNER_PASSWORD is required}"
 CONNECT="sys/${ORACLE_PASSWORD}@//localhost:1521/FREEPDB1 as sysdba"
 
 sqlplus -s "$CONNECT" <<SQL
