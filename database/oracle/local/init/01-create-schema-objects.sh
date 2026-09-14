@@ -5,7 +5,7 @@ set -euo pipefail
 # a partially populated owner stops provisioning so this baseline never silently mixes DDL sets.
 table_count() {
   local owner="$1"
-  sqlplus -s "${owner}/${LOCAL_ORACLE_OWNER_PASSWORD}@//localhost:1521/FREEPDB1" <<'SQL'
+  sqlplus -s "${owner}/${SCHEMA_OWNER_PASSWORD}@//localhost:1521/FREEPDB1" <<'SQL'
 WHENEVER SQLERROR EXIT SQL.SQLCODE
 set heading off feedback off pages 0
 select count(*) from user_tables;
@@ -21,7 +21,7 @@ run_owner() {
   count=$(table_count "$owner")
   count=$(echo "$count" | tr -d '[:space:]')
   if [[ "$count" == "0" ]]; then
-    sqlplus -s "${owner}/${LOCAL_ORACLE_OWNER_PASSWORD}@//localhost:1521/FREEPDB1" @"/container-entrypoint-initdb.d/${script}"
+    sqlplus -s "${owner}/${SCHEMA_OWNER_PASSWORD}@//localhost:1521/FREEPDB1" @"/container-entrypoint-initdb.d/${script}"
     count=$(table_count "$owner")
     count=$(echo "$count" | tr -d '[:space:]')
     if [[ "$count" != "$expected_tables" ]]; then
