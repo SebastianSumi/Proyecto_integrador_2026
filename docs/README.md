@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-Saludablemente tiene las verticales Java de **Teams**, **Actividades**, **Inscripciones** y **Metas** implementadas con DTOs, mapper, repository, service, controller y manejo de errores. La evidencia local integrada actual es `mvn test` 192/192 PASS (2026-09-13). Oracle no fue ejecutado como parte de esa evidencia. La evaluación S06 requiere además pruebas de integración que todavía no deben declararse completas: Oracle vivo, Swagger contra BD2, CORS y logs en ejecución real, cabecera–detalle acordada y consultas/reportes con datos reales. Ver la matriz de evaluación antes de preparar la demo.
+Saludablemente tiene las verticales Java de **Teams**, **Actividades**, **Inscripciones** y **Metas** implementadas con DTOs, mapper, repository, service, controller y manejo de errores. La evidencia local integrada actual es `mvn test` 210/210 PASS (2026-09-14). Oracle local y Swagger fueron verificados en ejecución, pero la evidencia contra el esquema BD2 compartido aún debe demostrarse. La evaluación S06 requiere además consultas/reportes con datos reales y una demo viva registrada. El seed SQL manual e idempotente está en `database/oracle/demo/`; se ejecuta explícitamente como `SALUDABLEMENTE_APP`, nunca al arrancar Docker o Spring Boot. Ver la matriz de evaluación y la guía del seed antes de preparar la demo.
 
 ## Ruta de lectura
 
@@ -51,3 +51,4 @@ Para `Inscripcion`, las capas `entity`, `dto`, `mapper`, `repository`, `service`
 ## Documentos históricos
 
 `external-module-recommendations.md`, `next-iteration.md`, `pedro-module-roadmap.md` y `project-architecture.md` describen el legado eliminado. Se conservan como evidencia; no son instrucciones de implementación para la reconstrucción.
+
