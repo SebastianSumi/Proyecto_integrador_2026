@@ -9,6 +9,17 @@ if ($compose -match 'ORACLE_PASSWORD:\s*\d') { throw 'Compose contains a literal
 if ($compose -notmatch 'container-entrypoint-initdb\.d') { throw 'Compose must mount the local init scripts.' }
 $profile = Get-Content (Join-Path $root 'src/main/resources/application-local-oracle.yml') -Raw
 if ($profile -notmatch 'ddl-auto: validate') { throw 'Local Oracle profile must validate only.' }
+$initDirectory = Join-Path $root 'database/oracle/local/init'
+$initFiles = Get-ChildItem $initDirectory -File
+if ($initFiles.Count -eq 0) { throw 'Local Oracle init directory must not be empty.' }
+foreach ($initFile in $initFiles) {
+    $bytes = [System.IO.File]::ReadAllBytes($initFile.FullName)
+    for ($index = 0; $index -lt $bytes.Length - 1; $index++) {
+        if ($bytes[$index] -eq 13 -and $bytes[$index + 1] -eq 10) {
+            throw "Local Oracle init file must use LF line endings: $($initFile.Name)"
+        }
+    }
+}
 $requiredTables = @('ACTIVIDADES','INSCRIPCIONES','METAS','TEAMS','PERSONA','PREFERENCIA_COMUNICACION','CREDENCIAL_PROGRAMA','CATALOGO_PRUEBA','EVALUACION_APTITUD','DETALLE_PRUEBA_FISICA','EVALUACION_NUTRICIONAL','DETALLE_ANTROPOMETRICO','DETALLE_BIOQUIMICO','ASISTENCIAS','NOTICIAS','NOTIFICACIONES','ALERTA_CLINICA','ALERTA_CLINICA_DETALLE','CATALOGO_ACCION_CORRECTIVA','RESOLUCION_CLINICA','BITACORA_SEGURIDAD','BITACORA_LECTURA','BITACORA_TRANSACCIONAL','EVENTO_AUDITORIA_DLQ','MANIFIESTO_ARCHIVADO_FRIO','PARTICION_BITACORA','POLITICA_RETENCION','SESION_USUARIO','TAREA_EXPORTACION','SUSCRIPTOR_WEBHOOK','LOG_INTEROPERABILIDAD_FHIR','BITACORA_DESCARGA_EXPORTACION','REPORTE_PERSONAL','COLA_GENERACION_REPORTES','REPORTE_DESCARGA_BITACORA','RECOMENDACION_IA','RECOMENDACION_IA_DETALLE')
 $ddl = (Get-ChildItem (Join-Path $root 'database/oracle/local/init') -Filter '*.sql.template' | Get-Content -Raw) -join "`n"
 foreach ($table in $requiredTables) { if ($ddl -notmatch "CREATE TABLE $table") { throw "DDL omits mapped table: $table" } }

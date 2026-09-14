@@ -1,0 +1,4 @@
+/mvnw text eol=lf
+*.cmd text eol=crlf
+/database/oracle/local/init/*.sh text eol=lf
+/database/oracle/local/init/*.sql.template text eol=lf
