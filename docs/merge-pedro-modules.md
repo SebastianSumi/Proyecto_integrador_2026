@@ -10,6 +10,10 @@ Esta guía sirve para integrar Teams, Actividades, Inscripciones, Metas y su sop
 4. Conservar `SaludablementeApplicationTests`, que usa el perfil `test` con H2 y los schemas H2 de mapeos de `src/test/resources/schema.sql`, y ejecutar `mvn clean test` más `git diff --check` después del merge.
 5. Con Oracle autorizado, aplicar y registrar V001/V002 si el responsable de BD2 lo aprueba; luego ejecutar la evidencia en vivo.
 
+## Evidencia local ya comprobada
+
+El perfil `test` inició con H2 en memoria por el puerto `8087` y verificó health, OpenAPI, Swagger UI, Teams, CORS permitido/rechazado/preflight y un `POST` de Team (`201`) con log `INFO` posterior al commit. El proceso se detuvo al terminar. Esta evidencia es útil para detectar regresiones de merge, pero no certifica Oracle BD2 ni habilita la ejecución de V001/V002.
+
 ## Gate de seguridad y pruebas antes de integrar
 
 - [ ] Rotar cualquier credencial Oracle que hubiera sido expuesta antes de este cambio; eliminarla del historial requiere una decisión del responsable del repositorio.
@@ -41,7 +45,7 @@ Esta guía sirve para integrar Teams, Actividades, Inscripciones, Metas y su sop
 
 | Tema | Estado | Acción posterior al merge |
 |---|---|---|
-| Oracle BD2 y Swagger | Externo al código de Pedro. | Configurar datasource autorizado, arrancar backend y demostrar CRUD desde Swagger. |
+| Oracle BD2 | Externo al código de Pedro. | Configurar datasource autorizado, arrancar backend y demostrar CRUD desde Swagger. La comprobación Swagger con H2 ya existe, pero no reemplaza BD2. |
 | CORS de ambiente | El valor local es Angular `http://localhost:4200`, sin credenciales. | Reemplazar mediante `CORS_*` con el origen y política confirmados del ambiente compartido. |
 | V001/V002 | Scripts manuales preparados, no activos por sí mismos. | El responsable Oracle decide, aplica y registra la ejecución; después se realiza prueba concurrente real. |
 | Cabecera–detalle | No está implementado porque el agregado real no fue definido. | El equipo debe acordar dueño, DTO compuesto, operación transaccional, cálculo y rollback; no renombrar Actividad–Inscripción para simularlo. |

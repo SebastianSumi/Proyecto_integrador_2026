@@ -31,6 +31,21 @@
 - **OpenAPI/Swagger:** Springdoc descubre los endpoints y `OpenApiConfig` aporta título, versión y descripción para presentarlos. Sus metadatos no reemplazan una demostración de Swagger con el backend iniciado.
 - **Logs:** respuestas de error no son logs. La convención está implementada, pero debe observarse en un backend iniciado antes de atribuir evidencia en vivo.
 
+## Evidencia runtime local con H2 (2026-09-13)
+
+> **Resultado:** el backend se inició usando exclusivamente el perfil `test` y H2 en memoria, en el puerto `8087`. Esta evidencia comprueba el arranque y los contratos HTTP locales; **no** prueba Oracle BD2 ni reemplaza su demostración autorizada.
+
+| Escenario verificado | Resultado observado |
+|---|---|
+| Salud | `GET /actuator/health` respondió `200`. |
+| Contrato OpenAPI | `GET /v3/api-docs` respondió `200`. |
+| Swagger UI | La ruta de Swagger redirigió y la interfaz respondió `200`. |
+| Endpoint de negocio | `GET /api/v1/teams` respondió `200`. |
+| CORS | Origen permitido, origen rechazado y preflight mostraron el comportamiento configurado para `/api/**`. |
+| Escritura y logs | Un `POST /api/v1/teams` seguro contra H2 respondió `201`; se observó el `INFO` diferido hasta `afterCommit`. |
+
+El proceso fue detenido después de la comprobación. No se conectó a Oracle, no se ejecutó SQL manual y no se persistieron datos fuera de H2 en memoria.
+
 ## Convención de logs de servidor
 
 | Zona | Nivel | Información permitida |
@@ -52,12 +67,12 @@ La configuración integrada separa entornos: `application-dev.yml` toma `DB_URL`
 
 - [ ] Ejecutar `mvn test` y registrar el total actual, sin reutilizar una cifra histórica si cambió.
 - [ ] Ejecutar `git diff --check` y verificar que no haya errores de espacios.
-- [ ] Confirmar con BD2 el Oracle/esquema autorizado y que el backend arranca conectado.
+- [ ] Confirmar con BD2 el Oracle/esquema autorizado y que el backend arranca conectado. El arranque H2 local ya fue verificado, pero no equivale a esta evidencia.
 - [x] Confirmar bootstrap único y verificación Modulith local: `ModularityTests` pasó 1/1 el 2026-09-13. El equipo debe preservar el bootstrap y acordar límites explícitos antes de ampliar módulos.
 - [ ] Confirmar si V001/V002 fueron aplicadas; si no, explicar que las garantías concurrentes no están activas.
 - [x] Registrar evidencia local de Spring Modulith: `ApplicationModules.of(SaludablementeApplication.class).verify()` pasó 1/1 el 2026-09-13.
 - [ ] Configurar el origen frontend y la política de credenciales del ambiente de demo mediante `CORS_*`.
-- [ ] No preparar una demo que afirme CORS en el ambiente compartido, logs o cabecera–detalle si siguen pendientes. Las consultas/reporte locales requieren todavía datos reales en la demo.
+- [ ] No preparar una demo que afirme CORS en el ambiente compartido, Oracle o cabecera–detalle si siguen pendientes. CORS y logs ya tienen evidencia runtime H2 local; las consultas/reporte requieren todavía datos reales en la demo.
 
 ### Secuencia de cinco minutos de demo técnica
 

@@ -25,7 +25,7 @@ El backend es un monolito modular: cada módulo conserva entity, DTO, mapper, re
 
 | Aspecto | Evidencia actual | Límite honesto |
 |---|---|---|
-| Proyecto único | Un único `pom.xml` Maven, contratos REST, `SaludablementeApplication` como bootstrap único y metadatos OpenAPI para Swagger. | Falta arrancar contra Oracle/BD2 y demostrar Swagger en vivo. |
+| Proyecto único | Un único `pom.xml` Maven, contratos REST, `SaludablementeApplication` como bootstrap único y metadatos OpenAPI para Swagger. El arranque local H2 verificó health, OpenAPI y Swagger UI con `200`. | Falta arrancar contra Oracle/BD2; la evidencia H2 no demuestra conexión BD2. |
 | Modularidad | Paquetes de negocio separados y `ModularityTests` con `ApplicationModules.of(...).verify()` verde (1/1, 2026-09-13). | La prueba refleja la topología actual; el equipo debe acordar límites explícitos antes de ampliar módulos. |
 | Persistencia | Entities y `JpaRepository` implementados. | No declarar persistencia Oracle validada hasta la demo conectada. |
 | Errores | Handler global y excepciones de dominio con 400/404/409. | No sustituye logs de trazabilidad. |
@@ -93,10 +93,11 @@ Oracle BD2 (evidencia pendiente en vivo)
 | Horario inválido/solapado | Pruebas de service de Actividad. | Rechazo secuencial; concurrencia real requiere Oracle + V002. |
 | Inscripción duplicada/cancelación | Pruebas de service de Inscripción. | Flujo normal e idempotencia cubiertos; carrera real requiere Oracle + V001. |
 | Meta | Pruebas entity/DTO/mapper/service/controller. | Crear, fechas, estado inicial, actualización, cumplimiento y borrado condicionado. |
-| Suite registrada | `mvn test` 196/196 PASS, incluida la verificación focalizada de Modulith 1/1, el perfil H2, CORS/Security y OpenAPI (2026-09-13). | Valida pruebas locales; no sustituye Oracle ni evidencia en vivo. |
-| Integración Oracle | Sin evidencia de ejecución viva registrada aquí. | Pendiente: arrancar y demostrar conexión contra BD2. |
+| Suite registrada | `mvn test` 196/196 PASS, incluida la verificación focalizada de Modulith 1/1, el perfil H2, CORS/Security y OpenAPI (2026-09-13). | Valida pruebas locales; no sustituye Oracle. |
+| Runtime H2 local | Perfil `test` en puerto 8087: health 200, OpenAPI 200, Swagger redirect/UI 200, Teams 200, CORS permitido/rechazado/preflight y POST Team 201 con `INFO` after-commit. El proceso se detuvo al finalizar. | Prueba local de arranque y contratos HTTP; no usa Oracle ni persiste fuera de H2 en memoria. |
+| Integración Oracle | Sin evidencia de ejecución viva contra BD2 registrada aquí. | Pendiente: arrancar y demostrar conexión contra BD2. |
 
-No existe todavía evidencia de rollback de una cabecera–detalle ni logs en un backend iniciado. `SaludablementeApplication` permite arrancar Spring Boot y `ModularityTests` verifica localmente la topología con `ApplicationModules.of(...).verify()` (1/1 PASS, 2026-09-13); aún falta ejecutar Swagger y Oracle en el ambiente autorizado. CORS por propiedad tiene pruebas MockMvc de política y de cadena real Spring Security para origen permitido, origen rechazado y preflight `OPTIONS`; falta repetirlas contra el backend/Oracle de demo con las variables del ambiente. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
+No existe todavía evidencia de rollback de una cabecera–detalle. `SaludablementeApplication` permite arrancar Spring Boot y `ModularityTests` verifica localmente la topología con `ApplicationModules.of(...).verify()` (1/1 PASS, 2026-09-13). El runtime H2 local comprobó Swagger, CORS y un log `INFO` posterior a commit; aún falta repetir estas evidencias contra Oracle/BD2 autorizado. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
 
 ## 7. Trazabilidad con ADS y BD2
 
