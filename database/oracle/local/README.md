@@ -4,10 +4,21 @@ This folder provisions a disposable **local** Oracle Free database from the curr
 
 ## Quick path
 
-1. Copy `.env.example` to `.env.local` and replace every password locally. Keep simple local passwords without quotes or shell-special characters because the initialization shell passes them to SQL*Plus.
+1. Run the interactive helper from the repository root: `./scripts/setup-local-oracle.ps1`. It prompts without echoing passwords, validates identifiers/ports, and writes the Git-ignored `.env.local`. Keep passwords simple (letters, digits, underscore) because initialization passes them to SQL*Plus.
 2. Start a fresh database: `docker compose --env-file .env.local -f compose-dev.yml up -d oracle`.
 3. Wait until `docker compose --env-file .env.local -f compose-dev.yml ps` reports `healthy`.
-4. Start the backend with `SPRING_PROFILES_ACTIVE=local-oracle` and the same `DB_URL`, `DB_USERNAME` and `DB_PASSWORD` values. Hibernate uses `ddl-auto: validate`; it never creates tables.
+4. Load only the runtime datasource values into the current PowerShell session; Spring Boot does not read Docker Compose's `.env.local` automatically:
+
+   ```powershell
+   Get-Content .env.local | Where-Object { $_ -match '^(DB_URL|DB_USERNAME|DB_PASSWORD)=' } | ForEach-Object {
+     $key, $value = $_ -split '=', 2
+     Set-Item -Path "Env:$key" -Value $value
+   }
+   $env:SPRING_PROFILES_ACTIVE = 'local-oracle'
+   mvn spring-boot:run
+   ```
+
+   Hibernate uses `ddl-auto: validate`; it never creates tables.
 5. Stop without deleting data: `docker compose --env-file .env.local -f compose-dev.yml down`.
 
 ## Reset
@@ -18,7 +29,7 @@ A reset destroys only the local named volume and all local test data:
 docker compose --env-file .env.local -f compose-dev.yml down -v
 ```
 
-Run it only when a fresh schema is intended. The init scripts run only for a new volume and preserve a nonempty volume.
+Run it only when a fresh schema is intended. The init scripts run only for a new volume and preserve a nonempty volume. Changing `ORACLE_PASSWORD`, `DB_USERNAME`, `DB_PASSWORD`, or `LOCAL_ORACLE_OWNER_PASSWORD` after first initialization requires this reset before `up`; changing only `ORACLE_PORT` does not.
 
 ## What the harness creates
 
