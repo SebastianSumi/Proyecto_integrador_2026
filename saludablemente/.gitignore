@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Auditoria ###
+/keys/
+/auditoria-cold-storage/
+/geoip/*.mmdb
+
+### Exportacion ###
+/exportacion-storage/

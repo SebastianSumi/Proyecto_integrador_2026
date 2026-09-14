@@ -5,5 +5,6 @@ public enum EstadoAlerta {
     EN_REVISION,
     ATENDIDA,
     DESESTIMADA,
-    VENCIDO
+    VENCIDO,
+    ANULADA
 }

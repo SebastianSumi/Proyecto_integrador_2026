@@ -6,7 +6,7 @@ services:
     container_name: saludablemente-oracle
     restart: unless-stopped
     ports:
-      - "1521:1521"
+      - "1522:1521"
     environment:
       ORACLE_PASSWORD: 123456
       APP_USER: SALUDABLEMENTE_APP

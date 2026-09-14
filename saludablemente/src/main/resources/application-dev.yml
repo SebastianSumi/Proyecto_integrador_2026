@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+    url: jdbc:oracle:thin:@localhost:1522/FREEPDB1
     username: SALUDABLEMENTE_APP
     password: 123456
     driver-class-name: oracle.jdbc.OracleDriver
@@ -18,7 +18,7 @@ spring:
     database: ORACLE
     database-platform: org.hibernate.dialect.OracleDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -52,3 +52,105 @@ management:
   endpoint:
     health:
       show-details: always
+
+# =====================================================
+# CONFIGURACION DEL MODULO DE AUDITORIA
+# =====================================================
+auditoria:
+  retencion:
+    dias-retencion-caliente: 365
+    meses-retencion-frio: 60
+    anios-retencion-legal: 5
+    anios-retencion-logs-tecnicos: 1
+    formato-compresion: zip
+    tamano-lote-archivado: 100000
+    purga-automatica: true
+  rsa:
+    private-key-path: ./keys/auditoria-private.key
+    public-key-path: ./keys/auditoria-public.key
+    auto-generate: true
+  geoip:
+    enabled: true
+    database-path: ./geoip/GeoLite2-City.mmdb
+  cold-storage:
+    tipo: LOCAL
+    ruta-base-local: ./auditoria-cold-storage
+    cifrado-habilitado: true
+    algoritmo-compresion: zip
+    tamano-maximo-archivo-mb: 500
+  schedulers:
+    particionamiento:
+      cron: "0 0 2 1 * *"
+    sincronizacion-particiones:
+      cron: "0 0 3 * * SUN"
+    archivado-frio:
+      cron: "0 0 3 1 * *"
+    purga:
+      cron: "0 0 4 1 1 *"
+    integridad-ledger:
+      cron: "0 0 2 * * *"
+    dlq-retry:
+      cron: "0 */15 * * * *"
+# =====================================================
+# CONFIGURACION DEL MODULO DE EXPORTACION
+# =====================================================
+exportacion:
+  storage:
+    tipo: LOCAL
+    ruta-base: ./exportacion-storage
+  async:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 50
+  sse:
+    timeout-minutos: 30
+  fhir:
+    enabled: true
+    version: R4
+    base-path: /fhir/r4
+  webhooks:
+    enabled: true
+    timeout-segundos: 10
+    max-reintentos: 3
+    backoff-inicial-ms: 1000
+  presigned:
+    expiracion-minutos: 15
+  retencion:
+    horas-temporal: 2
+    dias-url-prefirmada: 15
+  rate-limit:
+    exportaciones-por-hora: 10
+    registros-diarios: 500000
+    registros-por-exportacion: 100000
+  privacidad:
+    k-anonymity-minimo: 5
+    pseudonimizacion-salt: ${EXPORTACION_PSEUDONIMIZACION_SALT:cambiar-este-salt-en-produccion}
+  chunk:
+    tamano-lote: 1000
+  schedulers:
+    limpieza-temporales:
+      cron: "0 0 * * * *"
+    generacion-periodica:
+      cron: "0 0 3 1 * *"
+    verificacion-descargas-expiradas:
+      cron: "0 */15 * * * *"
+
+saludablemente:
+  cors:
+    allowed-origins: http://localhost:4200
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+    allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
+    allowed-headers: ${CORS_ALLOWED_HEADERS:Content-Type,Authorization}
+    allow-credentials: ${CORS_ALLOW_CREDENTIALS:false}
+    max-age: ${CORS_MAX_AGE:3600}
+
+perfil:
+  reporte:
+    storage:
+      tipo: LOCAL
+      ruta-base: ./perfil-reporte-storage
+
+

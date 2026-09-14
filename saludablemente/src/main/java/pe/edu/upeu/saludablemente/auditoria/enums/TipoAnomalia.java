@@ -1,0 +1,12 @@
+package pe.edu.upeu.saludablemente.auditoria.enums;
+
+public enum TipoAnomalia {
+    IMPOSSIBLE_TRAVEL,
+    RATE_LIMIT_EXCEEDED,
+    UNAUTHORIZED_ACCESS,
+    BREAK_GLASS_ACCESS,
+    PROMPT_INJECTION,
+    MASSIVE_DOWNLOAD,
+    OUT_OF_HOURS_MODIFICATION,
+    SUSPICIOUS_LOGIN_PATTERN
+}
