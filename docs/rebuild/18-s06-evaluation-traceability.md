@@ -108,3 +108,7 @@ La configuración integrada separa entornos: `application-dev.yml` toma `DB_URL`
 - [Requisitos de Actividades](16-activities-module-requirements-and-rationale.md)
 - [Requisitos y dependencias de Metas](17-metas-requirements-and-dependencies.md)
 - [Guía de merge de módulos de Pedro](../merge-pedro-modules.md)
+
+## Local Oracle harness (integration preparation, not evidence yet)
+
+A reproducible local Oracle Free harness is documented in [`database/oracle/local/README.md`](../../database/oracle/local/README.md). It is intentionally inactive until Docker is started with an ignored `.env.local`; it creates the schemas derived from the canonical JPA inventory and runs Hibernate only with `ddl-auto: validate`. V001/V002 remain manual after base provisioning. Docker was unavailable while this change was prepared, so no container health, Oracle validation boot, CRUD or concurrent proof is asserted yet.

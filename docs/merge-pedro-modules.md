@@ -63,3 +63,9 @@ El perfil `test` inició con H2 en memoria por el puerto `8087` y verificó heal
 - [Matriz de trazabilidad S06](rebuild/18-s06-evaluation-traceability.md)
 - [Preparación de integración](rebuild/14-s06-integration-readiness.md)
 - [Scripts Oracle manuales](../database/oracle/manual-migrations/README.md)
+
+## Oracle local reproducible harness
+
+For the assembled backend, an optional local Oracle Free harness now lives in [`database/oracle/local/README.md`](../database/oracle/local/README.md). It uses the current JPA inventory as the DDL source, an ignored `.env.local`, a pinned `gvenzl/oracle-free` image, separate owner schemas and a least-privilege runtime user. It is safe to merge because it creates no database until a developer explicitly runs Docker; it neither contacts BD2 nor runs V001/V002 automatically.
+
+Before claiming Oracle evidence, run the static asset check, create the ignored local environment file, start a fresh container, wait for its health check, and launch the backend with `local-oracle` and `ddl-auto: validate`. If the current mappings fail validation, stop and reconcile the local DDL; do not change entities merely to make the harness pass.
