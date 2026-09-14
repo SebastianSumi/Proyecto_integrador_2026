@@ -93,10 +93,10 @@ Oracle BD2 (evidencia pendiente en vivo)
 | Horario inválido/solapado | Pruebas de service de Actividad. | Rechazo secuencial; concurrencia real requiere Oracle + V002. |
 | Inscripción duplicada/cancelación | Pruebas de service de Inscripción. | Flujo normal e idempotencia cubiertos; carrera real requiere Oracle + V001. |
 | Meta | Pruebas entity/DTO/mapper/service/controller. | Crear, fechas, estado inicial, actualización, cumplimiento y borrado condicionado. |
-| Suite registrada | `mvn test` 192/192 PASS, incluida la verificación focalizada de Modulith 1/1 (2026-09-13). | Valida pruebas locales; no sustituye Oracle ni evidencia en vivo. |
+| Suite registrada | `mvn test` 196/196 PASS, incluida la verificación focalizada de Modulith 1/1, el perfil H2, CORS/Security y OpenAPI (2026-09-13). | Valida pruebas locales; no sustituye Oracle ni evidencia en vivo. |
 | Integración Oracle | Sin evidencia de ejecución viva registrada aquí. | Pendiente: arrancar y demostrar conexión contra BD2. |
 
-No existe todavía evidencia de rollback de una cabecera–detalle ni logs en un backend iniciado. `SaludablementeApplication` permite arrancar Spring Boot y `ModularityTests` verifica localmente la topología con `ApplicationModules.of(...).verify()` (1/1 PASS, 2026-09-13); aún falta ejecutar Swagger y Oracle en el ambiente autorizado. CORS por propiedad tiene pruebas MockMvc de origen permitido, origen rechazado y preflight `OPTIONS`; falta repetirlas contra el backend/Oracle de demo con las variables del ambiente. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
+No existe todavía evidencia de rollback de una cabecera–detalle ni logs en un backend iniciado. `SaludablementeApplication` permite arrancar Spring Boot y `ModularityTests` verifica localmente la topología con `ApplicationModules.of(...).verify()` (1/1 PASS, 2026-09-13); aún falta ejecutar Swagger y Oracle en el ambiente autorizado. CORS por propiedad tiene pruebas MockMvc de política y de cadena real Spring Security para origen permitido, origen rechazado y preflight `OPTIONS`; falta repetirlas contra el backend/Oracle de demo con las variables del ambiente. La búsqueda combinada y el resumen agregado de Actividades existen localmente; falta repetirlos con datos reales.
 
 ## 7. Trazabilidad con ADS y BD2
 
