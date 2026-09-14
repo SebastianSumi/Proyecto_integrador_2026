@@ -38,7 +38,7 @@ After V002 succeeds, run `../manual-migrations/V002__activity_schedule_runtime_g
 ## Deferred runtime validation
 
 - `spring-modulith-starter-jpa` is present. Before claiming a fully validated Oracle runtime, decide whether its persistent publication registry is enabled; create and grant its exact table only if the final configuration requires it.
-- `NoticiaEntity.contenido` and `NotificacionEntity.mensaje` currently declare `TEXT` while Oracle local DDL uses `CLOB`. Do not change the DDL to `TEXT`; prove `ddl-auto: validate` and align the mappings to `@Lob`/`CLOB` if Hibernate validates the literal definition.
+- `NoticiaEntity.contenido` and `NotificacionEntity.mensaje` map with `@Lob`, while Oracle local DDL uses `CLOB`. The mapping is aligned; prove it with the first `ddl-auto: validate` Oracle boot.
 
 ## Boundaries
 
