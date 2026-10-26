@@ -1,0 +1,145 @@
+server:
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 15MB
+      max-request-size: 20MB
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+    username: SALUDABLEMENTE_APP
+    password: 123456
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: SLB_PERSONAL
+    show-sql: true
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:saludable}
+    password: ${RABBITMQ_PASS:123456}
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 10
+        default-requeue-rejected: false
+      direct:
+        acknowledge-mode: manual
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/saludablemente-realm-dev
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    upeu.edu.pe.Saludabemente: DEBUG
+    org.springframework.amqp: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+saludablemente:
+  cors:
+    allowed-origins: http://localhost:4200
+  security:
+    qr-salt: ${QR_SALT:dev-salt-cambiar-en-produccion}
+  asistencia:
+    qr-actividad:
+      rotacion-segundos: 180
+      tolerancia-reloj-segundos: 90
+      ventana-anticipacion-min: 15
+      ventana-cierre-min: 15
+      longitud-hash: 32
+  alertas:
+    severidad:
+      leve-max: 3
+      moderada-max: 7
+  storage:
+    minio:
+      endpoint: http://localhost:9000
+      access-key: minioadmin
+      secret-key: minioadmin
+      bucket-name: saludablemente
+      public-url: http://localhost:9000
+  notificaciones:
+    reintentos:
+      max-intentos: 5
+      intervalo-minutos: 10
+      backoff-multiplicador: 2
+    rabbitmq:
+      exchange: saludable.notificaciones.exchange
+      queue: saludable.notificaciones.queue
+      routing-key: notificacion.#
+      dlx: saludable.notificaciones.dlx
+      dlq: saludable.notificaciones.dlq
+      dlq-routing-key: notificacion.dead
+
+  recomendaciones:
+    ia:
+      provider: gemini
+      temperature: 0.3
+      num-predict: 8192
+      num-ctx: 8192
+      ollama:
+        base-url: http://localhost:11434
+        model: qwen2.5:3b
+        read-timeout: 600s
+      gemini:
+        model: gemini-2.5-flash
+        read-timeout: 120s
+        api-key: 
+    outbox:
+      scheduler-interval-ms: 5000
+      max-intentos: 3
+      backoff-inicial-ms: 300000
+      backoff-multiplicador: 3
+
+keycloak:
+  admin:
+    server-url: http://localhost:8180
+    realm: saludablemente-realm-dev
+    client-id: saludablemente-backend
+    client-secret: 

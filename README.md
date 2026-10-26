@@ -1,4 +1,4 @@
-# 🌿 Saludablemente
+m# 🌿 Saludablemente
 
 Sistema web full-stack para la gestión del programa de salud ocupacional **Universidad Saludable** de la Universidad Peruana Unión.
 
@@ -68,7 +68,7 @@ El proyecto está organizado siguiendo una arquitectura por capas:
 
 **Frontend**
 
-* React *(o la tecnología que utilicen)*
+
 
 **Base de datos**
 

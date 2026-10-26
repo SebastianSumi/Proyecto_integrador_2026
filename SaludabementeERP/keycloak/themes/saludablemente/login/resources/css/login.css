@@ -1,0 +1,143 @@
+/* Tema "saludablemente" — misma identidad del sistema (claro, tarjeta, verde/azul). */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  color: #1d2333;
+}
+
+.sal-fondo {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background:
+    radial-gradient(60rem 30rem at 10% -10%, rgba(82, 110, 211, 0.25), transparent),
+    radial-gradient(50rem 26rem at 110% 110%, rgba(46, 160, 120, 0.22), transparent),
+    #f4f6fb;
+}
+
+.sal-card {
+  width: min(28rem, 100%);
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  box-shadow: 0 1.5rem 4rem rgba(20, 30, 80, 0.18);
+}
+
+.sal-marca { display: flex; align-items: center; gap: 1rem; }
+.sal-marca h1 { margin: 0.3rem 0 0; font-size: 1.6rem; }
+.sal-logo { width: 3.25rem; height: 3.25rem; flex-shrink: 0; }
+.sal-badge {
+  display: inline-block;
+  background: #e7edff;
+  color: #3c5bd6;
+  border-radius: 999px;
+  padding: 0.15rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.sal-hint { color: #6b7280; margin: 1rem 0; }
+
+.sal-alert {
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.sal-error { background: #fdecec; color: #b42323; border: 1px solid #f3c2c2; }
+.sal-warning { background: #fff7e6; color: #92580a; border: 1px solid #f0d9a8; }
+.sal-success { background: #e9f7ef; color: #1e7e46; border: 1px solid #bfe3cd; }
+.sal-info { background: #eaf1ff; color: #2f4fc4; border: 1px solid #c4d4f7; }
+
+.sal-form { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.sal-field { display: flex; flex-direction: column; gap: 0.35rem; font-weight: 600; font-size: 0.9rem; }
+.sal-field input {
+  border: 1px solid #dfe3ee;
+  border-radius: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  font-size: 1rem;
+  font-weight: 400;
+  background: #fbfbff;
+}
+.sal-field input:focus { outline: 2px solid #526ed3; border-color: #526ed3; background: #fff; }
+.sal-field-error { color: #b42323; font-size: 0.8rem; font-weight: 400; }
+
+.sal-row { display: flex; justify-content: flex-end; }
+.sal-link { color: #3c5bd6; text-decoration: none; font-size: 0.9rem; }
+.sal-link:hover { text-decoration: underline; }
+
+.sal-check { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #374151; }
+.sal-check input { width: 1rem; height: 1rem; accent-color: #526ed3; }
+
+.sal-btn {
+  border: 0;
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #526ed3, #2ea078);
+  cursor: pointer;
+}
+.sal-btn:hover { filter: brightness(1.05); }
+
+.sal-crear {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7ef;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.sal-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #3c5bd6;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.sal-volver:hover { text-decoration: underline; }
+
+/* Respeta el modo oscuro / claro del sistema o navegador. */
+@media (prefers-color-scheme: dark) {
+  html, body { color-scheme: dark; }
+
+  .sal-fondo {
+    background:
+      radial-gradient(60rem 30rem at 10% -10%, rgba(82, 110, 211, 0.35), transparent),
+      radial-gradient(50rem 26rem at 110% 110%, rgba(46, 160, 120, 0.28), transparent),
+      #0f1420;
+  }
+
+  .sal-card { background: #1a2133; box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.55); }
+  .sal-marca h1 { color: #f2f5fc; }
+  .sal-hint { color: #a7b0c5; }
+  .sal-badge { background: #2a3a6e; color: #c9d6ff; }
+
+  .sal-field { color: #dbe2f2; }
+  .sal-field input {
+    background: #101828;
+    border-color: #2c3a58;
+    color: #eef2fa;
+  }
+  .sal-field input:focus { background: #0d1526; border-color: #7c9aff; outline-color: #7c9aff; }
+
+  .sal-link, .sal-volver { color: #9db4ff; }
+  .sal-crear { border-top-color: #2c3a58; color: #a7b0c5; }
+  .sal-check { color: #c4cde2; }
+
+  .sal-error { background: #3a1d1d; color: #ffb4b4; border-color: #6e2b2b; }
+  .sal-warning { background: #3a2f14; color: #ffd98a; border-color: #6e5623; }
+  .sal-success { background: #123626; color: #8fe3b4; border-color: #1f5c3c; }
+  .sal-info { background: #1a2a52; color: #b9ccff; border-color: #2f4a8f; }
+}
