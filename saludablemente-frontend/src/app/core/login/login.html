@@ -1,0 +1,59 @@
+<section class="login-fondo">
+  <div class="login-card">
+    <div class="login-marca">
+      <img class="login-logo" src="img/logo-icon.svg" alt="Saludablemente" />
+      <div>
+        <span tuiBadge appearance="primary" size="s">Saludablemente ERP</span>
+        <h1>Bienvenido</h1>
+      </div>
+      <span class="login-tema">
+        <button tuiIconButton appearance="flat" size="s" type="button"
+          [iconStart]="esOscuro() ? '@tui.sun' : '@tui.moon'"
+          (click)="alternarTema()" aria-label="Cambiar tema claro/oscuro">
+          Tema
+        </button>
+      </span>
+    </div>
+
+    <p class="hint">
+      Accede con tu cuenta institucional. El inicio de sesión es seguro
+      mediante Keycloak (SSO): nunca escribes tu clave en esta aplicación.
+    </p>
+
+    @if (auth.estaAutenticado()) {
+      <p class="hint">Ya tienes sesión como <strong>{{ auth.obtenerNombre() }}</strong>.</p>
+    }
+
+    <div class="login-acciones">
+      <button
+        tuiButton
+        appearance="primary"
+        size="l"
+        type="button"
+        [loading]="ingresando()"
+        (click)="ingresar()"
+      >
+        <tui-icon icon="@tui.log-in" />
+        {{ auth.estaAutenticado() ? 'Ir a mi panel' : 'Iniciar sesión' }}
+      </button>
+    </div>
+
+    <ul class="login-lista">
+      <li><tui-icon icon="@tui.shield-check" /> Sesión única y roles automáticos</li>
+      <li><tui-icon icon="@tui.users" /> Colaboradores, coordinadores y administradores</li>
+      <li><tui-icon icon="@tui.bell" /> Noticias, asistencias y alertas en un solo lugar</li>
+    </ul>
+
+    <p class="hint login-ayuda">
+      ¿Sin acceso? Contacta al administrador para que active tu usuario.
+    </p>
+    <p class="hint login-ayuda">
+      <button tuiButton appearance="flat" size="s" type="button" (click)="ingresar()">
+        ¿Olvidaste tu contraseña?
+      </button>
+    </p>
+    <p class="hint login-crear">
+      Need an account? <a routerLink="/registro">Create one</a>
+    </p>
+  </div>
+</section>

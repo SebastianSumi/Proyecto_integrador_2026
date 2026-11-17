@@ -1,0 +1,7 @@
+# Frontend build artifacts and dependencies
+saludablemente-frontend/node_modules/
+saludablemente-frontend/dist/
+saludablemente-frontend/.angular/
+saludablemente-frontend/out-tsc/
+saludablemente-frontend/coverage/
+saludablemente-frontend/*.log
